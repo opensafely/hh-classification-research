@@ -1,0 +1,66 @@
+-----------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  E:\cohorts\households-research\analysis\02_an_data_checks.log
+  log type:  text
+ opened on:  29 Sep 2020, 14:04:33
+
+. 
+end of do-file
+
+. do "E:\STATATMP\STD7f28_000000.tmp"
+
+. use hh_analysis_dataset.dta, clear
+file hh_analysis_dataset.dta not found
+r(601);
+
+end of do-file
+
+r(601);
+
+. do "E:\STATATMP\STD7f28_000000.tmp"
+
+. use hh_analysis_datasetALLVARS.dta, clear
+file hh_analysis_datasetALLVARS.dta not found
+r(601);
+
+end of do-file
+
+r(601);
+
+. cd
+E:\cohorts\households-research\analysis
+
+. do "E:\STATATMP\STD7f28_000000.tmp"
+
+. cd ${outputData}
+E:\cohorts\households-research\analysis
+
+. 
+end of do-file
+
+. do "E:\STATATMP\STD7f28_000000.tmp"
+
+. cd E:\cohorts\households-research\analysis
+E:\cohorts\households-research\analysis
+
+. 
+. 
+. *set up my global file paths
+. run global.do
+
+. 
+end of do-file
+
+. do "E:\STATATMP\STD7f28_000000.tmp"
+
+. cd ${outputData}
+E:\cohorts\households-research\output
+
+. clear all
+
+. 
+end of do-file
+
+. do "E:\STATATMP\STD7f28_000000.tmp"
+
+. cap log close
