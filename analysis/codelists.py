@@ -43,6 +43,13 @@ ethnicity_codes = codelist_from_csv(
     category_column="Grouping_6",
 )
 
+ethnicity_codes_16 = codelist_from_csv(
+    "codelists/opensafely-ethnicity.csv",
+    system="ctv3",
+    column="Code",
+    category_column="Grouping_16",
+)
+
 # SMOKING CODELIST
 clear_smoking_codes = codelist_from_csv(
     "codelists/opensafely-smoking-clear.csv",
@@ -224,6 +231,12 @@ dialysis_codes = codelist_from_csv(
 
 other_transplant_codes = codelist_from_csv(
     "codelists/opensafely-other-organ-transplant.csv",
+    system="ctv3",
+    column="CTV3ID",
+)
+
+organ_transplant_codes = codelist_from_csv(
+    "codelists/opensafely-solid-organ-transplantation.csv",
     system="ctv3",
     column="CTV3ID",
 )

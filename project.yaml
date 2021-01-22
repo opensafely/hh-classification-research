@@ -1,31 +1,34 @@
-version: '3.0'
+version: "3.0"
 
 expectations:
-  population_size: 1000
+  population_size: 100000
 
 actions:
-
-  generate_cohorts:
+  generate_cohort:
     run: cohortextractor:latest generate_cohort --study-definition study_definition
     outputs:
       highly_sensitive:
         cohort: output/input.csv
 
-  run_model:
-    run: stata-mp:latest analysis/model.do
-    needs: [generate_cohorts]
+  prepare_data:
+    run: stata-mp:latest analysis/01_hhClassif_cr_analysis_dataset.do
+    needs: [generate_cohort]
     outputs:
+      highly_sensitive:
+        allvars: output/hhClassif_analysis_dataset.dta
       moderately_sensitive:
-        log: logs/model.log
+        log1: released_outputs/01_hhClassif_cr_analysis_dataset.log
 
-  run_all:
-    needs:
-      - run_model
-    # In order to be valid this action needs to define a run commmand and some
-    # output. We don't really care what these are but the below does the trick.
-    # In a future release of the platform, this special action won't need to be
-    # defined at all.
-    run: cohortextractor:latest --version
+
+  output_descriptive:
+    run: stata-mp:latest analysis/02_hh_an_caseFreq_descriptive_plots.do
+    needs: [prepare_data]
     outputs:
       moderately_sensitive:
-        whatever: project.yaml
+        graph1: released_outputs/an_caseFreq_descr_overall_HH_Histogram.svg
+        graph2: released_outputs/an_caseFreq_descr_overall_HH_HistogramOverlay.svg
+        log1: released_outputs/02_hh_an_caseFreq_descriptive_plots.log
+        log2: released_outputs/an_caseDescrTable.txt
+
+
+  
