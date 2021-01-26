@@ -819,6 +819,7 @@ Outcome summary:
 
 /* CONVERT STRINGS TO DATE FOR OUTCOME VARIABLES =============================*/
 * Recode to dates from the strings 
+order first_tested_for_covid first_positive_test_date died_date_ons died_date_cpns covid_tpp_probable covid_tpp_probableclindiag covid_tpp_probabletest covid_tpp_probableseq covid_admission_date positive_covid_test_ever
 
 foreach var of varlist first_tested_for_covid - covid_admission_date {
 	confirm string variable `var'
@@ -1196,8 +1197,11 @@ drop `r(varlist)'
 
 safecount
 
+*drop people over the age of 110 or under 18 (I can drop the under 18 year old's now as I have already used them in the composition variable)
 noi di "DROP AGE >110:"
 drop if age > 110 & age != .
+noi di "DROP AGE <18:"
+drop if age <18 & age != .
 
 safecount
 noi di "DROP IF DIED BEFORE INDEX"
