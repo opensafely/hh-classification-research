@@ -1,237 +1,305 @@
 /*==============================================================================
 DO FILE NAME:			02_an_data_checks
-PROJECT:				Ethnicity and COVID
-AUTHOR:					K Wing adapted from Rohini Mathur, H Forbes, A Wong, A Schultze, C Rentsch
+PROJECT:				Exposure children and COVID risk
+AUTHOR:					K Wing adapted from H Forbes,  A Wong, A Schultze, C Rentsch
 						 K Baskharan, E Williamson
-DATE: 					25th August 2020
+DATE: 					26 Jan 2020 
 DESCRIPTION OF FILE:	Run sanity checks on all variables
 							- Check variables take expected ranges 
 							- Cross-check logical relationships 
 							- Explore expected relationships 
 							- Check stsettings 
-							- KW added: plots histograms of distribution of cases over time by household size
-DATASETS USED:			$tempdir\`analysis_dataset'.dta
+DATASETS USED:			./output/hhClassif_analysis_dataset.dta
 DATASETS CREATED: 		None
-OTHER OUTPUT: 			Log file: $logdir\02_an_data_checks
-
-cd ${outputData}
-clear all
-use hh_analysis_dataset_DRAFT.dta, clear
+OTHER OUTPUT: 			Log file: ./released_outputs/02_hhClassif_an_data_checks.log  
 							
 ==============================================================================*/
-cd ${outputData}
-clear all
-
-
-* Open a log file
-cap log close
-log using "02_an_data_checks", replace t
-
-use hh_analysis_dataset.dta, clear
-
-
-*how many households in total, and how many have at least one case
-*have a quick look at the data
-*how many households
-tab hh_size
-codebook hh_id /*5,295,872*/
-*how many with no cases
-*count houses with at least one case
-gsort hh_id -case
-generate atLeastone=.
-by hh_id:replace atLeastone=1 if case[1]==1
-replace atLeastone=0 if atLeastone==.
-*drop duplicate hh_ids
-preserve
-	duplicates drop hh_id, force
-	count
-	tab atLeastone
-restore
-
-
+sysdir set PLUS ./analysis/adofiles
+sysdir set PERSONAL ./analysis/adofiles
 
 * Open a log file
 
-cap log close
-log using "02_an_data_checks", replace t
-
-*capture log close
-*log using "$Logdir/02_an_data_checks", replace t
-*add numeric values to all labels
-numlabel, add
+capture log close
+log using ./released_outputs/02_hhClassif_an_data_checks.log, replace t
 
 * Open Stata dataset
-*use "$Tempdir/analysis_dataset.dta", clear
+use ./output/hhClassif_analysis_dataset.dta, clear
 
+*run ssc install if not on local machine - server needs datacheck.ado file
+*ssc install datacheck 
 
 *Duplicate patient check
-datacheck _n==1, bysort(patient_id) nol
+datacheck _n==1, by(patient_id) nol
 
 
 /* CHECK INCLUSION AND EXCLUSION CRITERIA=====================================*/ 
 
 * DATA STRUCTURE: Confirm one row per patient 
 duplicates tag patient_id, generate(dup_check)
-cap assert dup_check == 0 
+assert dup_check == 0 
 drop dup_check
 
-* INCLUSION 1: <=110 at 1 Feb 2020 
-cap assert age < .
-cap assert age <= 110
+* INCLUSION 1: >=18 and <=110 at 1 March 2020 
+assert age < .
+assert age >= 18
+assert age <= 110
  
-* INCLUSION 2: M or F gender at 1 Feb 2020 
-cap assert inlist(sex, "M", "F")
+* INCLUSION 2: M or F gender at 1 March 2020 
+assert inlist(sex, 1, 2)
 
 * EXCLUDE 1:  MISSING IMD
-cap assert inlist(imd, 1, 2, 3, 4, 5)
+assert inlist(imd, 1, 2, 3, 4, 5)
 
+* EXCLUDE 2:  HH with more than 10 people
+datacheck inlist(hh_size, 1, 2, 3, 4, 5,6, 7, 8, 9, 10), nol
 
 /* EXPECTED VALUES============================================================*/ 
 
-*HH
-*summ hh_size hh_linear hh_log_linea
-summ hh_size
-safetab hh_size, m
-
-*Care home
-*safetab carehome, m
-*safetab carehome hh_total_cat, m
+*HH composition variables
+*hhRiskCat (the generic starting variable)
+datacheck hhRiskCat<., nol
+datacheck inlist(hhRiskCat, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14), nol
+*hhRiskCatBROAD
+datacheck hhRiskCatBROAD<., nol
+datacheck inlist(hhRiskCatBROAD, 1, 2, 3), nol
+*hhRiskCat67PLUS
+datacheck hhRiskCat67PLUS<., nol
+datacheck inlist(hhRiskCat67PLUS, 1, 2, 3, 4, 5, 6, 7, 8), nol
+*hhRiskCat33TO66
+datacheck hhRiskCat33TO66<., nol
+datacheck inlist(hhRiskCat33TO66, 1, 2, 3, 4, 5, 6, 7, 8), nol
+*hhRiskCat18TO29
+datacheck hhRiskCat18TO29<., nol
+datacheck inlist(hhRiskCat18TO29, 1, 2, 3, 4, 5, 6, 7, 8), nol
 
 * Age
-summ age
 datacheck age<., nol
-datacheck inlist(ageCat, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), nol
+datacheck inlist(agegroup, 1, 2, 3, 4), nol
 
 * Sex
-safetab sex, m
-datacheck inlist(sex, 0, 1), nol
+datacheck inlist(sex, 1, 2), nol
 
 * BMI 
-*summ bmi
-*safetab obese4cat, m 
-*datacheck inlist(obese4cat, 1, 2, 3, 4), nol
-
-*safetab obese4cat_sa, m
-*datacheck inlist(obese4cat_sa, 1, 2, 3, 4), nol
-
-safetab bmicat, m
+datacheck inlist(obese4cat, 1, 2, 3, 4), nol
 datacheck inlist(bmicat, 1, 2, 3, 4, 5, 6, .u), nol
 
-*safetab bmicat_sa, m
-*datacheck inlist(bmicat_sa, 1, 2, 3, 4, 5, 6, .u), nol
-
 * IMD
-summ imd
-safetab imd, m
 datacheck inlist(imd, 1, 2, 3, 4, 5), nol
 
 * Ethnicity
-safetab ethnicity
-datacheck inlist(ethnicity, 1, 2, 3, 4, 5, 6), nol
-
-safetab eth5, m
-datacheck inlist(eth5, 1, 2, 3, 4, 5, 6), nol
-
-safetab ethnicity_16,m
-datacheck inlist(ethnicity_16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17), nol
-
-safetab eth16,m
-datacheck inlist(eth16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), nol
+*eth5
+datacheck inlist(eth5, 1, 2, 3, 4, 5, .), nol
+*eth16
+datacheck inlist(eth5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, .), nol
 
 * Smoking
-datacheck inlist(smoke, 1, 2, 3, .u), nol
+datacheck inlist(smoke, 1, 2, 3, 4), nol
 datacheck inlist(smoke_nomiss, 1, 2, 3), nol 
 
 
-* Check date ranges for all variables - keep in mind they'll all be 15th of the month!
+* Check date ranges for all comorbidities
+/*
+foreach var of varlist  chronic_respiratory_disease 	///
+					asthma		///
+					chronic_cardiac_disease  		///
+					dm  			///
+					cancer_nonhaemPrevYear ///
+					cancer_haemPrev5Years				///
+					chronic_liver_disease  ///
+					stroke_dementia  ///
+					egfr60  			/// 
+					organ_transplant  			/// 
+					asplenia			 	///
+					other_immuno			 	///
+					{
+						
+	summ `var'_date, format
 
-foreach var of varlist  *date {
-	format `var' %d
-	summ `var', format
+}
+*/
+
+foreach comorb in $varlist { 
+
+	local comorb: subinstr local comorb "i." ""
+	safetab `comorb', m
+	
 }
 
-**********************************
-*  Distribution in whole cohort  *
-**********************************
+*summarise end dates for each outcome
+foreach outcome in covidDeathCase covidHospCase nonCOVIDDeathCase	 {
+sum `outcome', format
+}
 
-* Comorbidities
-*safetab bpcat
-*safetab bpcat, m
-*safetab htdiag_or_highbp
-safetab chronic_respiratory_disease
-*safetab asthma
-safetab chronic_cardiac_disease
-safetab cancer
-safetab chronic_liver_disease
-*safetab dm_type
-*safetab immunosuppressed
-*safetab other_neuro
-*safetab dementia
-*safetab stroke
-safetab comorb_Neuro
-safetab comorb_Immunosuppression
-safetab egfr_cat
-*safetab egfr60
-*safetab esrf
-safetab hypertension
-*safetab ra_sle_psoriasis
-*safetab stp
-safetab region
-safetab rural_urban
+foreach outcome in covidDeathCase covidHospCase nonCOVIDDeathCase	 {
+gen `outcome'_month=mofd(`outcome') 
+ lab define `outcome'_month 721 feb 722 mar 723 apr 724 may 725 june 726 jul 727 aug 728 sept 729 oct
+lab val `outcome'_month `outcome'_month
+tab `outcome'_month
+drop `outcome'_month
+}
+
+*Outcome dates
+di d(1feb2020)
+* 21946
+di d(01apr2020)
+* 22006
+di d(01june2020)
+* 22067
+di d(01aug2020)
+* 22128
+di d(01oct2020)
+* 22189
+
+foreach outcome of any covidDeathCase covidHospCase nonCOVIDDeathCase    {
+summ  `outcome', format d 
+summ patient_id if `outcome'==1
+local total_`outcome'=`r(N)'
+hist `outcome'Date, saving(`outcome', replace) ///
+xlabel(21946 22006 22067 22128 22189,labsize(tiny))  xtitle(, size(vsmall)) ///
+graphregion(color(white))  legend(off) freq  ///
+yscale(range(0 3000)) ylab(0 (500) 6000, labsize(vsmall)) ytitle("Number", size(vsmall))  ///
+title("N=`total_`outcome''", size(vsmall)) 
+}
+* Combine histograms
+graph combine covidDeathCase.gph covidHospCase.gph nonCOVIDDeathCase.gph, graphregion(color(white))
+erase covidDeathCase.gph 
+erase covidHospCase.gph 
+erase nonCOVIDDeathCase.gph
+graph export ./output/01_histogram_outcomes.svg, as(svg) replace 
+
+*censor dates
+summ censor_date, format
+
 
 
 /* LOGICAL RELATIONSHIPS======================================================*/ 
 
 *HH variables
-summ hh_size
-summ hh_composition
+safetab hhRiskCat hh_total_cat
+safetab hhRiskCat67PLUS hh_total_cat
+safetab hhRiskCat33TO66 hh_total_cat
+safetab hhRiskCat18TO29 hh_total_cat
 
 * BMI
 bysort bmicat: summ bmi
-bysort bmicat_sa: summ bmi
-
 safetab bmicat obese4cat, m
-safetab bmicat_sa obese4cat_sa, m
 
 * Age
-bysort ageCat: summ age
+bysort agegroup: summ age
+safetab agegroup age66, m
 
 * Smoking
 safetab smoke smoke_nomiss, m
 
 * Diabetes
-*safetab dm_type
-*safetab dm_type_exeter_os
-*tab dm_type dm_type_exeter_os, row col
+*safetab diabcat diabetes, m
 
 * CKD
-*safetab egfr60, m
+*safetab reduced egfr_cat, m
+* CKD
+*safetab reduced esrd, m
 
-/* EXPECTED RELATIONSHIPS WITH ETHNICITY =======================================*/ 
+*comorbidities
+safetab coMorbCat
 
-foreach var in $varlist {	
-	safetab `var'
-	safetab eth5 `var', row 
-	safetab eth16 `var', row
+/* EXPECTED RELATIONSHIPS=====================================================*/ 
+
+/*  Relationships between demographic/lifestyle variables  */
+safetab agegroup bmicat, 	row 
+safetab agegroup smoke, 	row  
+safetab agegroup ethnicity, row 
+safetab agegroup imd, 		row 
+*safetab agegroup shield,    row 
+
+safetab bmicat smoke, 		 row   
+safetab bmicat ethnicity, 	 row 
+safetab bmicat imd, 	 	 row 
+safetab bmicat hypertension, row 
+*safetab bmicat shield,    row 
+
+                            
+safetab smoke ethnicity, 	row 
+safetab smoke imd, 			row 
+safetab smoke hypertension, row 
+*safetab smoke shield,    row 
+                      
+safetab ethnicity imd, 		row 
+*safetab shield imd, 		row 
+
+*safetab shield ethnicity, 		row 
+
+
+
+* Relationships with age
+foreach var of varlist 								///
+					chronic_respiratory_disease 	///
+					asthma_severe	///
+					chronic_cardiac_disease  		///
+					dm  			///
+					cancer_nonhaemPrevYear ///
+					cancer_haemPrev5Years				///
+					chronic_liver_disease  ///
+					stroke_dementia  ///
+					egfr60  			/// 
+					organ_transplant  			/// 
+					asplenia			 	///
+					other_immuno			 	///	 	
+										{
+
+		
+ 	safetab agegroup `var', row 
+ }
+
+
+*Relationships with sex
+foreach var of varlist 						///
+					chronic_respiratory_disease 	///
+					asthma_severe	///
+					chronic_cardiac_disease  		///
+					dm  			///
+					cancer_nonhaemPrevYear ///
+					cancer_haemPrev5Years				///
+					chronic_liver_disease  ///
+					stroke_dementia  ///
+					egfr60  			/// 
+					organ_transplant  			/// 
+					asplenia			 	///
+					other_immuno			 	///	
+										{
+						
+ 	safetab male `var', row 
 }
 
-/* AGE DISTRUBUTION OF HOUSEHOLDS=======================================================*/
-bysort eth5: tab ageCat hh_size, col
+*Relationships with smoking							
+foreach var of varlist  							///
+					chronic_respiratory_disease 	///
+					asthma_severe	///
+					chronic_cardiac_disease  		///
+					dm  			///
+					cancer_nonhaemPrevYear ///
+					cancer_haemPrev5Years				///
+					chronic_liver_disease  ///
+					stroke_dementia  ///
+					egfr60  			/// 
+					organ_transplant  			/// 
+					asplenia			 	///
+					other_immuno			 	///
+					{
+	
+ 	safetab smoke `var', row 
+}
+
 
 /* SENSE CHECK OUTCOMES=======================================================*/
-foreach i of global outcomes {
-		safetab `i'
-		safetab eth5 `i', row
-		safetab eth16 `i', row
-		
-		*proportion with diabetes who have the outcome x ethnicity
-		bysort eth5:safetab  dm_type `i', col
-		bysort eth16: safetab  dm_type `i', col
-		
-		*proportion of household size who have the outcome x ethnicity
-		bysort eth5: safetab  hh_total_cat `i', col
-		bysort eth16: safetab  hh_total_cat `i', col
-}
+safetab covidDeathCase covidHospCase  , row col
+safetab covidDeathCase nonCOVIDDeathCase  , row col
+safetab nonCOVIDDeathCase covidHospCase  , row col
+
+safecount if covidHospCase==1 & covidDeathCase==1
+safecount if covidDeathCase==1 & nonCOVIDDeathCase==1
+safecount if covidHospCase==1 & nonCOVIDDeathCase==1
 
 * Close log file 
 log close
+
+

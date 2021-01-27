@@ -19,6 +19,12 @@ actions:
       moderately_sensitive:
         log1: released_outputs/01_hhClassif_cr_analysis_dataset.log
 
+  data_checks:
+    run: stata-mp:latest analysis/02_hhClassif_an_data_checks.do
+    needs: [prepare_data]
+    outputs:
+      moderately_sensitive:
+        log: released_outputs/02_hhClassif_an_data_checks.log
 
   output_descriptive:
     run: stata-mp:latest analysis/02_hh_an_caseFreq_descriptive_plots.do

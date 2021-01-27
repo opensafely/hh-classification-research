@@ -309,7 +309,7 @@ preserve
 	replace hhRiskCat=14 if hasUnder18==1 & has18_29==1 & has30_66==1 & has67Plus==1
 	
 	*label variable
-	label define hhRiskCatLabel 0 "Only <18"  1 "Only 18-29" 2 "Only 30-66" 3 "Only 67+" 4 "0-17 with 18-29" 5 "0-17 with 30-66" 6 "0-17 with 67+" 7 "18-29 with 30-66" 8 "18-29 with 67+" 9 "30-66 with 67+" 10 "0-17, 18-29 and 30-66" 11 "0-17, 18-29 and 67+" 12 "0-17, 30-66 and 67+" 13 "18-29, 30-66 and 67+" 14 "0-17, 18-29, 30-66 and 67+"
+	label define hhRiskCatLabel 0 "Only <18"  1 "Only 18-29" 2 "Only 30-66" 3 "Only 67+" 4 "0-17 & 18-29" 5 "0-17 & 30-66" 6 "0-17 & 67+" 7 "18-29 & 30-66" 8 "18-29 & 67+" 9 "30-66 & 67+" 10 "0-17, 18-29 & 30-66" 11 "0-17, 18-29 & 67+" 12 "0-17, 30-66 & 67+" 13 "18-29, 30-66 & 67+" 14 "0-17, 18-29, 30-66 & 67+"
 	label values hhRiskCat hhRiskCatLabel
 	la var hhRiskCat "Age group(s) of hh occupants"
 	safetab hhRiskCat, miss
@@ -331,7 +331,7 @@ replace hhRiskCatBROAD=1 if hhRiskCat>=1 & hhRiskCat<=3
 replace hhRiskCatBROAD=2 if hhRiskCat>=4 & hhRiskCat<=9
 replace hhRiskCatBROAD=3 if hhRiskCat>=10 & hhRiskCat<=14
 *label variable
-label define hhRiskCatBROADLabel 1 "HH of single generation" 2 "HH with two generations" 3 "MG household"
+label define hhRiskCatBROADLabel 1 "1 gen" 2 "2 gens" 3 "3+ gens"
 label values hhRiskCatBROAD hhRiskCatBROADLabel
 safetab hhRiskCatBROAD hhRiskCat
 
@@ -347,7 +347,7 @@ replace hhRiskCat67PLUS=6 if hhRiskCat==12
 replace hhRiskCat67PLUS=7 if hhRiskCat==13
 replace hhRiskCat67PLUS=8 if hhRiskCat==14
 *label variable
-label define hhRiskCat67PLUS 1 "Only 67+" 2 "0-17 with 67+" 3 "18-29 with 67+" 4 "30-66 with 67+" 5 "0-17, 18-29 and 67+" 6 "0-17, 30-66 and 67+" 7 "18-29, 30-66 and 67+" 8 "0-17, 18-29, 30-66 and 67+"
+label define hhRiskCat67PLUS 1 "Only 67+" 2 "0-17 & 67+" 3 "18-29 & 67+" 4 "30-66 & 67+" 5 "0-17, 18-29 & 67+" 6 "0-17, 30-66 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
 label values hhRiskCat67PLUS hhRiskCat67PLUS
 safetab hhRiskCat hhRiskCat67PLUS 
 
@@ -364,7 +364,7 @@ replace hhRiskCat33TO66=6 if hhRiskCat==12
 replace hhRiskCat33TO66=7 if hhRiskCat==13
 replace hhRiskCat33TO66=8 if hhRiskCat==14
 *label variable
-label define hhRiskCat33TO66 1 "Only 30-66" 2 "0-17 with 30-66" 3 "18-29 with 30-66" 4 "30-66 with 67+" 5 "0-17, 18-29 and 30-66" 6 "0-17, 30-66 and 67+" 7 "18-29, 30-66 and 67+" 8 "0-17, 18-29, 30-66 and 67+"
+label define hhRiskCat33TO66 1 "Only 30-66" 2 "0-17 & 30-66" 3 "18-29 & 30-66" 4 "30-66 & 67+" 5 "0-17, 18-29 & 30-66" 6 "0-17, 30-66 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
 label values hhRiskCat33TO66 hhRiskCat33TO66
 safetab hhRiskCat hhRiskCat33TO66 
 
@@ -381,7 +381,7 @@ replace hhRiskCat18TO29=6 if hhRiskCat==11
 replace hhRiskCat18TO29=7 if hhRiskCat==13
 replace hhRiskCat18TO29=8 if hhRiskCat==14
 *label variable
-label define hhRiskCat18TO29 1 "Only 18-29" 2 "0-17 with 18-29" 3 "18-29 with 30-66" 4 "18-29 with 67+" 5 "0-17, 18-29 and 30-66" 6 "0-17, 18-29 and 67+" 7 "18-29, 30-66 and 67+" 8 "0-17, 18-29, 30-66 and 67+"
+label define hhRiskCat18TO29 1 "Only 18-29" 2 "0-17 & 18-29" 3 "18-29 & 30-66" 4 "18-29 & 67+" 5 "0-17, 18-29 & 30-66" 6 "0-17, 18-29 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
 label values hhRiskCat18TO29 hhRiskCat18TO29
 safetab hhRiskCat hhRiskCat18TO29 
 
@@ -1094,6 +1094,7 @@ safetab asthmacat
 generate asthma_severe=0
 replace asthma_severe=1 if asthmacat==3
 safetab asthma_severe
+la var asthma_severe "severe asthma"
 *(3) cardiac disease
 safetab chronic_cardiac_disease
 *(4) diabetes
@@ -1103,16 +1104,19 @@ generate dm=0
 replace dm=1 if dm_type>0
 safetab dm
 safetab dm dm_type
+la var dm "diabetes"
 *(5) non-haem cancer (in previous year)
 safetab cancer_nonhaem
 generate cancer_nonhaemPrevYear=0
 replace cancer_nonhaemPrevYear=1 if indexdate-cancer_nonhaem_date<365
 tab cancer_nonhaemPrevYear
+la var cancer_nonhaemPrevYear "non haem cancer in prev year"
 *(6) haem cancer (within previous 5 years)
 safetab cancer_haem
 generate cancer_haemPrev5Years=0
 replace cancer_haemPrev5Years=1 if indexdate-cancer_haem_date<1825
 tab cancer_haemPrev5Years
+la var cancer_haemPrev5Years "haem cancer in prev 5 years"
 *(7) liver disease
 safetab chronic_liver_disease
 *(8 and 9) stroke or dementia
@@ -1127,6 +1131,7 @@ replace organ_transplantBin=1 if organ_transplant!=""
 drop organ_transplant
 rename organ_transplantBin organ_transplant
 tab organ_transplant
+la var organ_transplant "organ transplant"
 *(12) asplenia
 safetab asplenia
 generate aspleniaBin=0
@@ -1134,6 +1139,7 @@ replace aspleniaBin=1 if asplenia!=""
 drop asplenia
 rename aspleniaBin asplenia
 tab asplenia
+la var asplenia "asplenia"
 *(13) other immunosuppression
 safetab other_immuno
 
