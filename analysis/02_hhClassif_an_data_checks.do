@@ -60,21 +60,17 @@ datacheck inlist(hh_size, 1, 2, 3, 4, 5,6, 7, 8, 9, 10, .u), nol
 datacheck hhRiskCat<., nol
 datacheck inlist(hhRiskCat, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14), nol
 *hhRiskCatBROAD
-datacheck hhRiskCatBROAD<., nol
-datacheck inlist(hhRiskCatBROAD, 1, 2, 3), nol
+datacheck inlist(hhRiskCatBROAD, 1, 2, 3, .), nol
 *hhRiskCat67PLUS
-datacheck hhRiskCat67PLUS<., nol
-datacheck inlist(hhRiskCat67PLUS, 1, 2, 3, 4, 5, 6, 7, 8), nol
+datacheck inlist(hhRiskCat67PLUS, 1, 2, 3, 4, 5, 6, 7, 8, .), nol
 *hhRiskCat33TO66
-datacheck hhRiskCat33TO66<., nol
-datacheck inlist(hhRiskCat33TO66, 1, 2, 3, 4, 5, 6, 7, 8), nol
+datacheck inlist(hhRiskCat33TO66, 1, 2, 3, 4, 5, 6, 7, 8, .), nol
 *hhRiskCat18TO29
-datacheck hhRiskCat18TO29<., nol
-datacheck inlist(hhRiskCat18TO29, 1, 2, 3, 4, 5, 6, 7, 8), nol
+datacheck inlist(hhRiskCat18TO29, 1, 2, 3, 4, 5, 6, 7, 8, .), nol
 
 * Age
 datacheck age<., nol
-datacheck inlist(agegroup, 1, 2, 3, 4), nol
+datacheck inlist(agegroup, 1, 2, 3, 4, 5, 6, 7), nol
 
 * Sex
 datacheck inlist(sex, 1, 2), nol
@@ -84,7 +80,7 @@ datacheck inlist(obese4cat, 1, 2, 3, 4), nol
 datacheck inlist(bmicat, 1, 2, 3, 4, 5, 6, .u), nol
 
 * IMD
-datacheck inlist(imd, 1, 2, 3, 4, 5), nol
+datacheck inlist(imd, 1, 2, 3, 4, 5, .u), nol
 
 * Ethnicity
 *eth5

@@ -495,7 +495,6 @@ foreach var of varlist 	chronic_respiratory_disease ///
 						stroke_dementia ///
 						esrf  ///
 						hypertension  ///
-						asthma ///
 						ra_sle_psoriasis  ///
 						bmi_measured_date   ///
 						bp_sys_date_measured   ///
@@ -790,6 +789,8 @@ label define asthmacat 1 "No" 2 "Yes, no OCS" 3 "Yes with OCS"
 label values asthmacat asthmacat
 
 gen asthma = (asthmacat==2|asthmacat==3)
+safetab asthma
+safetab asthmacat
 
 /*
 **care home
@@ -840,24 +841,26 @@ generate covidDeathCaseDate=.
 replace covidDeathCaseDate=min(died_date_ons, died_date_cpns) if covidDeathCase==1
 la var covidDeathCaseDate "Date of case based on ONS or CPNS death record"
 format covidDeathCaseDate %td
+tab covidDeathCase
 
 *2. COVID hospitalisation outcome
-generate covidHospCase=0
-replace covidHospCase=1 if covid_admission_date!=.
-la var covidHospCase "Case based on hospitalisation with COVID"
 generate covidHospCaseDate=.
-replace covidHospCaseDate=covid_admission_date if covidHospCase==1
+replace covidHospCaseDate=covid_admission_date if covid_admission_date!=.
 la var covidHospCaseDate "Date of case based COVID admission date"
 format covidHospCaseDate %td
+generate covidHospCase=0
+replace covidHospCase=1 if covidHospCaseDate!=.
+la var covidHospCase "Case based on hospitalisation with COVID"
+
 
 *3. Non-COVID death outcome
-generate nonCOVIDDeathCase=0
-replace nonCOVIDDeathCase=1 if covidDeathCase==0 & died_date_ons!=. & died_date_cpns!=.
-la var nonCOVIDDeathCase "Died from non-COVID causes"
-generate nonCOVIDDeathCaseDate=.
-replace nonCOVIDDeathCaseDate=min(died_date_ons, died_date_cpns) if nonCOVIDDeathCaseDate==1
+gen nonCOVIDDeathCaseDate = died_date_ons if died_ons_covid_flag_any != 1 
 la var nonCOVIDDeathCaseDate "Date of non-COVID death"
 format nonCOVIDDeathCaseDate %td
+generate nonCOVIDDeathCase=0
+replace nonCOVIDDeathCase=1 if nonCOVIDDeathCaseDate!=.
+la var nonCOVIDDeathCase "Died from non-COVID causes"
+tab nonCOVIDDeathCase
 
 *3. Fracture - to do
 
@@ -1034,7 +1037,7 @@ lab var  bphigh 						"non-missing indicator of known high blood pressure"
 lab var bpcat 							"Blood pressure four levels, non-missing"
 lab var htdiag_or_highbp 				"High blood pressure or hypertension diagnosis"
 lab var esrf 							"end stage renal failure"
-lab var asthma_date 						"Diagnosed Asthma Date"
+*lab var asthma_date 						"Diagnosed Asthma Date"
 label var hypertension_date			   		"Diagnosed hypertension Date"
 label var chronic_respiratory_disease_date 	"Other Respiratory Diseases Date"
 label var chronic_cardiac_disease_date		"Other Heart Diseases Date"
