@@ -26,6 +26,13 @@ actions:
       moderately_sensitive:
         log: released_outputs/02_hhClassif_an_data_checks.log
 
+  output_table1:
+    run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do
+    needs: [prepare_data]
+    outputs:
+      moderately_sensitive:
+        log: released_outputs/03b_hhClassif_an_descriptive_table_1.log
+
   output_descriptive:
     run: stata-mp:latest analysis/02_hh_an_caseFreq_descriptive_plots.do
     needs: [prepare_data]
