@@ -69,14 +69,14 @@ safetab ethnicity
  replace eth5=5 if ethnicity==5
  replace eth5=. if ethnicity==.
 
- label define eth5	 	1 "White"  					///
-						2 "South Asian"				///						
-						3 "Black"  					///
-						4 "Mixed"					///
-						5 "Other"					
+ label define eth5Label	 	1 "White"  					///
+							2 "South Asian"				///						
+							3 "Black"  					///
+							4 "Mixed"					///
+							5 "Other"					
 					
 
-label values eth5 eth5
+label values eth5 eth5Label
 safetab eth5, m
 
 
@@ -162,8 +162,8 @@ drop imd_o
 * Reverse the order (so high is more deprived)
 recode imd 5 = 1 4 = 2 3 = 3 2 = 4 1 = 5 .u = .u
 
-label define imd 1 "1 least deprived" 2 "2" 3 "3" 4 "4" 5 "5 most deprived" .u "Unknown"
-label values imd imd 
+label define imdLabel 1 "1 least deprived" 2 "2" 3 "3" 4 "4" 5 "5 most deprived" .u "Unknown"
+label values imd imdLabel 
 
 /*  Age variables  */ 
 
@@ -177,16 +177,16 @@ recode age 	0/17.9999=0 ///
 			70/79.9999 = 6 ///
 			80/max = 7, gen(agegroup) 
 
-label define agegroup 	0 "0-<18" ///
-						1 "18-<30" ///
-						2 "30-<40" ///
-						3 "40-<50" ///
-						4 "50-<60" ///
-						5 "60-<70" ///
-						6 "70-<80" ///
-						7 "80+"
+label define agegroupLabel 	0 "0-<18" ///
+							1 "18-<30" ///
+							2 "30-<40" ///
+							3 "40-<50" ///
+							4 "50-<60" ///
+							5 "60-<70" ///
+							6 "70-<80" ///
+							7 "80+"
 						
-label values agegroup agegroup
+label values agegroup agegroupLabel
 
 
 
@@ -256,7 +256,7 @@ safetab hh_size
 *first of all, create age bands that I need for this
 egen ageCatHHRisk=cut(age), at (0, 18, 30, 67, 200)
 recode ageCatHHRisk 0=1 18=2 30=3 67=4 
-label define ageCatHHRiskLabel 1 "0-17" 2 "18-29" 3 "30-66" 4 "67+"
+label define ageCatHHRiskLabel 0 "0-17" 1 "18-29" 2 "30-66" 3 "67+"
 label values ageCatHHRisk ageCatHHRiskLabel
 safetab ageCatHHRisk, miss
 la var ageCatHHRisk "Age categorised for HH risk analysis"
@@ -544,16 +544,17 @@ recode  bmicat . = 5 if bmi<40
 recode  bmicat . = 6 if bmi<.
 replace bmicat = .u if bmi>=.
 
-label define bmicat 1 "Underweight (<18.5)" 	///
-					2 "Normal (18.5-24.9)"		///
-					3 "Overweight (25-29.9)"	///
-					4 "Obese I (30-34.9)"		///
-					5 "Obese II (35-39.9)"		///
-					6 "Obese III (40+)"			///
-					.u "Unknown (.u)"
-label values bmicat bmicat
+label define bmicatLabel 	1 "Underweight (<18.5)" 	///
+							2 "Normal (18.5-24.9)"		///
+							3 "Overweight (25-29.9)"	///
+							4 "Obese I (30-34.9)"		///
+							5 "Obese II (35-39.9)"		///
+							6 "Obese III (40+)"			///
+							.u "Unknown (.u)"
+label values bmicat bmicatLabel
 
 * Create more granular categorisation
+
 recode bmicat 1/3 .u = 1 4=2 5=3 6=4, gen(obese4cat)
 
 label define obese4cat 	1 "No record of obesity" 	///
@@ -577,14 +578,14 @@ replace bmicat_sa = 6 if bmi>=37.5 & bmi < . & ethnicity ==3
 
 safetab bmicat_sa
 
-label define bmicat_sa 1 "Underweight (<18.5)" 	///
+label define bmicat_saLabel 1 "Underweight (<18.5)" 	///
 					2 "Normal (18.5-24.9 / 22.9)"		///
 					3 "Overweight (25-29.9 / 23-27.4)"	///
 					4 "Obese I (30-34.9 / 27.4-32.4)"		///
 					5 "Obese II (35-39.9 / 32.5- 37.4)"		///
 					6 "Obese III (40+ / 37.5+)"			///
 					.u "Unknown (.u)"
-label values bmicat bmicat
+label values bmicat_sa bmicat_saLabel
 
 * Create more granular categorisation
 recode bmicat_sa 1/3 .u = 1 4=2 5=3 6=4, gen(obese4cat_sa)

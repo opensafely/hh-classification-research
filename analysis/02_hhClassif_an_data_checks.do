@@ -1,9 +1,9 @@
 /*==============================================================================
-DO FILE NAME:			02_an_data_checks
-PROJECT:				Exposure children and COVID risk
+DO FILE NAME:			02_hhClassif_an_data_checks
+PROJECT:				HH COVID risk classification
 AUTHOR:					K Wing adapted from H Forbes,  A Wong, A Schultze, C Rentsch
 						 K Baskharan, E Williamson
-DATE: 					26 Jan 2020 
+DATE: 					26 Jan 2021 
 DESCRIPTION OF FILE:	Run sanity checks on all variables
 							- Check variables take expected ranges 
 							- Cross-check logical relationships 
