@@ -215,12 +215,12 @@ replace hh_total_cat=. if care_home_type!="U"
 *keep only private homes
 drop if care_home_type!="U"
 			
-label define hh_total_cat 1 "1-2" ///
-						2 "3-5" ///
-						3 "6-10" ///
-						4 "11+"
+label define hh_total_catLabel  1 "1-2" ///
+								2 "3-5" ///
+								3 "6-10" ///
+								4 "11+"
 											
-label values hh_total_cat hh_total_cat
+label values hh_total_cat hh_total_catLabel
 
 safetab hh_total_cat,m
 safetab hh_total_cat care_home_type,m
