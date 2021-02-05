@@ -32,16 +32,9 @@ actions:
     outputs:
       moderately_sensitive:
         log: released_outputs/03b_hhClassif_an_descriptive_table_1.log
+        table1text: output/table1_hhClassif.txt
+        table1excel: output/hh_size_T1.xlsx
 
-  output_descriptive:
-    run: stata-mp:latest analysis/02_hh_an_caseFreq_descriptive_plots.do
-    needs: [prepare_data]
-    outputs:
-      moderately_sensitive:
-        graph1: released_outputs/an_caseFreq_descr_overall_HH_Histogram.svg
-        graph2: released_outputs/an_caseFreq_descr_overall_HH_HistogramOverlay.svg
-        log1: released_outputs/02_hh_an_caseFreq_descriptive_plots.log
-        log2: released_outputs/an_caseDescrTable.txt
 
 
   
