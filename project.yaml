@@ -33,7 +33,7 @@ actions:
       moderately_sensitive:
         log: released_outputs/03b_hhClassif_an_descriptive_table_1.log
         table1text: output/table1_hhClassif.txt
-        table1excel: output/hh_size_T1.xlsx
+        table1excel: output/table1_hhClassif.xlsx
 
 
 
