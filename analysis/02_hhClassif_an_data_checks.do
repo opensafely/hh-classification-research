@@ -17,13 +17,29 @@ OTHER OUTPUT: 			Log file: ./released_outputs/02_hhClassif_an_data_checks.log
 sysdir set PLUS ./analysis/adofiles
 sysdir set PERSONAL ./analysis/adofiles
 
+
+*first argument main W2 
+local dataset `1'
+if "`dataset'"=="MAIN" local fileextension
+else local fileextension "_`1'"
+local inputfile "hhClassif_analysis_dataset`dataset'"
+
 * Open a log file
 
+capture log close
+log using ./logs/02_hhClassif_an_data_checks`fileextension', replace t
+
+* Open Stata dataset
+use ./output/`inputfile', clear
+
+/*
+* Open a log file
 capture log close
 log using ./released_outputs/02_hhClassif_an_data_checks.log, replace t
 
 * Open Stata dataset
 use ./output/hhClassif_analysis_dataset.dta, clear
+*/
 
 *run ssc install if not on local machine - server needs datacheck.ado file
 *ssc install datacheck 
@@ -70,7 +86,7 @@ datacheck inlist(hhRiskCat18TO29, 1, 2, 3, 4, 5, 6, 7, 8, .), nol
 
 * Age
 datacheck age<., nol
-datacheck inlist(agegroup, 1, 2, 3, 4, 5, 6, 7), nol
+datacheck inlist(ageCatHHRisk, 0, 1, 2, 3), nol
 
 * Sex
 datacheck inlist(sex, 1, 2), nol
@@ -164,7 +180,7 @@ erase nonCOVIDDeathCase.gph
 graph export ./output/01_histogram_outcomes.svg, as(svg) replace 
 
 *censor dates
-summ censor_date, format
+summ study_end_censor, format
 
 
 
@@ -181,8 +197,8 @@ bysort bmicat: summ bmi
 safetab bmicat obese4cat, m
 
 * Age
-bysort agegroup: summ age
-safetab agegroup age66, m
+*bysort ageCatHHRisk: summ age
+*safetab ageCatHHRisk age66, m
 
 * Smoking
 safetab smoke smoke_nomiss, m
@@ -201,11 +217,11 @@ safetab coMorbCat
 /* EXPECTED RELATIONSHIPS=====================================================*/ 
 
 /*  Relationships between demographic/lifestyle variables  */
-safetab agegroup bmicat, 	row 
-safetab agegroup smoke, 	row  
-safetab agegroup ethnicity, row 
-safetab agegroup imd, 		row 
-*safetab agegroup shield,    row 
+safetab ageCatHHRisk bmicat, 	row 
+safetab ageCatHHRisk smoke, 	row  
+safetab ageCatHHRisk ethnicity, row 
+safetab ageCatHHRisk imd, 		row 
+*safetab ageCatHHRisk shield,    row 
 
 safetab bmicat smoke, 		 row   
 safetab bmicat ethnicity, 	 row 
@@ -243,7 +259,7 @@ foreach var of varlist 								///
 										{
 
 		
- 	safetab agegroup `var', row 
+ 	safetab ageCatHHRisk `var', row 
  }
 
 
