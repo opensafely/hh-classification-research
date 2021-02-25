@@ -21,25 +21,56 @@ sysdir set PERSONAL "/Users/kw/Documents/GitHub/households-research/analysis/ado
 sysdir set PLUS ./analysis/adofiles
 sysdir set PERSONAL ./analysis/adofiles
 pwd
-import delimited ./output/input.csv, clear
 
 
-*Both server and local
+
+*first argument main W2 
+local dataset `1' 
+if "`dataset'"=="MAIN" local fileextension
+else local fileextension "_`1'"
+local inputfile "input`fileextension'.csv"
+
+*Start dates
+if "`dataset'"=="MAIN" global indexdate = "1/2/2020"
+else if "`dataset'"=="W2" global indexdate = "1/9/2020"
+
+*Censor dates
+if "`dataset'"=="MAIN" global study_end_censor   	= "31/08/2020"
+else if "`dataset'"=="W2" global study_end_censor   	= "18/12/2020"
+
+
 * Open a log file
 cap log close
-log using ./released_outputs/01_hhClassif_cr_analysis_dataset.log, replace t
+log using ./logs/01_hhClassif_cr_analysis_dataset`fileextension'.log, replace t
+
+
+
+*import delimited ./output/input.csv, clear
+import delimited ./output/`inputfile', clear
+
+**********for debugging only************
+/*
+global indexdate = "1/2/2020"
+global study_end_censor   	= "31/08/2020"
+import delimited ./output/input.csv, clear
+*/
+**********for debugging only************
+
+
 
 
 
 di "STARTING safecount FROM IMPORT:"
 safecount
 
-*Start dates
-gen index 			= "01/02/2020"
+*Start dates - already created above
+*gen index 			= "01/02/2020"
 
 * Date of cohort entry, 1 Feb 2020
-gen indexdate = date(index, "DMY")
-format indexdate %d
+*gen indexdate = date("$index", "DMY")
+*format indexdate %d
+
+****UP TO HERE THU NIGHT - COMPARING WITH HARRIET FILE******
 
 
 *******************************************************************************
@@ -165,30 +196,6 @@ recode imd 5 = 1 4 = 2 3 = 3 2 = 4 1 = 5 .u = .u
 label define imdLabel 1 "1 least deprived" 2 "2" 3 "3" 4 "4" 5 "5 most deprived" .u "Unknown"
 label values imd imdLabel 
 
-/*  Age variables  */ 
-
-* Create categorised age 
-recode age 	0/17.9999=0 ///
-			18/29.9999 = 1 /// 
-		    30/39.9999 = 2 /// 
-			40/49.9999 = 3 ///
-			50/59.9999 = 4 ///
-			60/69.9999 = 5 ///
-			70/79.9999 = 6 ///
-			80/max = 7, gen(agegroup) 
-
-label define agegroupLabel 	0 "0-<18" ///
-							1 "18-<30" ///
-							2 "30-<40" ///
-							3 "40-<50" ///
-							4 "50-<60" ///
-							5 "60-<70" ///
-							6 "70-<80" ///
-							7 "80+"
-						
-label values agegroup agegroupLabel
-
-
 
 
 
@@ -255,7 +262,7 @@ safetab hh_size
 */
 *first of all, create age bands that I need for this
 egen ageCatHHRisk=cut(age), at (0, 18, 30, 67, 200)
-recode ageCatHHRisk 0=1 18=2 30=3 67=4 
+recode ageCatHHRisk 0=0 18=1 30=2 67=3 
 label define ageCatHHRiskLabel 0 "0-17" 1 "18-29" 2 "30-66" 3 "67+"
 label values ageCatHHRisk ageCatHHRiskLabel
 safetab ageCatHHRisk, miss
@@ -410,16 +417,16 @@ safetab male
 
 
 * Create binary age (for age stratification)
-recode age min/65.999999999 = 0 ///
-           66/max = 1, gen(age66)
+*recode age min/65.999999999 = 0 ///
+*           66/max = 1, gen(age66)
 
 * Check there are no missing ages
-cap assert age < .
-cap assert agegroup < .
-cap assert age66 < .
+*cap assert age < .
+*cap assert agegroup < .
+*cap assert age66 < .
 
 * Create restricted cubic splines for age
-mkspline age = age, cubic nknots(4)
+*mkspline age = age, cubic nknots(4)
 
 
 /* CONVERT STRINGS TO DATE====================================================*/
@@ -523,7 +530,7 @@ replace bmi = . if bmi == 0
 replace bmi = . if !inrange(bmi, 15, 50)
 
 * Restrict to within 10 years of index and aged > 16 
-gen bmi_time = (indexdate - bmi_measured_date)/365.25
+gen bmi_time = (date("$indexdate", "DMY")  - bmi_measured_date)/365.25
 gen bmi_age = age - bmi_time
 
 replace bmi = . if bmi_age < 16 
@@ -639,7 +646,7 @@ label values cancer_cat cancer
 * Permanent immunodeficiency ever, OR 
 * Temporary immunodeficiency  last year
 gen temp1  = 1 if perm_immunodef_date!=.
-gen temp2  = inrange(temp_immunodef_date, (indexdate - 365), indexdate)
+gen temp2  = inrange(temp_immunodef_date, (date("$indexdate", "DMY") - 365), date("$indexdate", "DMY"))
 
 egen other_immuno = rowmax(temp1 temp2)
 drop temp1 temp2 
@@ -896,8 +903,8 @@ gen ons_noncoviddeath_date = onsdeath_date if died_ons_covid_flag_any != 1
 *If outcome occurs on the first day of follow-up add one day
 foreach i of global outcomes  {
 	di "`i'"
-	count if `i'Date==indexdate
-	replace `i'Date=`i'Date+1 if `i'Date==indexdate
+	count if `i'Date==date("$indexdate", "DMY")
+	replace `i'Date=`i'Date+1 if `i'Date==date("$indexdate", "DMY")
 }
 *date of deregistration
 rename dereg_date dereg_dstr
@@ -927,12 +934,12 @@ foreach i of global outcomes {
 
 * Censoring dates for each outcome (last date outcome data available) - kw note: these are what were included for Rohini ethnicity (copied wed 12th Aug, may need updated).
 *https://github.com/opensafely/rapid-reports/blob/master/notebooks/latest-dates.ipynb
-gen censor_date = d("01/12/2020")
+*gen censor_date = d("01/12/2020")
 
 
 *******************************************************************************
-format *censor_date %d
-sum *censor_date, format
+*format *censor_date %d
+*sum *censor_date, format
 
 *******************************
 *  Recode implausible values  *
@@ -945,13 +952,21 @@ replace bmi = . if !inrange(bmi, 15, 50)
 
 
 /**** Create survival times  ****/
+* Outcomes and follow-up
+gen enter_date = date("$indexdate", "DMY")
+format enter_date %td
+gen study_end_censor =date("$study_end_censor", "DMY")
+format study_end_censor %td
+
+label var enter_date		"Date of study start"
+label var study_end_censor	"Date of admin censoring"
 
 * For looping later, name must be stime_binary_outcome_name
 
 * Survival time = last followup date (first: deregistration date, end study, death, or that outcome)
 *Ventilation does not have a survival time because it is a yes/no flag
 foreach i of global outcomes {
-	gen stime_`i' = min(censor_date, died_date_ons, `i'Date, dereg_date)
+	gen stime_`i' = min(study_end_censor, died_date_ons, `i'Date, dereg_date)
 }
 
 * If outcome date occurs after censoring, set outcome to zero
@@ -986,8 +1001,8 @@ label var hh_total_cat "Number of people in household"
 * Demographics
 label var patient_id				"Patient ID"
 label var age 						"Age (years)"
-label var agegroup					"Grouped age"
-label var age66 					"66 years and older"
+*label var agegroup					"Grouped age"
+*label var age66 					"66 years and older"
 label var sex 						"Sex"
 label var male 						"Male"
 label var bmi 						"Body Mass Index (BMI, kg/m2)"
@@ -1003,9 +1018,9 @@ label var eth5						"Eth 5 categories"
 label var ethnicity_16				"Eth 16 categories"
 label var eth16						"Eth 16 collapsed"
 label var stp 						"Sustainability and Transformation Partnership"
-label var age1 						"Age spline 1"
-label var age2 						"Age spline 2"
-label var age3 						"Age spline 3"
+*label var age1 						"Age spline 1"
+*label var age2 						"Age spline 2"
+*label var age3 						"Age spline 3"
 lab var hh_total					"calculated No of ppl in household"
 lab var region						"Region of England"
 lab var rural_urban					"Rural-Urban Indicator"
@@ -1112,13 +1127,13 @@ la var dm "diabetes"
 *(5) non-haem cancer (in previous year)
 safetab cancer_nonhaem
 generate cancer_nonhaemPrevYear=0
-replace cancer_nonhaemPrevYear=1 if indexdate-cancer_nonhaem_date<365
+replace cancer_nonhaemPrevYear=1 if date("$indexdate", "DMY")-cancer_nonhaem_date<365
 tab cancer_nonhaemPrevYear
 la var cancer_nonhaemPrevYear "non haem cancer in prev year"
 *(6) haem cancer (within previous 5 years)
 safetab cancer_haem
 generate cancer_haemPrev5Years=0
-replace cancer_haemPrev5Years=1 if indexdate-cancer_haem_date<1825
+replace cancer_haemPrev5Years=1 if date("$indexdate", "DMY")-cancer_haem_date<1825
 tab cancer_haemPrev5Years
 la var cancer_haemPrev5Years "haem cancer in prev 5 years"
 *(7) liver disease
@@ -1163,11 +1178,6 @@ label define coMorbCatLabel 	0 "No comorbidities" 	///
 label values coMorbCat coMorbCatLabel
 safetab coMorbCat
 
-* Outcomes and follow-up
-
-label var indexdate			"Date of study start (Feb 1 2020)"
-label var censor_date		"Date of admin censoring"
-
 
 *Outcome dates
 foreach i of global outcomes {
@@ -1178,7 +1188,7 @@ foreach i of global outcomes {
 
 * Survival times
 foreach i of global outcomes {
-	lab var stime_`i' 					"Survivatime (date): `i'"
+	lab var stime_`i' 					"Survivaltime (date): `i'"
 	d stime_`i'
 }
 
@@ -1188,6 +1198,10 @@ foreach i of global outcomes {
 	lab var `i' 					"outcome `i'"
 	safetab `i'
 }
+
+****age still fine here
+sum age, detail
+
 
 /*
 *label var was_ventilated_flag		"outcome: ICU Ventilation"
@@ -1216,6 +1230,9 @@ drop if age <18 & age != .
 safecount
 noi di "DROP IF DIED BEFORE INDEX"
 
+sum age, detail
+*THIS IS THE LAST TIME THAT AGE VARIABLE DOESN'T JUST DISAPPEAR, SO SOMETHING IS WRONG IN FOLLOWING CODE - FROM HERE WED NIGHT*
+
 *need to sort out deathdates
 /*
 local vars case_date onsdeath_date cpnsdeath_date
@@ -1229,13 +1246,14 @@ foreach var of local vars {
 }
 */
 
-drop if covidDeathCaseDate <= indexdate
-drop if nonCOVIDDeathCaseDate <= indexdate
+
+drop if covidDeathCaseDate <= enter_date
+drop if nonCOVIDDeathCaseDate <= enter_date
 
 
-*drop cases that are dates prior to Feb012020
+*drop cases that are dates prior to indexdate
 foreach i of global outcomes {
-	drop if `i'Date<date("20200201", "YMD")	
+	drop if `i'Date<enter_date	
 }
 
 
@@ -1331,11 +1349,26 @@ label define smokeLabel 1 "Never" 2 "Former" 3 "Current" 4 "Unknown"
 label values smoke smokeLabel
 safetab smoke
 
+***************
+*  Save data  *
+***************
 
 safecount 
 sort patient_id
-save ./output/hhClassif_analysis_dataset.dta, replace
+save ./output/hhClassif_analysis_dataset_with_missing_ethnicity`dataset'.dta, replace
 
+noi di "DROP NO ETHNICITY DATA"
+keep if ethnicity!=.u
+
+save ./output/hhClassif_analysis_dataset`dataset'.dta, replace
+	
+*create restricted cubic splines for age - Harriet split data by age and then created splines separately here? WHEN READY TO STRATIFY SHOULD COME BACK AND DO THAT!
+mkspline age = age, cubic nknots(4)
+save ./output/hhClassif_analysis_dataset_wAgeSpline`dataset'.dta, replace
+
+
+* Close log file 
+log close
 
 
 

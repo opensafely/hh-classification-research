@@ -10,30 +10,47 @@ actions:
       highly_sensitive:
         cohort: output/input.csv
 
-  prepare_data:
-    run: stata-mp:latest analysis/01_hhClassif_cr_analysis_dataset.do
+  W2_generate_cohort:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_W2
+    outputs:
+      highly_sensitive:
+        cohort: output/input_W2.csv
+
+  01_hhClassif_cr_analysis_dataset:
+    run: stata-mp:latest analysis/01_hhClassif_cr_analysis_dataset.do MAIN
     needs: [generate_cohort]
     outputs:
       highly_sensitive:
-        allvars: output/hhClassif_analysis_dataset.dta
+        allvars: output/hhClassif_analysis_datasetMAIN.dta
       moderately_sensitive:
-        log1: released_outputs/01_hhClassif_cr_analysis_dataset.log
+        log: logs/01_hhClassif_cr_analysis_dataset.log
 
-  data_checks:
-    run: stata-mp:latest analysis/02_hhClassif_an_data_checks.do
-    needs: [prepare_data]
+  01_hhClassif_cr_analysis_dataset_W2:
+    run: stata-mp:latest analysis/01_hhClassif_cr_analysis_dataset.do W2
+    needs: [W2_generate_cohort]
+    outputs:
+      highly_sensitive:
+        allvars: output/hhClassif_analysis_datasetW2.dta
+      moderately_sensitive:
+        log: logs/01_hhClassif_cr_analysis_dataset_W2.log
+
+  02_hhClassif_an_data_checks:
+    run: stata-mp:latest analysis/02_hhClassif_an_data_checks.do MAIN
+    needs: [01_hhClassif_cr_analysis_dataset]
     outputs:
       moderately_sensitive:
-        log: released_outputs/02_hhClassif_an_data_checks.log
+        log: logs/02_hhClassif_an_data_checks.log
 
-  output_table1:
-    run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do
-    needs: [prepare_data]
+  02_hhClassif_an_data_checks_W2:
+    run: stata-mp:latest analysis/02_hhClassif_an_data_checks.do W2
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
     outputs:
       moderately_sensitive:
-        log: released_outputs/03b_hhClassif_an_descriptive_table_1.log
-        table1text: output/table1_hhClassif.txt
-        table1excel: output/table1_hhClassif.xlsx
+        log: logs/02_hhClassif_an_data_checks_W2.log
+
+
+
+    
 
 
 
