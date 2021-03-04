@@ -48,6 +48,23 @@ actions:
       moderately_sensitive:
         log: logs/02_hhClassif_an_data_checks_W2.log
 
+  03_hhClassif_an_descriptive_table_1:
+    run: stata-mp:latest analysis/03_hhClassif_an_descriptive_table_1.do MAIN
+    needs: [01_hhClassif_cr_analysis_dataset]
+    outputs:
+      moderately_sensitive:
+        log: logs/03_hhClassif_an_descriptive_table_1.log
+        tableTxt: output/table1_hhClassif.txt
+        tableExcel: output/table1_hhClassif.xlsx
+
+  03_hhClassif_an_descriptive_table_1_W2:
+    run: stata-mp:latest analysis/03_hhClassif_an_descriptive_table_1.do W2
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    outputs:
+      moderately_sensitive:
+        log: logs/03_hhClassif_an_descriptive_table_1_W2.log
+        tableTxt: output/table1_hhClassif_W2.txt
+        tableExcel: output/table1_hhClassif_W2.xlsx
 
 
     
