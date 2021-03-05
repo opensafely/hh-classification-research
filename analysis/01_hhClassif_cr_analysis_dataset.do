@@ -274,10 +274,10 @@ preserve
 	sort hh_id ageCatHHRisk
 
 	*mark whether hh has each age category using egen max which returns true (1) or false (0) (see https://www.stata.com/support/faqs/data-management/create-variable-recording/)
-	egen hasUnder18=max(ageCatHHRisk==1), by(hh_id)
-	egen has18_29=max(ageCatHHRisk==2), by(hh_id)
-	egen has30_66=max(ageCatHHRisk==3), by(hh_id)
-	egen has67Plus=max(ageCatHHRisk==4), by(hh_id)
+	egen hasUnder18=max(ageCatHHRisk==0), by(hh_id)
+	egen has18_29=max(ageCatHHRisk==1), by(hh_id)
+	egen has30_66=max(ageCatHHRisk==2), by(hh_id)
+	egen has67Plus=max(ageCatHHRisk==3), by(hh_id)
 
 	*now generate the hhRiskCat variable for each person
 	generate hhRiskCat=.
@@ -340,7 +340,7 @@ replace hhRiskCatBROAD=3 if hhRiskCat>=10 & hhRiskCat<=14
 *label variable
 label define hhRiskCatBROADLabel 1 "1 gen" 2 "2 gens" 3 "3+ gens"
 label values hhRiskCatBROAD hhRiskCatBROADLabel
-safetab hhRiskCatBROAD hhRiskCat
+safetab hhRiskCat hhRiskCatBROAD 
 
 *(b) variable for stratifying by the oldest age group (67+)
 generate hhRiskCat67PLUS=.
@@ -356,7 +356,7 @@ replace hhRiskCat67PLUS=8 if hhRiskCat==14
 *label variable
 label define hhRiskCat67PLUS 1 "Only 67+" 2 "0-17 & 67+" 3 "18-29 & 67+" 4 "30-66 & 67+" 5 "0-17, 18-29 & 67+" 6 "0-17, 30-66 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
 label values hhRiskCat67PLUS hhRiskCat67PLUS
-safetab hhRiskCat hhRiskCat67PLUS 
+safetab hhRiskCat hhRiskCat67PLUS, miss
 
 
 *(b) variable for stratifying by the 30-66 year olds 
@@ -373,7 +373,7 @@ replace hhRiskCat33TO66=8 if hhRiskCat==14
 *label variable
 label define hhRiskCat33TO66 1 "Only 30-66" 2 "0-17 & 30-66" 3 "18-29 & 30-66" 4 "30-66 & 67+" 5 "0-17, 18-29 & 30-66" 6 "0-17, 30-66 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
 label values hhRiskCat33TO66 hhRiskCat33TO66
-safetab hhRiskCat hhRiskCat33TO66 
+safetab hhRiskCat hhRiskCat33TO66, miss
 
 
 *(c) variable for stratifying by the 18-29 year olds 
@@ -390,7 +390,7 @@ replace hhRiskCat18TO29=8 if hhRiskCat==14
 *label variable
 label define hhRiskCat18TO29 1 "Only 18-29" 2 "0-17 & 18-29" 3 "18-29 & 30-66" 4 "18-29 & 67+" 5 "0-17, 18-29 & 30-66" 6 "0-17, 18-29 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
 label values hhRiskCat18TO29 hhRiskCat18TO29
-safetab hhRiskCat hhRiskCat18TO29 
+safetab hhRiskCat hhRiskCat18TO29, miss
 
 
 
@@ -929,18 +929,6 @@ foreach i of global outcomes {
 *gen severe=1 if ae==1 | icu==1 | onscoviddeath==1
 
 
-/* CENSORING */
-/* SET FU DATES===============================================================*/ 
-
-* Censoring dates for each outcome (last date outcome data available) - kw note: these are what were included for Rohini ethnicity (copied wed 12th Aug, may need updated).
-*https://github.com/opensafely/rapid-reports/blob/master/notebooks/latest-dates.ipynb
-*gen censor_date = d("01/12/2020")
-
-
-*******************************************************************************
-*format *censor_date %d
-*sum *censor_date, format
-
 *******************************
 *  Recode implausible values  *
 *******************************
@@ -1363,8 +1351,54 @@ keep if ethnicity!=.u
 save ./output/hhClassif_analysis_dataset`dataset'.dta, replace
 	
 *create restricted cubic splines for age - Harriet split data by age and then created splines separately here? WHEN READY TO STRATIFY SHOULD COME BACK AND DO THAT!
+*Create datasets stratified by age and then create a spline for each one and save
+*NOTE: will come back and look at more detailed age groups here, this is just to check I have the code correct
+
+*Eventually will split these up further
+
+
+*Age category 2: 30-66
+use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
+tab ageCatHHRisk
+tab ageCatHHRisk, nolabel
+tab hhRiskCat
+tab hhRiskCat33TO66
+keep if ageCatHHRisk==2
+tab hhRiskCat
 mkspline age = age, cubic nknots(4)
-save ./output/hhClassif_analysis_dataset_wAgeSpline`dataset'.dta, replace
+save ./output/hhClassif_analysis_dataset_ageband_2`dataset'.dta, replace
+
+*Age category 3: 67+
+use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
+tab ageCatHHRisk
+tab ageCatHHRisk, nolabel
+tab hhRiskCat
+tab hhRiskCat67PLUS
+keep if ageCatHHRisk==3
+tab hhRiskCat
+mkspline age = age, cubic nknots(4)
+save ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, replace
+
+
+forvalues x=2/3 {
+use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
+* Save a version set on NON-covid death outcome
+stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'`dataset'.dta, replace
+	
+use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
+* Save a version set on covid hospitalisation outcome only
+stset stime_covidHospCase, fail(covidHospCase) 				///
+	id(patient_id) enter(enter_date) origin(enter_date)
+save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'`dataset'.dta, replace
+
+use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
+* Save a version set on covid death only
+stset stime_covidDeathCase, fail(covidDeathCase) 				///
+	id(patient_id) enter(enter_date) origin(enter_date)
+save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'`dataset'.dta, replace
+}
+
 
 
 * Close log file 
