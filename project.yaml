@@ -22,6 +22,9 @@ actions:
     outputs:
       highly_sensitive:
         allvars: output/hhClassif_analysis_datasetMAIN.dta
+        allvarsEthMiss: output/hhClassif_analysis_dataset_with_missing_ethnicityMAIN.dta
+        allVarsAgeSpline: output/hhClassif_analysis_dataset_ageband_*MAIN.dta 
+        allVarsAgeStratStset: output/hhClassif_analysis_dataset_STSET_*_ageband_*MAIN.dta 
       moderately_sensitive:
         log: logs/01_hhClassif_cr_analysis_dataset.log
 
@@ -31,6 +34,9 @@ actions:
     outputs:
       highly_sensitive:
         allvars: output/hhClassif_analysis_datasetW2.dta
+        allvarsEthMiss: output/hhClassif_analysis_dataset_with_missing_ethnicityW2.dta
+        allVarsAgeSpline: output/hhClassif_analysis_dataset_ageband_*W2.dta 
+        allVarsAgeStratStset: output/hhClassif_analysis_dataset_STSET_*_ageband_*W2.dta 
       moderately_sensitive:
         log: logs/01_hhClassif_cr_analysis_dataset_W2.log
 
