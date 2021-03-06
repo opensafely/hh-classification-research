@@ -1365,6 +1365,8 @@ tab hhRiskCat
 tab hhRiskCat33TO66
 keep if ageCatHHRisk==2
 tab hhRiskCat
+rename hhRiskCat33TO66 hhRiskCatExp
+tab hhRiskCatExp, miss
 mkspline age = age, cubic nknots(4)
 save ./output/hhClassif_analysis_dataset_ageband_2`dataset'.dta, replace
 
@@ -1376,6 +1378,8 @@ tab hhRiskCat
 tab hhRiskCat67PLUS
 keep if ageCatHHRisk==3
 tab hhRiskCat
+rename hhRiskCat67PLUS hhRiskCatExp
+tab hhRiskCatExp, miss
 mkspline age = age, cubic nknots(4)
 save ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, replace
 
