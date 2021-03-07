@@ -36,22 +36,22 @@ log using ./logs/04_hhClassif_an_univariable_analysis_`dataset', replace t
 * Open dataset and fit specified model(s)
 foreach outcome in covidDeath covidHosp nonCovidDeath {
 *2 and 3 here are the two age categories I've created so far, need to change these when there are more
-forvalues x=2/3 {
+	forvalues x=2/3 {
 
-use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
+	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
 
-	*Fit and save model
-	cap erase ./output/an_univariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster
-	*capture stcox i.hhRiskCatExp age1 age2 age3 i.male, strata(stp) vce(cluster household_id) - this is harriet's but I don't have stp yet
-	capture stcox i.hhRiskCatExp age1 age2 age3 i.male, vce(cluster hh_id)
-	if _rc==0 {
-		estimates
-		estimates save ./output/an_univariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster, replace
-		}
-	else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"
+		*Fit and save model
+		*cap erase ./output/an_univariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster
+		display "***********Outcome: `outcome', ageband: `x', dataset: `dataset'*************************"
+		capture stcox i.hhRiskCatExp age1 age2 age3 i.male, strata(utla) vce(cluster hh_id)
+		/*if _rc==0 {
+			estimates
+			estimates save ./output/an_univariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster, replace
+			}
+		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"*/
 
 
-}
+	}
 }
 * Close log file
 log close

@@ -78,7 +78,6 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/04_hhClassif_an_univariable_analysis_MAIN.log
-        data: output/an_univariable_cox_models_*_AGESEX_ageband_*MAIN.ster
 
   04_hhClassif_an_univariable_analysis_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -86,7 +85,6 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/04_hhClassif_an_univariable_analysis_W2.log
-        data: output/an_univariable_cox_models_*_AGESEX_ageband_*W2.ster
 
 
     
