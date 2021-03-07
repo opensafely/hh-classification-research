@@ -217,6 +217,16 @@ study = StudyDefinition(
         },
     ),
 
+    # GEOGRAPHIC REGION MSOA
+    msoa=patients.registered_practice_as_of(        
+        "2020-09-01",
+        returning="msoa_code",
+        return_expectations={
+            "rate": "universal",
+            "category": {"ratios": dict_msoa},
+        },
+    ),
+
     # RURAL OR URBAN LOCATION
     rural_urban=patients.address_as_of(
         "2020-09-01",

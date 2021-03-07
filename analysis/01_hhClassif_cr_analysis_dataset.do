@@ -48,6 +48,12 @@ log using ./logs/01_hhClassif_cr_analysis_dataset`fileextension'.log, replace t
 *import delimited ./output/input.csv, clear
 import delimited ./output/`inputfile', clear
 
+*merge with msoa data (copied from DGrint SGTF repo)
+merge m:1 msoa using ./lookups/MSOA_lookup
+drop if _merge==2
+drop _merge
+
+
 **********for debugging only************
 /*
 global indexdate = "1/2/2020"
@@ -177,6 +183,51 @@ rename stp stp_old
 bysort stp_old: gen stp = 1 if _n==1
 replace stp = sum(stp)
 drop stp_old
+
+* MSOA/UTLA
+
+egen n_msoa = tag(msoa)
+count if n_msoa
+
+bysort msoa: gen count1 = _N
+summ count1, d
+
+egen n_utla = tag(utla)
+count if n_utla
+
+bysort utla: gen count2 = _N
+summ count2, d
+
+* Regroup UTLAs with small case numbers
+
+gen utla_group = utla_name
+tab utla_group
+
+
+replace utla_group = "Redbridge, Barking and Dagenham" if utla_name == "Barking and Dagenham"
+replace utla_group = "Redbridge, Barking and Dagenham" if utla_name == "Redbridge"
+
+replace utla_group = "Bucks/Ox/West. Berks/Swindon" if utla_name == "Buckinghamshire"
+replace utla_group = "Bucks/Ox/West. Berks/Swindon" if utla_name == "Oxfordshire"
+replace utla_group = "Bucks/Ox/West. Berks/Swindon" if utla_name == "Swindon"
+replace utla_group = "Bucks/Ox/West. Berks/Swindon" if utla_name == "West Berkshire"
+
+replace utla_group = "Camden and Westminster" if utla_name == "Camden"
+replace utla_group = "Camden and Westminster" if utla_name == "Westminster"
+
+replace utla_group = "" if utla_name == "Isles of Scilly"
+
+replace utla_group = "Richmond and Hounslow" if utla_name == "Richmond upon Thames"
+replace utla_group = "Richmond and Hounslow" if utla_name == "Hounslow"
+
+replace utla_group = "Rutland and Lincoln" if utla_name == "Rutland"
+replace utla_group = "Rutland and Lincoln" if utla_name == "Lincolnshire"
+
+replace utla_group = "Bolton and Tameside" if utla_name == "Bolton"
+replace utla_group = "Bolton and Tameside" if utla_name == "Tameside"
+
+tab utla_group, m
+
 
 /*  IMD  */
 * Group into 5 groups
