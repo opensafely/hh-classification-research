@@ -41,10 +41,10 @@ foreach outcome in covidDeath covidHosp nonCovidDeath {
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
 
 		*Fit and save model
-		*cap erase ./output/an_univariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster
+		cap erase ./output/an_univariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster
 		display "***********Outcome: `outcome', ageband: `x', dataset: `dataset'*************************"
-		capture stcox i.hhRiskCatExp age1 age2 age3 i.male, strata(utla) vce(cluster hh_id)
-		/*if _rc==0 {
+		stcox i.hhRiskCatExp age1 age2 age3 i.male, strata(utla_group) vce(cluster hh_id)
+		if _rc==0 {
 			estimates
 			estimates save ./output/an_univariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster, replace
 			}

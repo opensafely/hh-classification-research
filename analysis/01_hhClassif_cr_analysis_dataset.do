@@ -227,6 +227,7 @@ replace utla_group = "Bolton and Tameside" if utla_name == "Bolton"
 replace utla_group = "Bolton and Tameside" if utla_name == "Tameside"
 
 tab utla_group, m
+la var utla_group "Upper Tier Local Authority"
 
 
 /*  IMD  */
