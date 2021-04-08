@@ -88,8 +88,24 @@ actions:
         log: logs/04_hhClassif_an_univariable_analysis_W2.log
         data: output/an_univariable_cox_models_*_AGESEX_ageband_*W2.ster
 
+  05_hhClassif_an_multivariable_analysis:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/05_hhClassif_an_multivariable_analysis.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/05_hhClassif_an_multivariable_analysis_MAIN.log
+        data: output/an_multivariable_cox_models_*_AGESEX_ageband_*MAIN.ster
+
+  05_hhClassif_an_multivariable_analysis_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/05_hhClassif_an_multivariable_analysis.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/05_hhClassif_an_multivariable_analysis_W2.log
+        data: output/an_multivariable_cox_models_*_AGESEX_ageband_*W2.ster
 
     
+ 
 
 
 

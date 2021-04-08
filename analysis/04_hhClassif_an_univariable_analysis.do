@@ -9,7 +9,7 @@
 *
 ********************************************************************************
 *
-*	Purpose:		Fit age/sex adjusted Cox models, stratified by STP using robust standard errors to handle for clustering by household
+
 *  
 ********************************************************************************
 

@@ -9,7 +9,7 @@
 *
 ********************************************************************************
 *
-*	Purpose:		Fit multivariable adjusted Cox models, stratified by STP using robust standard errors to handle clustering by household
+
 *  
 ********************************************************************************
 
