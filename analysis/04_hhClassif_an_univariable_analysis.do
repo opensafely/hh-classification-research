@@ -1,16 +1,15 @@
 ********************************************************************************
 *
-*	Do-file:		06_hhClassif_an_univariable_analysis.do
+*	Do-file:		04_hhClassif_an_univariable_analysis.do
 *	Project:		hh risk classification
 *	Programmed by:	K Wing, based on files from Hforbes, Fizz & Krishnan
 *	Data used:		analysis_dataset.dta
 *	Data created:	None
-*	Other output:	Log file: an_univariable_cox_models.log 
+*	Other output:	Log file: 04_hhClassif_an_univariable_analysis_`dataset'.log 
 *
 ********************************************************************************
 *
-*	Purpose:		Fit age/sex adjusted Cox models, stratified by STP and 
-*with hh size as random effect
+*	Purpose:		Fit age/sex adjusted Cox models, stratified by STP using robust standard errors to account for clustering by household
 *  
 ********************************************************************************
 
@@ -49,8 +48,6 @@ foreach outcome in covidDeath covidHosp nonCovidDeath {
 			estimates save ./output/an_univariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster, replace
 			}
 		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"*/
-
-
 	}
 }
 * Close log file
