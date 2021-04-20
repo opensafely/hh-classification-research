@@ -67,68 +67,33 @@ foreach outcome in covidDeath covidHosp nonCovidDeath {
 *2 and 3 here are the two age categories I've created so far, need to change these when there are more
 	forvalues x=2/3 {
 
-	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
+		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
 
 		*Fit and save model
 		cap erase ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'_eth5Interaction.ster
 		display "***********Outcome: `outcome', ageband: `x', dataset: `dataset' - stratified by ethnicity and adjusted for imd*************************"
 		stcox i.hhRiskCatExp##i.eth5 $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
 		
-				*output HRs for each level of strata
-		lincom 1.hhRiskCatExp + 1*1.hhRiskCatExp#eth5
-		lincom 1.hhRiskCatExp + 2*1.hhRiskCatExp#eth5
-		lincom 1.hhRiskCatExp + 3*1.hhRiskCatExp#eth5
-		lincom 1.hhRiskCatExp + 4*1.hhRiskCatExp#eth5
-		lincom 1.hhRiskCatExp + 5*1.hhRiskCatExp#eth5
-		
-		lincom 2.hhRiskCatExp + 1*2.hhRiskCatExp#eth5
-		lincom 2.hhRiskCatExp + 2*2.hhRiskCatExp#eth5
-		lincom 2.hhRiskCatExp + 3*2.hhRiskCatExp#eth5
-		lincom 2.hhRiskCatExp + 4*2.hhRiskCatExp#eth5
-		lincom 2.hhRiskCatExp + 5*2.hhRiskCatExp#eth5
-		
-		lincom 3.hhRiskCatExp + 1*3.hhRiskCatExp#eth5
-		lincom 3.hhRiskCatExp + 2*3.hhRiskCatExp#eth5
-		lincom 3.hhRiskCatExp + 3*3.hhRiskCatExp#eth5
-		lincom 3.hhRiskCatExp + 4*3.hhRiskCatExp#eth5
-		lincom 3.hhRiskCatExp + 5*3.hhRiskCatExp#eth5
-		
-		lincom 4.hhRiskCatExp + 1*4.hhRiskCatExp#eth5
-		lincom 4.hhRiskCatExp + 2*4.hhRiskCatExp#eth5
-		lincom 4.hhRiskCatExp + 3*4.hhRiskCatExp#eth5
-		lincom 4.hhRiskCatExp + 4*4.hhRiskCatExp#eth5
-		lincom 4.hhRiskCatExp + 5*4.hhRiskCatExp#eth5
-		
-		lincom 5.hhRiskCatExp + 1*5.hhRiskCatExp#eth5
-		lincom 5.hhRiskCatExp + 2*5.hhRiskCatExp#eth5
-		lincom 5.hhRiskCatExp + 3*5.hhRiskCatExp#eth5
-		lincom 5.hhRiskCatExp + 4*5.hhRiskCatExp#eth5
-		lincom 5.hhRiskCatExp + 5*5.hhRiskCatExp#eth5
-		
-		lincom 6.hhRiskCatExp + 1*6.hhRiskCatExp#eth5
-		lincom 6.hhRiskCatExp + 2*6.hhRiskCatExp#eth5
-		lincom 6.hhRiskCatExp + 3*6.hhRiskCatExp#eth5
-		lincom 6.hhRiskCatExp + 4*6.hhRiskCatExp#eth5
-		lincom 6.hhRiskCatExp + 5*6.hhRiskCatExp#eth5
-		
-		lincom 7.hhRiskCatExp + 1*7.hhRiskCatExp#eth5
-		lincom 7.hhRiskCatExp + 2*7.hhRiskCatExp#eth5
-		lincom 7.hhRiskCatExp + 3*7.hhRiskCatExp#eth5
-		lincom 7.hhRiskCatExp + 4*7.hhRiskCatExp#eth5
-		lincom 7.hhRiskCatExp + 5*7.hhRiskCatExp#eth5
-		
-		lincom 8.hhRiskCatExp + 1*8.hhRiskCatExp#eth5
-		lincom 8.hhRiskCatExp + 2*8.hhRiskCatExp#eth5
-		lincom 8.hhRiskCatExp + 3*8.hhRiskCatExp#eth5
-		lincom 8.hhRiskCatExp + 4*8.hhRiskCatExp#eth5
-		lincom 8.hhRiskCatExp + 5*8.hhRiskCatExp#eth5
-		
+		*helper variables
+		sum eth5
+		local maxEth5=r(max) 
+		sum hhRiskCatExp
+		local maxhhRiskCat=r(max)
+
+		*for each ethnicity category, output hhrisk hazard ratios
+		forvalues ethCat=1/`maxEth5' {
+			display "*************Ethnicity: `ethCat'************ "
+			forvalues riskCat=1/`maxhhRiskCat' {
+				display "`ethCat'"
+				display "`riskCat'"
+				capture noisily lincom `riskCat'.hhRiskCatExp + `riskCat'.hhRiskCatExp#`ethCat'.eth5, eform
+			}
+		}
 		if _rc==0 {
 			estimates
 			estimates save ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'_eth5Interaction.ster, replace
 			}
 		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"
-		
 
 	}
 }
@@ -139,15 +104,150 @@ log close
 
 
 
+******MANUAL BUGHUNTING OF LINCOM ISSUES*******(comment out unless bughunting locally)
+/*
+cd /Users/kw/Documents/GitHub/hh-classification-research
+use ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3MAIN.dta
+tab eth5
+tab eth5, nolabel
+
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+global comorbidadjlist i.coMorbCat	
+
+stcox i.hhRiskCatExp##i.eth5 $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
+
+		*helper variables
+		sum eth5
+		local maxEth5=r(max) 
+		sum hhRiskCatExp
+		local maxhhRiskCat=r(max)
+
+		*for each ethnicity category, output hhrisk hazard ratios
+		forvalues ethCat=1/`maxEth5' {
+			display "*************Ethnicity: `ethCat'************ "
+			forvalues riskCat=1/`maxhhRiskCat' {
+				capture noisily lincom `riskCat'.hhRiskCatExp + `riskCat'.hhRiskCatExp#`ethCat'.eth5, eform
+			}
+		}
 
 
+*output hhrisk exposures by each level of ethnicity
+				*1=white
+				lincom 1.hhRiskCatExp + 1.hhRiskCatExp#1.eth5, eform
+				lincom 2.hhRiskCatExp + 2.hhRiskCatExp#1.eth5, eform 
+				lincom 3.hhRiskCatExp + 3.hhRiskCatExp#1.eth5, eform
+				lincom 4.hhRiskCatExp + 4.hhRiskCatExp#1.eth5, eform
+				lincom 5.hhRiskCatExp + 5.hhRiskCatExp#1.eth5, eform
+				lincom 6.hhRiskCatExp + 6.hhRiskCatExp#1.eth5, eform
+				lincom 7.hhRiskCatExp + 7.hhRiskCatExp#1.eth5, eform
+				lincom 8.hhRiskCatExp + 8.hhRiskCatExp#1.eth5, eform
+				
+				*2=south asian
+				lincom 1.hhRiskCatExp + 1.hhRiskCatExp#2.eth5, eform
+				lincom 2.hhRiskCatExp + 2.hhRiskCatExp#2.eth5, eform 
+				lincom 3.hhRiskCatExp + 3.hhRiskCatExp#2.eth5, eform
+				lincom 4.hhRiskCatExp + 4.hhRiskCatExp#2.eth5, eform
+				lincom 5.hhRiskCatExp + 5.hhRiskCatExp#2.eth5, eform
+				lincom 6.hhRiskCatExp + 6.hhRiskCatExp#2.eth5, eform
+				lincom 7.hhRiskCatExp + 7.hhRiskCatExp#2.eth5, eform
+				lincom 8.hhRiskCatExp + 8.hhRiskCatExp#2.eth5, eform
+				
+				*3=black
+				lincom 1.hhRiskCatExp + 1.hhRiskCatExp#3.eth5, eform
+				lincom 2.hhRiskCatExp + 2.hhRiskCatExp#3.eth5, eform 
+				lincom 3.hhRiskCatExp + 3.hhRiskCatExp#3.eth5, eform
+				lincom 4.hhRiskCatExp + 4.hhRiskCatExp#3.eth5, eform
+				lincom 5.hhRiskCatExp + 5.hhRiskCatExp#3.eth5, eform
+				lincom 6.hhRiskCatExp + 6.hhRiskCatExp#3.eth5, eform
+				lincom 7.hhRiskCatExp + 7.hhRiskCatExp#3.eth5, eform
+				lincom 8.hhRiskCatExp + 8.hhRiskCatExp#3.eth5, eform
+				
+				*4=mixed
+				lincom 1.hhRiskCatExp + 1.hhRiskCatExp#4.eth5, eform
+				lincom 2.hhRiskCatExp + 2.hhRiskCatExp#4.eth5, eform 
+				lincom 3.hhRiskCatExp + 3.hhRiskCatExp#4.eth5, eform
+				lincom 4.hhRiskCatExp + 4.hhRiskCatExp#4.eth5, eform
+				lincom 5.hhRiskCatExp + 5.hhRiskCatExp#4.eth5, eform
+				lincom 6.hhRiskCatExp + 6.hhRiskCatExp#4.eth5, eform
+				lincom 7.hhRiskCatExp + 7.hhRiskCatExp#4.eth5, eform
+				lincom 8.hhRiskCatExp + 8.hhRiskCatExp#4.eth5, eform		
+				
+				*5=other
+				lincom 1.hhRiskCatExp + 1.hhRiskCatExp#5.eth5, eform
+				lincom 2.hhRiskCatExp + 2.hhRiskCatExp#5.eth5, eform 
+				lincom 3.hhRiskCatExp + 3.hhRiskCatExp#5.eth5, eform
+				lincom 4.hhRiskCatExp + 4.hhRiskCatExp#5.eth5, eform
+				lincom 5.hhRiskCatExp + 5.hhRiskCatExp#5.eth5, eform
+				lincom 6.hhRiskCatExp + 6.hhRiskCatExp#5.eth5, eform
+				lincom 7.hhRiskCatExp + 7.hhRiskCatExp#5.eth5, eform
+				lincom 8.hhRiskCatExp + 8.hhRiskCatExp#5.eth5, eform
 
+*lincom 3.smoke_nomiss + 3.smoke_nomiss#1.male, eform
 
+*hhRiskCatExp baseline category, by each ethnicity category
+		*lincom 1.hhRiskCatExp + 1.hhRiskCatExp#1.eth5, eform
+		*lincom 1.hhRiskCatExp + 1.hhRiskCatExp#2.eth5, eform 
+		*lincom 1.hhRiskCatExp + 1.hhRiskCatExp#3.eth5, eform
+		*lincom 1.hhRiskCatExp + 1.hhRiskCatExp#4.eth5, eform
+		*lincom 1.hhRiskCatExp + 1.hhRiskCatExp#5.eth5, eform
+		
+		lincom 2.hhRiskCatExp + 2.hhRiskCatExp#1.eth5, eform
+		lincom 2.hhRiskCatExp + 2.hhRiskCatExp#2.eth5, eform 
+		lincom 2.hhRiskCatExp + 2.hhRiskCatExp#3.eth5, eform
+		lincom 2.hhRiskCatExp + 2.hhRiskCatExp#4.eth5, eform
+		lincom 2.hhRiskCatExp + 2.hhRiskCatExp#5.eth5, eform
+		
+		lincom 3.hhRiskCatExp + 3.hhRiskCatExp#1.eth5, eform
+		lincom 3.hhRiskCatExp + 3.hhRiskCatExp#2.eth5, eform 
+		lincom 3.hhRiskCatExp + 3.hhRiskCatExp#3.eth5, eform
+		lincom 3.hhRiskCatExp + 3.hhRiskCatExp#4.eth5, eform
+		lincom 3.hhRiskCatExp + 3.hhRiskCatExp#5.eth5, eform
+		
+		lincom 4.hhRiskCatExp + 4.hhRiskCatExp#1.eth5, eform
+		lincom 4.hhRiskCatExp + 4.hhRiskCatExp#2.eth5, eform 
+		lincom 4.hhRiskCatExp + 4.hhRiskCatExp#3.eth5, eform
+		lincom 4.hhRiskCatExp + 4.hhRiskCatExp#4.eth5, eform
+		lincom 4.hhRiskCatExp + 4.hhRiskCatExp#5.eth5, eform		
+		
+		lincom 5.hhRiskCatExp + 5.hhRiskCatExp#1.eth5, eform
+		lincom 5.hhRiskCatExp + 5.hhRiskCatExp#2.eth5, eform 
+		lincom 5.hhRiskCatExp + 5.hhRiskCatExp#3.eth5, eform
+		lincom 5.hhRiskCatExp + 5.hhRiskCatExp#4.eth5, eform
+		lincom 5.hhRiskCatExp + 5.hhRiskCatExp#5.eth5, eform		
+		
+		lincom 6.hhRiskCatExp + 6.hhRiskCatExp#1.eth5, eform
+		lincom 6.hhRiskCatExp + 6.hhRiskCatExp#2.eth5, eform 
+		lincom 6.hhRiskCatExp + 6.hhRiskCatExp#3.eth5, eform
+		lincom 6.hhRiskCatExp + 6.hhRiskCatExp#4.eth5, eform
+		lincom 6.hhRiskCatExp + 6.hhRiskCatExp#5.eth5, eform
+		
+		lincom 7.hhRiskCatExp + 7.hhRiskCatExp#1.eth5, eform
+		lincom 7.hhRiskCatExp + 7.hhRiskCatExp#2.eth5, eform 
+		lincom 7.hhRiskCatExp + 7.hhRiskCatExp#3.eth5, eform
+		lincom 7.hhRiskCatExp + 7.hhRiskCatExp#4.eth5, eform
+		lincom 7.hhRiskCatExp + 7.hhRiskCatExp#5.eth5, eform
+		
+		lincom 8.hhRiskCatExp + 8.hhRiskCatExp#1.eth5, eform
+		lincom 8.hhRiskCatExp + 8.hhRiskCatExp#2.eth5, eform 
+		lincom 8.hhRiskCatExp + 8.hhRiskCatExp#3.eth5, eform
+		lincom 8.hhRiskCatExp + 8.hhRiskCatExp#4.eth5, eform
+		lincom 8.hhRiskCatExp + 8.hhRiskCatExp#5.eth5, eform
 
+*limited version so I can check code
+stcox i.smoke_nomiss##i.male, strata(utla_group) vce(cluster hh_id) base
 
+lincom 3.smoke_nomiss + 3.smoke_nomiss#1.male, eform
 
+lincom 2.hhRiskCatExp + 5*2.hhRiskCatExp#eth5, eform
 
+lincom 2.hhRiskCatExp, eform
+lincom 3.hhRiskCatExp, eform
+lincom 4.hhRiskCatExp, eform 
+lincom 5.hhRiskCatExp, eform
+lincom 6.hhRiskCatExp, eform
+lincom 7.hhRiskCatExp, eform
 
+lincom 2.`exposure_type' + 1.`int_type'#2.`exposure_type', eform
 
 
 *Harriet code
