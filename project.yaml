@@ -95,7 +95,6 @@ actions:
       moderately_sensitive:
         log: logs/05_hhClassif_an_multivariable_analysis_MAIN.log
         data: output/an_multivariable_cox_models_*_AGESEX_ageband_*MAIN.ster
-        data2: output/an_multivariable_cox_models_*_AGESEX_ageband_*MAIN_eth5Interaction.ster
 
   05_hhClassif_an_multivariable_analysis_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -104,8 +103,36 @@ actions:
       moderately_sensitive:
         log: logs/05_hhClassif_an_multivariable_analysis_W2.log
         data: output/an_multivariable_cox_models_*_AGESEX_ageband_*W2.ster
-        data2: output/an_multivariable_cox_models_*_AGESEX_ageband_*W2_eth5Interaction.ster
 
+  06_hhClassif_an_multivariable_analysis_eth5interaction:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5interaction.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/06_hhClassif_an_eth5interaction_analysis_MAIN.log
+        data: output/an_multivariable_cox_models_*_AGESEX_ageband_*MAIN_eth5Interaction.ster
+
+  06_hhClassif_an_multivariable_analysis_eth5interaction_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5interaction.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/06_hhClassif_an_eth5interaction_analysis_W2.log
+        data: output/an_multivariable_cox_models_*_AGESEX_ageband_*W2_eth5Interaction.ster
+
+  07_hhClassif_an_multivariable_analysis_perEth5Group:
+  needs: [01_hhClassif_cr_analysis_dataset]
+  run: stata-mp:latest analysis/07_hhClassif_an_multivariable_analysis_perEth5Group.do MAIN
+  outputs:
+    moderately_sensitive:
+      log: logs/07_hhClassif_an_multivariable_analysis_perEth5Group_MAIN.log
+
+  07_hhClassif_an_multivariable_analysis_perEth5Group_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/07_hhClassif_an_multivariable_analysis_perEth5Group.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/07_hhClassif_an_multivariable_analysis_perEth5Group_W2.log
     
  
 
