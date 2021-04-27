@@ -1,11 +1,11 @@
 ********************************************************************************
 *
-*	Do-file:		05_hhClassif_an_univariable_analysis.do
+*	Do-file:		07_hhClassif_an_multivariable_analysis_perEth5Group.do
 *	Project:		hh risk classification
 *	Programmed by:	K Wing, based on files from Hforbes, Fizz & Krishnan
 *	Data used:		analysis_dataset.dta
 *	Data created:	None
-*	Other output:	Log file: 04_hhClassif_an_multivariable_analysis_`dataset'.log 
+*	Other output:	Log file: 07_hhClassif_an_multivariable_analysis_.log 
 *
 ********************************************************************************
 *
@@ -38,25 +38,28 @@ local dataset `2'
 
 * Open a log file
 capture log close
-log using ./logs/05_hhClassif_an_multivariable_analysis_`dataset', replace t
+log using ./logs/07_hhClassif_an_multivariable_analysis_perEth5Group_`dataset', replace t
+
+* Open dataset for each ethnicity and fit specified model(s)
+*Multivariable adjusted for ses
+*loop by each ethnicity
 
 
-* Open dataset and fit specified model(s)
-*(a) Multivariable not stratified by anything, not adjusted for ses or ethnicity
 foreach outcome in covidDeath covidHosp nonCovidDeath {
-*2 and 3 here are the two age categories I've created so far, need to change these when there are more
+	*2 and 3 here are the two age categories I've created so far, need to change these when there are more
 	forvalues x=2/3 {
-
-	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
-
-		*Fit and save model
-		cap erase ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster
-		display "***********Outcome: `outcome', ageband: `x', dataset: `dataset'*************************"
-		stcox i.hhRiskCatExp $demogadjlist $comorbidadjlist, strata(utla_group) vce(cluster hh_id)
-		/*if _rc==0 {
-			estimates
-			estimates save ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster, replace
-			}
-		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"*/
+		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
+		sum eth5
+		local maxEth5Cat=r(max)
+		forvalues ethCat=1/`maxEth5Cat' {
+			display "ethCat: `ethCat'"
+			capture noisily use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
+			*Fit and save model
+			display "***********Outcome: `outcome', ageband: `x', ethnicity: `ethCat' dataset: `dataset'*************************"
+			capture noisily stcox i.hhRiskCatExp $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
+		}
 	}
 }
+
+* Close log file
+log close
