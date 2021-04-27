@@ -1409,6 +1409,8 @@ save ./output/hhClassif_analysis_dataset`dataset'.dta, replace
 *Eventually will split these up further
 
 
+
+
 *Age category 2: 30-66
 use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
 tab ageCatHHRisk
@@ -1419,6 +1421,8 @@ keep if ageCatHHRisk==2
 tab hhRiskCat
 rename hhRiskCat33TO66 hhRiskCatExp
 tab hhRiskCatExp, miss
+tab eth5, miss
+tab eth5, nolabel miss
 *save for all ethnicities
 preserve
 	mkspline age = age, cubic nknots(4)
@@ -1428,10 +1432,11 @@ restore
 sum eth5
 local maxEth5Cat=r(max)
 forvalues ethCat=1/`maxEth5Cat' {
+	display "ethCat: `ethCat'"
 	preserve
-		keep if `ethCat'=1
-		mkspline age = age, cubic nknots(4)
-		save ./output/hhClassif_analysis_dataset_ageband_2_ethnicity_`ethCat'`dataset'.dta, replace
+		capture noisily keep if eth5==`ethCat'
+		capture noisily mkspline age = age, cubic nknots(4)
+		capture noisily save ./output/hhClassif_analysis_dataset_ageband_2_ethnicity_`ethCat'`dataset'.dta, replace
 	restore
 }
 
@@ -1455,10 +1460,11 @@ restore
 sum eth5
 local maxEth5Cat=r(max)
 forvalues ethCat=1/`maxEth5Cat' {
+	display "ethCat: `ethCat'"
 	preserve
-		keep if `ethCat'=1
-		mkspline age = age, cubic nknots(4)
-		save ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
+		capture noisily keep if eth5==`ethCat'
+		capture noisily mkspline age = age, cubic nknots(4)
+		capture noisily save ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
 	restore
 }
 
@@ -1466,52 +1472,47 @@ forvalues ethCat=1/`maxEth5Cat' {
 
 *now stset for each agegroup overall and for each ethnicity separately for each of the three outcomes
 forvalues x=2/3 {
-	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
 	*(1)**nonCovidDeath**
 	*overall
-	preserve
-		stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'`dataset'.dta, replace
-	restore
+	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
+	stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'`dataset'.dta, replace
 	*for each ethnicity
 	sum eth5
 	local maxEth5Cat=r(max)
 	forvalues ethCat=1/`maxEth5Cat' {
-		preserve
-			stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-			save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
-		restore
+		display "ethCat: `ethCat'"
+		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
+		capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
 	}
 		
-
 	*(2)**covidHospCase**
 	* overall
-	preserve
-		stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
-		save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'`dataset'.dta, replace
-	restore
+	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
+	stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
+	save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'`dataset'.dta, replace
 	*for each ethnicity
 	sum eth5
 	local maxEth5Cat=r(max)
 	forvalues ethCat=1/`maxEth5Cat' {
-		preserve
-			stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
-			save ./output/hhClassif_analysis_dataset_STSET_covidHospCase_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
-		restore
+		display "ethCat: `ethCat'"
+		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
+		capture noisily stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospCase_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
 	}
 
 	*(3)**covidDeath**
 	*overall
-	preserve
-		stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'`dataset'.dta, replace
-	restore
+	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
+	stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'`dataset'.dta, replace
 	*for each ethnicity
 	forvalues ethCat=1/`maxEth5Cat' {
-		preserve
-			stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-			save ./output/hhClassif_analysis_dataset_STSET_covidDeathCase_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
-		restore
+		display "ethCat: `ethCat'"
+		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
+		capture noisily stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeathCase_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
 	}
 }
 

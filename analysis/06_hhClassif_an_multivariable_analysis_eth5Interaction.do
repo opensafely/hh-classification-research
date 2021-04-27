@@ -38,7 +38,7 @@ local dataset `2'
 
 * Open a log file
 capture log close
-log using ./logs/06_hhClassif_an_eth5interaction_analysis_`dataset', replace t
+log using ./logs/06_hhClassif_an_eth5Interaction_analysis_`dataset', replace t
 
 
 *(b) Multivariable, stratified by ethnicity and including adjustment for SES
@@ -68,11 +68,11 @@ foreach outcome in covidDeath covidHosp nonCovidDeath {
 				capture noisily lincom `riskCat'.hhRiskCatExp + `riskCat'.hhRiskCatExp#`ethCat'.eth5, eform
 			}
 		}
-		if _rc==0 {
+		/*if _rc==0 {
 			estimates
 			estimates save ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'_eth5Interaction.ster, replace
 			}
-		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"
+		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"*/
 
 	}
 }

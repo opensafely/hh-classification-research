@@ -53,7 +53,7 @@ foreach outcome in covidDeath covidHosp nonCovidDeath {
 		cap erase ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster
 		display "***********Outcome: `outcome', ageband: `x', dataset: `dataset'*************************"
 		stcox i.hhRiskCatExp $demogadjlist $comorbidadjlist, strata(utla_group) vce(cluster hh_id)
-		if _rc==0 {
+		/*if _rc==0 {
 			estimates
 			estimates save ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster, replace
 			}

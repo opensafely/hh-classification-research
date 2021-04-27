@@ -78,7 +78,6 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/04_hhClassif_an_univariable_analysis_MAIN.log
-        data: output/an_univariable_cox_models_*_AGESEX_ageband_*MAIN.ster
 
   04_hhClassif_an_univariable_analysis_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -86,7 +85,6 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/04_hhClassif_an_univariable_analysis_W2.log
-        data: output/an_univariable_cox_models_*_AGESEX_ageband_*W2.ster
 
   05_hhClassif_an_multivariable_analysis:
     needs: [01_hhClassif_cr_analysis_dataset]
@@ -94,7 +92,6 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/05_hhClassif_an_multivariable_analysis_MAIN.log
-        data: output/an_multivariable_cox_models_*_AGESEX_ageband_*MAIN.ster
 
   05_hhClassif_an_multivariable_analysis_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -102,30 +99,27 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/05_hhClassif_an_multivariable_analysis_W2.log
-        data: output/an_multivariable_cox_models_*_AGESEX_ageband_*W2.ster
 
-  06_hhClassif_an_multivariable_analysis_eth5interaction:
+  06_hhClassif_an_multivariable_analysis_eth5Interaction:
     needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5interaction.do MAIN
+    run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5Interaction.do MAIN
     outputs:
       moderately_sensitive:
-        log: logs/06_hhClassif_an_eth5interaction_analysis_MAIN.log
-        data: output/an_multivariable_cox_models_*_AGESEX_ageband_*MAIN_eth5Interaction.ster
+        log: logs/06_hhClassif_an_eth5Interaction_analysis_MAIN.log
 
-  06_hhClassif_an_multivariable_analysis_eth5interaction_W2:
+  06_hhClassif_an_multivariable_analysis_eth5Interaction_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
-    run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5interaction.do W2
+    run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5Interaction.do W2
     outputs:
       moderately_sensitive:
-        log: logs/06_hhClassif_an_eth5interaction_analysis_W2.log
-        data: output/an_multivariable_cox_models_*_AGESEX_ageband_*W2_eth5Interaction.ster
+        log: logs/06_hhClassif_an_eth5Interaction_analysis_W2.log
 
   07_hhClassif_an_multivariable_analysis_perEth5Group:
-  needs: [01_hhClassif_cr_analysis_dataset]
-  run: stata-mp:latest analysis/07_hhClassif_an_multivariable_analysis_perEth5Group.do MAIN
-  outputs:
-    moderately_sensitive:
-      log: logs/07_hhClassif_an_multivariable_analysis_perEth5Group_MAIN.log
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/07_hhClassif_an_multivariable_analysis_perEth5Group.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/07_hhClassif_an_multivariable_analysis_perEth5Group_MAIN.log
 
   07_hhClassif_an_multivariable_analysis_perEth5Group_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -133,6 +127,8 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/07_hhClassif_an_multivariable_analysis_perEth5Group_W2.log
+
+
     
  
 
