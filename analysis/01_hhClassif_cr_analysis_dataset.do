@@ -1499,7 +1499,7 @@ forvalues x=2/3 {
 		display "ethCat: `ethCat'"
 		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
 		capture noisily stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospCase_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
 	}
 
 	*(3)**covidDeath**
@@ -1512,7 +1512,7 @@ forvalues x=2/3 {
 		display "ethCat: `ethCat'"
 		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
 		capture noisily stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeathCase_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
 	}
 }
 
