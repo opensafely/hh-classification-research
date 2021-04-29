@@ -912,8 +912,16 @@ generate covidHospCase=0
 replace covidHospCase=1 if covidHospCaseDate!=.
 la var covidHospCase "Case based on hospitalisation with COVID"
 
+*3. COVID hospitalisation or death outcome
+generate covidHospOrDeathCase=0
+replace covidHospOrDeathCase=1 if covidHospCase==1|covidDeathCase==1
+generate covidHospOrDeathCaseDate=.
+replace covidHospOrDeathCaseDate=min(covidHospCaseDate, covidDeathCaseDate) if covidHospOrDeathCase==1
+la var covidHospOrDeathCaseDate "Date of case based on earliest of COVID hosp or COVID death date"
+format covidHospOrDeathCaseDate %td
+la var covidHospOrDeathCase "Case based on either hospitalisation with or death from COVID"
 
-*3. Non-COVID death outcome
+*4. Non-COVID death outcome
 gen nonCOVIDDeathCaseDate = died_date_ons if died_ons_covid_flag_any != 1 
 la var nonCOVIDDeathCaseDate "Date of non-COVID death"
 format nonCOVIDDeathCaseDate %td
@@ -922,11 +930,9 @@ replace nonCOVIDDeathCase=1 if nonCOVIDDeathCaseDate!=.
 la var nonCOVIDDeathCase "Died from non-COVID causes"
 tab nonCOVIDDeathCase
 
-*3. Fracture - to do
-
 
 *create a list of the outcomes for reuse
-global outcomes covidDeathCase covidHospCase nonCOVIDDeathCase
+global outcomes covidDeathCase covidHospCase covidHospOrDeathCase nonCOVIDDeathCase
 
 /*
 *create a total number of cases in the household variable
@@ -1288,7 +1294,9 @@ foreach var of local vars {
 
 
 drop if covidDeathCaseDate <= enter_date
+drop if covidHospCaseDate <= enter_date
 drop if nonCOVIDDeathCaseDate <= enter_date
+
 
 
 *drop cases that are dates prior to indexdate
@@ -1513,6 +1521,19 @@ forvalues x=2/3 {
 		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
 		capture noisily stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
+	}
+	
+	*(4)**covidHospOrDeathCase**
+	*overall
+	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
+	stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_`x'`dataset'.dta, replace
+	*for each ethnicity
+	forvalues ethCat=1/`maxEth5Cat' {
+		display "ethCat: `ethCat'"
+		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
+		capture noisily stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
 	}
 }
 

@@ -43,20 +43,20 @@ log using ./logs/05_hhClassif_an_multivariable_analysis_`dataset', replace t
 
 * Open dataset and fit specified model(s)
 *(a) Multivariable not stratified by anything, not adjusted for ses or ethnicity
-foreach outcome in covidDeath covidHosp nonCovidDeath {
+foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 *2 and 3 here are the two age categories I've created so far, need to change these when there are more
 	forvalues x=2/3 {
 
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
 
 		*Fit and save model
-		cap erase ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster
+		cap erase ./output/hhClassif_multivariableAllEthnicities_`outcome'_ageband_`x'`dataset'.ster
 		display "***********Outcome: `outcome', ageband: `x', dataset: `dataset'*************************"
 		stcox i.hhRiskCatExp $demogadjlist $comorbidadjlist, strata(utla_group) vce(cluster hh_id)
-		/*if _rc==0 {
+		if _rc==0 {
 			estimates
-			estimates save ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'.ster, replace
+			estimates save ./output/hhClassif_multivariableAllEthnicities_`outcome'_ageband_`x'`dataset'.ster, replace
 			}
-		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"*/
+		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"
 	}
 }
