@@ -78,6 +78,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/04_hhClassif_an_univariable_analysis_MAIN.log
+        data: output/hhClassif_univariableAnalysis_*_ageband_*MAIN.ster
 
   04_hhClassif_an_univariable_analysis_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -85,6 +86,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/04_hhClassif_an_univariable_analysis_W2.log
+        data: output/hhClassif_univariableAnalysis_*_ageband_*W2.ster
 
   05_hhClassif_an_multivariable_analysis:
     needs: [01_hhClassif_cr_analysis_dataset]
@@ -92,6 +94,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/05_hhClassif_an_multivariable_analysis_MAIN.log
+        data: output/hhClassif_multivariableAllEthnicities_*_ageband_*MAIN.ster
 
   05_hhClassif_an_multivariable_analysis_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -99,6 +102,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/05_hhClassif_an_multivariable_analysis_W2.log
+        data: output/hhClassif_multivariableAllEthnicities_*_ageband_*W2.ster
 
   06_hhClassif_an_multivariable_analysis_eth5Interaction:
     needs: [01_hhClassif_cr_analysis_dataset]
@@ -106,6 +110,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/06_hhClassif_an_eth5Interaction_analysis_MAIN.log
+        data: output/hhClassif_multvariableAnalysisEth5Interaction_*_ageband_*MAIN.ster
 
   06_hhClassif_an_multivariable_analysis_eth5Interaction_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -113,6 +118,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/06_hhClassif_an_eth5Interaction_analysis_W2.log
+        data: output/hhClassif_multvariableAnalysisEth5Interaction_*_ageband_*W2.ster
 
   07_hhClassif_an_multivariable_analysis_perEth5Group:
     needs: [01_hhClassif_cr_analysis_dataset]
@@ -120,6 +126,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/07_hhClassif_an_multivariable_analysis_perEth5Group_MAIN.log
+        data: output/hhClassif_multvariableAnalysisPerEth5_*_ageband_*_ethnicity_*MAIN.ster
 
   07_hhClassif_an_multivariable_analysis_perEth5Group_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -127,6 +134,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/07_hhClassif_an_multivariable_analysis_perEth5Group_W2.log
+        data: output/hhClassif_multvariableAnalysisPerEth5_*_ageband_*_ethnicity_*W2.ster
 
 
     

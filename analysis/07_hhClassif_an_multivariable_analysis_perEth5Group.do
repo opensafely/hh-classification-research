@@ -45,18 +45,25 @@ log using ./logs/07_hhClassif_an_multivariable_analysis_perEth5Group_`dataset', 
 *loop by each ethnicity
 
 
-foreach outcome in covidDeath covidHosp nonCovidDeath {
+foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 	*2 and 3 here are the two age categories I've created so far, need to change these when there are more
 	forvalues x=2/3 {
 		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
+		
 		sum eth5
 		local maxEth5Cat=r(max)
 		forvalues ethCat=1/`maxEth5Cat' {
 			display "ethCat: `ethCat'"
 			capture noisily use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
+			cap erase ./output/hhClassif_multvariableAnalysisPerEth5_`outcome'_ageband_`x'_ethnicity_`ethCat'`dataset'.ster
 			*Fit and save model
 			display "***********Outcome: `outcome', ageband: `x', ethnicity: `ethCat' dataset: `dataset'*************************"
 			capture noisily stcox i.hhRiskCatExp $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
+			if _rc==0 {
+				estimates
+				estimates save ./output/hhClassif_multvariableAnalysisPerEth5_`outcome'_ageband_`x'_ethnicity_`ethCat'`dataset', replace
+			}
+			else di "WARNING - Outcome: `outcome', ageband: `x', ethnicity: `ethCat' dataset: `dataset' MODEL DID NOT SUCCESSFULLY FIT"
 		}
 	}
 }

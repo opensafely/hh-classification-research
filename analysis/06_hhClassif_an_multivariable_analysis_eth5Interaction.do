@@ -42,14 +42,14 @@ log using ./logs/06_hhClassif_an_eth5Interaction_analysis_`dataset', replace t
 
 
 *(b) Multivariable, stratified by ethnicity and including adjustment for SES
-foreach outcome in covidDeath covidHosp nonCovidDeath {
+foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 *2 and 3 here are the two age categories I've created so far, need to change these when there are more
 	forvalues x=2/3 {
 
 		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
 
 		*Fit and save model
-		cap erase ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'_eth5Interaction.ster
+		cap erase ./output/hhClassif_multvariableAnalysisEth5Interaction_`outcome'_ageband_`x'`dataset'.ster
 		display "***********Outcome: `outcome', ageband: `x', dataset: `dataset' - stratified by ethnicity and adjusted for imd*************************"
 		stcox i.hhRiskCatExp##i.eth5 $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
 		
@@ -68,9 +68,9 @@ foreach outcome in covidDeath covidHosp nonCovidDeath {
 				capture noisily lincom `riskCat'.hhRiskCatExp + `riskCat'.hhRiskCatExp#`ethCat'.eth5, eform
 			}
 		}
-		/*if _rc==0 {
+		if _rc==0 {
 			estimates
-			estimates save ./output/an_multivariable_cox_models_`outcome'_AGESEX_ageband_`x'`dataset'_eth5Interaction.ster, replace
+			estimates save ./output/hhClassif_multvariableAnalysisEth5Interaction_`outcome'_ageband_`x'`dataset'.ster, replace
 			}
 		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"*/
 
