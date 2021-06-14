@@ -33,7 +33,7 @@ capture log close
 log using ./logs/04_hhClassif_an_univariable_analysis_`dataset', replace t
 
 * Open dataset and fit specified model(s)
-foreach outcome in covidDeath covidHosp nonCovidDeath {
+foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 *2 and 3 here are the two age categories I've created so far, need to change these when there are more
 	forvalues x=2/3 {
 
