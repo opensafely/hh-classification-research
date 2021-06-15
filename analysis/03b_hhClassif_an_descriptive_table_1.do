@@ -45,10 +45,10 @@ local dataset `1'
 * Open a log file
 
 capture log close
-log using ./released_outputs/03b_hhClassif_an_descriptive_table_1_`dataset'.log, replace t
+log using ./logs/03b_hhClassif_an_descriptive_table_1_`dataset'.log, replace t
 
 * Open Stata dataset
-use ./output/hhClassif_analysis_dataset_`dataset'.dta, clear
+use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
 
 
 
@@ -219,7 +219,7 @@ end
 
 *Set up output file
 cap file close tablecontent
-file open tablecontent using ./output/table1_hhClassif.txt, write text replace
+file open tablecontent using ./output/table1_hhClassif`dataset'.txt, write text replace
 
 file write tablecontent ("Table 1: Demographic and Clinical Characteristics") _n
 
@@ -277,7 +277,7 @@ file write tablecontent _n
 qui summarizevariable, variable(age) 
 file write tablecontent _n
 
-tabulatevariable, variable(agegroup) min(1) max(7) 
+tabulatevariable, variable(ageCatHHRisk) min(0) max(3) 
 file write tablecontent _n 
 
 *ETHNICITY
@@ -324,10 +324,10 @@ file close tablecontent
 log close
 
 clear
-insheet using ./output/table1_hhClassif_`dataset'.txt, clear
+insheet using ./output/table1_hhClassif`dataset'.txt, clear
 
 
-export excel using ./output/table1_hhClassif_`dataset'.xlsx, replace
+export excel using ./output/table1_hhClassif`dataset'.xlsx, replace
 
 
 
