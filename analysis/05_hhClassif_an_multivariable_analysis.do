@@ -12,7 +12,8 @@
 
 *  
 ********************************************************************************
-
+sysdir set PLUS ./analysis/adofiles
+sysdir set PERSONAL ./analysis/adofiles
 
 * Set globals that will print in programs and direct output
 *global outdir  	  "output" 

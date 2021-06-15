@@ -286,6 +286,9 @@ safetab hh_total_cat care_home_type,m
 
 safetab hh_size hh_total_cat,m
 
+*save a file here for looking at the distribution of household sizes AFTER carehomes have been dropped
+save ./output/allHH_beforeDropping_largerThan10_`dataset'.dta, replace
+
 *drop households we don't need i.e. 1 or smaller or larger than 10
 *note originally dropped at 2, but after discussion with Daniel and Roz decided to keep size 1 hh in
 drop if hh_size>10

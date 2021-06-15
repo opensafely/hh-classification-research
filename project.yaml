@@ -21,6 +21,7 @@ actions:
     needs: [generate_cohort]
     outputs:
       highly_sensitive:
+        allHHSizes: output/allHH_beforeDropping_largerThan10_MAIN.dta
         allvars: output/hhClassif_analysis_datasetMAIN.dta
         allvarsEthMiss: output/hhClassif_analysis_dataset_with_missing_ethnicityMAIN.dta
         allVarsAgeSpline: output/hhClassif_analysis_dataset_ageband_*MAIN.dta 
@@ -33,6 +34,7 @@ actions:
     needs: [W2_generate_cohort]
     outputs:
       highly_sensitive:
+        allHHSizes: output/allHH_beforeDropping_largerThan10_W2.dta
         allvars: output/hhClassif_analysis_datasetW2.dta
         allvarsEthMiss: output/hhClassif_analysis_dataset_with_missing_ethnicityW2.dta
         allVarsAgeSpline: output/hhClassif_analysis_dataset_ageband_*W2.dta 
@@ -54,23 +56,47 @@ actions:
       moderately_sensitive:
         log: logs/02_hhClassif_an_data_checks_W2.log
 
-  03_hhClassif_an_descriptive_table_1:
-    run: stata-mp:latest analysis/03_hhClassif_an_descriptive_table_1.do MAIN
+  03a_hh_an_hist_descriptive_plots.do:
+    run: stata-mp:latest analysis/03a_hh_an_hist_descriptive_plots.do MAIN
     needs: [01_hhClassif_cr_analysis_dataset]
     outputs:
       moderately_sensitive:
-        log: logs/03_hhClassif_an_descriptive_table_1.log
-        tableTxt: output/table1_hhClassif.txt
-        tableExcel: output/table1_hhClassif.xlsx
+        log: logs/03a_hh_an_hist_descriptive_plots.do.log
+        gph1: overallHHSizeDist.gph 
+        gph2: whiteHHSizeDist.gph 
+        gph3: southAsianHHSizeDist.gph
+        gph4: blackHHSizeDist.gph
+        gph5: HHdistHists.pdf
 
-  03_hhClassif_an_descriptive_table_1_W2:
-    run: stata-mp:latest analysis/03_hhClassif_an_descriptive_table_1.do W2
+  03a_hh_an_hist_descriptive_plots.do_W2:
+    run: stata-mp:latest analysis/03a_hh_an_hist_descriptive_plots.do W2
     needs: [01_hhClassif_cr_analysis_dataset_W2]
     outputs:
       moderately_sensitive:
-        log: logs/03_hhClassif_an_descriptive_table_1_W2.log
-        tableTxt: output/table1_hhClassif_W2.txt
-        tableExcel: output/table1_hhClassif_W2.xlsx
+        log: logs/03a_hh_an_hist_descriptive_plots_W2.log
+        gph1: overallHHSizeDist_W2.gph 
+        gph2: whiteHHSizeDist_W2.gph 
+        gph3: southAsianHHSizeDist_W2.gph
+        gph4: blackHHSizeDist_W2.gph
+        gph5: HHdistHists_W2.pdf
+
+  03b_hhClassif_an_descriptive_table_1:
+    run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do MAIN
+    needs: [01_hhClassif_cr_analysis_dataset]
+    outputs:
+      moderately_sensitive:
+        log: logs/03b_hhClassif_an_descriptive_table_1_MAIN.log
+        tableTxt: output/table1_hhClassifMAIN.txt
+        tableExcel: output/table1_hhClassifMAIN.xlsx
+
+  03b_hhClassif_an_descriptive_table_1_W2:
+    run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do W2
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    outputs:
+      moderately_sensitive:
+        log: logs/03b_hhClassif_an_descriptive_table_1_W2.log
+        tableTxt: output/table1_hhClassifW2.txt
+        tableExcel: output/table1_hhClassifW2.xlsx
 
   04_hhClassif_an_univariable_analysis:
     needs: [01_hhClassif_cr_analysis_dataset]
