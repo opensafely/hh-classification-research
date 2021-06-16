@@ -61,12 +61,12 @@ actions:
     needs: [01_hhClassif_cr_analysis_dataset]
     outputs:
       moderately_sensitive:
-        log: logs/03a_hh_an_hist_descriptive_plots.do.log
-        gph1: overallHHSizeDist.gph 
-        gph2: whiteHHSizeDist.gph 
-        gph3: southAsianHHSizeDist.gph
-        gph4: blackHHSizeDist.gph
-        gph5: HHdistHists.pdf
+        log: logs/03a_hh_an_hist_descriptive_plots_MAIN.log
+        gph1: output/overallHHSizeDist_MAIN.gph 
+        gph2: output/whiteHHSizeDist_MAIN.gph 
+        gph3: output/southAsianHHSizeDist_MAIN.gph
+        gph4: output/blackHHSizeDist_MAIN.gph
+        gph5: output/HHdistHists_MAIN.pdf
 
   03a_hh_an_hist_descriptive_plots.do_W2:
     run: stata-mp:latest analysis/03a_hh_an_hist_descriptive_plots.do W2
@@ -74,11 +74,11 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/03a_hh_an_hist_descriptive_plots_W2.log
-        gph1: overallHHSizeDist_W2.gph 
-        gph2: whiteHHSizeDist_W2.gph 
-        gph3: southAsianHHSizeDist_W2.gph
-        gph4: blackHHSizeDist_W2.gph
-        gph5: HHdistHists_W2.pdf
+        gph1: output/overallHHSizeDist_W2.gph 
+        gph2: output/whiteHHSizeDist_W2.gph 
+        gph3: output/southAsianHHSizeDist_W2.gph
+        gph4: output/blackHHSizeDist_W2.gph
+        gph5: output/HHdistHists_W2.pdf
 
   03b_hhClassif_an_descriptive_table_1:
     run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do MAIN
