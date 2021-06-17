@@ -82,9 +82,9 @@ graph save ./output/southAsianHHSizeDist_`dataset'.gph, replace
 *3 - black
 sum hh_size if eth5==3, detail 
 hist hh_size if eth5==3, freq ylabel (#3, format(%5.0f)) xlabel(minmax) discrete title(Black ethnicity, size (medium)) 
-graph save ./output/BlackHHSizeDist_`dataset'.gph, replace
+graph save ./output/blackHHSizeDist_`dataset'.gph, replace
 
-gr combine ./output/overallHHSizeDist_`dataset'.gph ./output/whiteHHSizeDist_`dataset'.gph ./output/southAsianHHSizeDist_`dataset'.gph ./output/BlackHHSizeDist_`dataset'.gph, title (Household size distribution)
+gr combine ./output/overallHHSizeDist_`dataset'.gph ./output/whiteHHSizeDist_`dataset'.gph ./output/southAsianHHSizeDist_`dataset'.gph ./output/blackHHSizeDist_`dataset'.gph, title (Household size distribution)
 gr export ./output/HHdistHists_`dataset'.pdf, replace
 
 log close
