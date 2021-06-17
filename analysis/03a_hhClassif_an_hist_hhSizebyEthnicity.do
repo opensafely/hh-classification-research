@@ -75,7 +75,7 @@ set scheme economist
 *overall distribution of hh_sizes
 la var hh_size "Household size"
 sum hh_size, detail
-hist hh_size, freq xtitle("Household size", size(small)) xlabel(0(5)20, labsize(small) noticks) ytitle("Number of houses", size(small)) ylabel (#3, format(%5.0f) labsize(small))  discrete title(All ethnicities, size (medium))
+hist hh_size, freq xtitle("Household size", size(small)) xlabel(0(5)20, labsize(small) noticks) ytitle("n (houses)", size(small)) ylabel (#3, format(%5.0f) labsize(small))  discrete title(All ethnicities, size (medium))
 graph save ./output/overallHHSizeDist_`dataset'.gph, replace
 
 program histByEth
@@ -88,7 +88,7 @@ program histByEth
 	else if `1'==3  { 
 		local ethnicity="Black"
 	}
-	hist hh_size if eth5==`1', freq xtitle("Household size", size(small)) xlabel(0(5)20, labsize(small) noticks) ytitle("Number of houses", size(small)) ylabel (#3, format(%5.0f) labsize(small))  discrete title(`ethnicity' ethnicity, size (medium)) 
+	hist hh_size if eth5==`1', freq xtitle("Household size", size(small)) xlabel(0(5)20, labsize(small) noticks) ytitle("n (houses)", size(small)) ylabel (#3, format(%5.0f) labsize(small))  discrete title(`ethnicity' ethnicity, size (medium)) 
 end
 
 *plot of distrubtion of hh_sizes by ethnicity
