@@ -43,6 +43,9 @@ log using ./logs/03a_hh_an_hist_descriptive_plots_`dataset'.log, replace t
 
 
 use ./output/allHH_beforeDropping_largerThan10_`dataset'.dta, clear
+*there are ridiculous numbers in the data (i.e. household sizes up to 2589) so restrict to those less than 20
+drop if hh_size<1
+drop if hh_size>20
 
 **bughunting**
 /*
@@ -62,26 +65,27 @@ gr export ./output/HHdistHists_MAIN.pdf, replace
 
 *set colour schemes
 graph query, schemes
+set scheme economist
 
 
 *overall distribution of hh_sizes
 la var hh_size "Household size"
 sum hh_size, detail
-hist hh_size, freq  ylabel (#3, format(%5.0f)) xlabel(minmax) discrete title(All, size (medium))
+hist hh_size, freq  ylabel (#2, format(%5.0f)) xlabel(minmax) discrete title(All, size (medium))
 graph save ./output/overallHHSizeDist_`dataset'.gph, replace
 
 *plot of distrubtion of hh_sizes by ethnicity
 *1 - white
 sum hh_size if eth5==1, detail 
-hist hh_size if eth5==1, freq ylabel (#3, format(%5.0f)) xlabel(minmax) discrete title(White ethnicity, size (medium))  
+hist hh_size if eth5==1, freq ylabel (#2, format(%5.0f)) xlabel(minmax) discrete title(White ethnicity, size (medium))  
 graph save ./output/whiteHHSizeDist_`dataset'.gph, replace
 *2 - south asian
 sum hh_size if eth5==2, detail 
-hist hh_size if eth5==2, freq ylabel (#3, format(%5.0f)) xlabel(minmax) discrete title(South Asian ethnicity, size (medium)) 
+hist hh_size if eth5==2, freq ylabel (#2, format(%5.0f)) xlabel(minmax) discrete title(South Asian ethnicity, size (medium)) 
 graph save ./output/southAsianHHSizeDist_`dataset'.gph, replace
 *3 - black
 sum hh_size if eth5==3, detail 
-hist hh_size if eth5==3, freq ylabel (#3, format(%5.0f)) xlabel(minmax) discrete title(Black ethnicity, size (medium)) 
+hist hh_size if eth5==3, freq ylabel (#2, format(%5.0f)) xlabel(minmax) discrete title(Black ethnicity, size (medium)) 
 graph save ./output/blackHHSizeDist_`dataset'.gph, replace
 
 gr combine ./output/overallHHSizeDist_`dataset'.gph ./output/whiteHHSizeDist_`dataset'.gph ./output/southAsianHHSizeDist_`dataset'.gph ./output/blackHHSizeDist_`dataset'.gph, title (Household size distribution)
