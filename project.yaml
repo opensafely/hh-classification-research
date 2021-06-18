@@ -22,6 +22,7 @@ actions:
     outputs:
       highly_sensitive:
         allHHSizes: output/allHH_beforeDropping_largerThan10_MAIN.dta
+        allHHSizes1_20: output/allHH_sizedBetween1And20_MAIN.dta
         allvars: output/hhClassif_analysis_datasetMAIN.dta
         allvarsEthMiss: output/hhClassif_analysis_dataset_with_missing_ethnicityMAIN.dta
         allVarsAgeSpline: output/hhClassif_analysis_dataset_ageband_*MAIN.dta 
@@ -35,6 +36,7 @@ actions:
     outputs:
       highly_sensitive:
         allHHSizes: output/allHH_beforeDropping_largerThan10_W2.dta
+        allHHSizes1_20: output/allHH_sizedBetween1And20_W2.dta
         allvars: output/hhClassif_analysis_datasetW2.dta
         allvarsEthMiss: output/hhClassif_analysis_dataset_with_missing_ethnicityW2.dta
         allVarsAgeSpline: output/hhClassif_analysis_dataset_ageband_*W2.dta 
