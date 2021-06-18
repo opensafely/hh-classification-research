@@ -82,7 +82,19 @@ actions:
         gph4: output/blackHHSizeDist_W2.gph
         gph5: output/HHdistHists_W2.pdf
 
-  03b_hhClassif_an_descriptive_table_1:
+  03b_hhClassif_an_hist_ov65hhSizebyEthnicity:
+    run: stata-mp:latest analysis/03b_hhClassif_an_hist_ov65hhSizebyEthnicity.do MAIN
+    needs: [01_hhClassif_cr_analysis_dataset]
+    outputs:
+      moderately_sensitive:
+        log: logs/03b_hhClassif_an_hist_ov65hhSizebyEthnicity_MAIN.log
+        gph1: output/ov65OverallHHSizeDist_MAIN.gph 
+        gph2: output/ov65WhiteHHSizeDist_MAIN.gph 
+        gph3: output/ov65SouthAsianHHSizeDist_MAIN.gph
+        gph4: output/ov65BlackHHSizeDist_MAIN.gph
+        gph5: output/ov65HHdistHists_MAIN.pdf
+
+  03c_hhClassif_an_descriptive_table_1:
     run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do MAIN
     needs: [01_hhClassif_cr_analysis_dataset]
     outputs:
@@ -91,7 +103,7 @@ actions:
         tableTxt: output/table1_hhClassifMAIN.txt
         tableExcel: output/table1_hhClassifMAIN.xlsx
 
-  03b_hhClassif_an_descriptive_table_1_W2:
+  03c_hhClassif_an_descriptive_table_1_W2:
     run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do W2
     needs: [01_hhClassif_cr_analysis_dataset_W2]
     outputs:
