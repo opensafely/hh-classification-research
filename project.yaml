@@ -70,18 +70,6 @@ actions:
         gph4: output/blackHHSizeDist_MAIN.gph
         gph5: output/HHdistHists_MAIN.pdf
 
-  03a_hhClassif_an_hist_hhSizebyEthnicity_W2:
-    run: stata-mp:latest analysis/03a_hhClassif_an_hist_hhSizebyEthnicity.do W2
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    outputs:
-      moderately_sensitive:
-        log: logs/03a_hhClassif_an_hist_hhSizebyEthnicity_W2.log
-        gph1: output/overallHHSizeDist_W2.gph 
-        gph2: output/whiteHHSizeDist_W2.gph 
-        gph3: output/southAsianHHSizeDist_W2.gph
-        gph4: output/blackHHSizeDist_W2.gph
-        gph5: output/HHdistHists_W2.pdf
-
   03b_hhClassif_an_hist_ov65hhSizebyEthnicity:
     run: stata-mp:latest analysis/03b_hhClassif_an_hist_ov65hhSizebyEthnicity.do MAIN
     needs: [01_hhClassif_cr_analysis_dataset]
@@ -94,21 +82,47 @@ actions:
         gph4: output/ov65BlackHHSizeDist_MAIN.gph
         gph5: output/ov65HHdistHists_MAIN.pdf
 
-  03c_hhClassif_an_descriptive_table_1:
-    run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do MAIN
+  03c_hhClassif_an_hist_ov65hhSizebyEthnicity_woAllSameAge:
+    run: stata-mp:latest analysis/03c_hhClassif_an_hist_ov65hhSizebyEthnicity_woAllSameAge.do MAIN
+    needs: [01_hhClassif_cr_analysis_dataset]
+    outputs:
+      highly_sensitive:
+        over65OnlyHH: output/housesWithOnly65yrOldsInThem_MAIN.dta
+      moderately_sensitive:
+        log: logs/03c_hhClassif_an_hist_ov65hhSizebyEthnicity_woAllSameAge_MAIN.log
+        gph1: output/ov65OverallHHSizeDist_woAllSameAge_MAIN.gph 
+        gph2: output/ov65WhiteHHSizeDist_woAllSameAge_MAIN.gph 
+        gph3: output/ov65SouthAsianHHSizeDist_woAllSameAge_MAIN.gph
+        gph4: output/ov65BlackHHSizeDist_woAllSameAge_MAIN.gph
+        gph5: output/ov65HHdistHists_woAllSameAge_MAIN.pdf
+
+  03d_hhClassif_an_hist_ov65hhSizebyEthnicity_RuralUrban:
+    run: stata-mp:latest analysis/03d_hhClassif_an_hist_ov65hhSizebyEthnicity_RuralUrban.do MAIN
     needs: [01_hhClassif_cr_analysis_dataset]
     outputs:
       moderately_sensitive:
-        log: logs/03b_hhClassif_an_descriptive_table_1_MAIN.log
+        log: logs/03d_hhClassif_an_hist_ov65hhSizebyEthnicity_RuralUrban_MAIN.log
+        gph1: output/ov65OverallHHSizeDist_RuralUrban_MAIN.gph 
+        gph2: output/ov65WhiteHHSizeDist_RuralURban_MAIN.gph 
+        gph3: output/ov65SouthAsianHHSizeDist_RuralURban_MAIN.gph
+        gph4: output/ov65BlackHHSizeDist_RuralUrban_MAIN.gph
+        gph5: output/ov65HHdistHists_RuralUrban_MAIN.pdf
+
+  03e_hhClassif_an_descriptive_table_1:
+    run: stata-mp:latest analysis/03e_hhClassif_an_descriptive_table_1.do MAIN
+    needs: [01_hhClassif_cr_analysis_dataset]
+    outputs:
+      moderately_sensitive:
+        log: logs/03e_hhClassif_an_descriptive_table_1_MAIN.log
         tableTxt: output/table1_hhClassifMAIN.txt
         tableExcel: output/table1_hhClassifMAIN.xlsx
 
-  03c_hhClassif_an_descriptive_table_1_W2:
-    run: stata-mp:latest analysis/03b_hhClassif_an_descriptive_table_1.do W2
+  03d_hhClassif_an_descriptive_table_1_W2:
+    run: stata-mp:latest analysis/03d_hhClassif_an_descriptive_table_1.do W2
     needs: [01_hhClassif_cr_analysis_dataset_W2]
     outputs:
       moderately_sensitive:
-        log: logs/03b_hhClassif_an_descriptive_table_1_W2.log
+        log: logs/03e_hhClassif_an_descriptive_table_1_W2.log
         tableTxt: output/table1_hhClassifW2.txt
         tableExcel: output/table1_hhClassifW2.xlsx
 
