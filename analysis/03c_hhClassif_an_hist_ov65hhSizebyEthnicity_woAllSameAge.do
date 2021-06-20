@@ -1,5 +1,5 @@
 /*==============================================================================
-DO FILE NAME:			03b_hhClassif_an_hist_ov65hhSizebyEthnicity
+DO FILE NAME:			03c_hhClassif_an_hist_ov65hhSizebyEthnicity_woAllSameAge
 PROJECT:				Household classfication
 AUTHOR:					K Wing
 DATE: 					18th June 2021
@@ -39,18 +39,38 @@ local dataset `1'
 
 * Open a log file
 capture log close
-log using ./logs/03b_hhClassif_an_hist_ov65hhSizebyEthnicity_`dataset'.log, replace t
+log using ./logs/03c_hhClassif_an_hist_ov65hhSizebyEthnicity_woAllSameAge_`dataset'.log, replace t
 
 *use dataset setup for descriptive analysis
 use ./output/allHH_sizedBetween1And20_`dataset'.dta
+
+*count the number of houses with two or more people in who are all over the age of 65, by ethnicity
+preserve
+	keep if hh_size>2
+	sort hh_id age
+	generate over_65=0
+	replace over_65=1 if age>64
+	by hh_id: egen over_65Total=total(over_65)
+	duplicates drop hh_id, force
+	keep if hh_size==over_65Total
+	display "**************TOTAL NUMBER OF HOUSEHOLDS WITH MORE THAN TWO PEOPLE IN WHO WERE ALL OVER THE AGE OF 65 (IN NON-CAREHOME HOUSES UP TO SIZE 20)****************"
+	count
+	keep hh_id
+	save ./output/housesWithOnly65yrOldsInThem_`dataset'.dta
+restore
+*remove these people
 
 *select people only 65 years or older
 keep if age>64
 
 *reduce to one record per household id
 duplicates drop hh_id, force
-display "**************TOTAL NUMBER OF HOUSEHOLDS BETWEEN THE SIZE OF 1 AND 20**************"
-count
+
+*remove households that only have 65 year olds include
+merge 1:1 hh_id using ./output/housesWithOnly65yrOldsInThem_`dataset'.dta
+drop if _merge==3
+drop _merge
+
 
 **bughunting**
 /*
@@ -77,7 +97,7 @@ set scheme economist
 la var hh_size "Household size"
 sum hh_size, detail
 hist hh_size, freq xtitle("Household size", size(small)) xlabel(0(5)20, labsize(small) noticks) ytitle("n (houses)", size(small)) ylabel (#3, format(%5.0f) labsize(small))  discrete title(All ethnicities, size (medium))
-graph save ./output/ov65OverallHHSizeDist_`dataset'.gph, replace
+graph save ./output/ov65OverallHHSizeDist_woAllSameAge_`dataset'.gph, replace
 
 program histByEth
 	if `1'==1  { 
@@ -96,24 +116,24 @@ end
 *1 - white
 sum hh_size if eth5==1, detail 
 histByEth 1 
-graph save ./output/ov65WhiteHHSizeDist_`dataset'.gph, replace
+graph save ./output/ov65WhiteHHSizeDist_woAllSameAge_`dataset'.gph, replace
 *2 - south asian
 sum hh_size if eth5==2, detail 
 histByEth 2 
-graph save ./output/ov65SouthAsianHHSizeDist_`dataset'.gph, replace
+graph save ./output/ov65SouthAsianHHSizeDist_woAllSameAge_`dataset'.gph, replace
 *3 - black
 sum hh_size if eth5==3, detail 
 capture noisily histByEth 3 
-capture noisily graph save ./output/ov65BlackHHSizeDist_`dataset'.gph, replace
+capture noisily graph save ./output/ov65BlackHHSizeDist_woAllSameAge_`dataset'.gph, replace
 
 *capture noisily gr combine ./output/overallHHSizeDist_`dataset'.gph ./output/whiteHHSizeDist_`dataset'.gph ./output/southAsianHHSizeDist_`dataset'.gph ./output/blackHHSizeDist_`dataset'.gph, title (Household size distribution, size(medium))
 
 *gr export ./output/HHdistHists_`dataset'.pdf, replace
 
-*BUGHUNTING
-capture noisily gr combine ./output/ov65OverallHHSizeDist_`dataset'.gph ./output/ov65WhiteHHSizeDist_`dataset'.gph ./output/ov65SouthAsianHHSizeDist_`dataset'.gph ./output/ov65BlackHHSizeDist_`dataset'.gph, title(Household size distribution - over 65 year olds, size(medium))
 
-gr export ./output/ov65HHdistHists_`dataset'.pdf, replace
+capture noisily gr combine ./output/ov65OverallHHSizeDist_woAllSameAge_`dataset'.gph ./output/ov65WhiteHHSizeDist_woAllSameAge_`dataset'.gph ./output/ov65SouthAsianHHSizeDist_woAllSameAge_`dataset'.gph ./output/ov65BlackHHSizeDist_woAllSameAge_`dataset'.gph, title(HH size dist - >65 yr olds (excl houses >2 w only >65 yr olds in), size(small))
+
+gr export ./output/ov65HHdistHists_woAllSameAge_`dataset'.pdf, replace
 
 
 
