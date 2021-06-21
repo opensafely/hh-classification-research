@@ -102,11 +102,11 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/03d_hhClassif_an_hist_ov65hhSizebyEthnicity_RuralUrban_MAIN.log
-        gph1: output/ov65OverallHHSizeDist_RuralUrban_MAIN.gph 
-        gph2: output/ov65WhiteHHSizeDist_RuralURban_MAIN.gph 
-        gph3: output/ov65SouthAsianHHSizeDist_RuralURban_MAIN.gph
-        gph4: output/ov65BlackHHSizeDist_RuralUrban_MAIN.gph
-        gph5: output/ov65HHdistHists_RuralUrban_MAIN.pdf
+        gph1: output/ov65OverallHHSizeDist_*_MAIN.gph 
+        gph2: output/ov65WhiteHHSizeDist_*_MAIN.gph 
+        gph3: output/ov65SouthAsianHHSizeDist_*_MAIN.gph
+        gph4: output/ov65BlackHHSizeDist_*_MAIN.gph
+        gph5: output/ov65HHdistHists_*_MAIN.pdf
 
   03e_hhClassif_an_descriptive_table_1:
     run: stata-mp:latest analysis/03e_hhClassif_an_descriptive_table_1.do MAIN
