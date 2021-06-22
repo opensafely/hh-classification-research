@@ -297,7 +297,8 @@ restore
 
 *drop households we don't need i.e. 1 or smaller or larger than 10
 *note originally dropped at 2, but after discussion with Daniel and Roz decided to keep size 1 hh in
-drop if hh_size>10
+*also originally dropped greater than 10, but after looking at distribution using histograms am changing this to greater than 12
+drop if hh_size>12
 safetab hh_size
 
 
