@@ -68,6 +68,10 @@ duplicates drop hh_id, force
 
 *remove households that only have 65 year olds include
 merge 1:1 hh_id using ./output/housesWithOnly65yrOldsInThem_`dataset'.dta
+*have a look at ethnicity of these houses
+tab eth5 if _merge==3
+*have a look at size of these houses
+sum hh_size if _merge==3
 drop if _merge==3
 drop _merge
 
