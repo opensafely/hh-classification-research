@@ -45,7 +45,7 @@ local dataset `1'
 * Open a log file
 
 capture log close
-log using ./logs/03d_hhClassif_an_descriptive_table_1_`dataset'.log, replace t
+log using ./logs/03e_hhClassif_an_descriptive_table_1_`dataset'.log, replace t
 
 * Open Stata dataset
 use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
