@@ -12,120 +12,113 @@
 *Date drafted: 17th June 2021
 *************************************************************************
 
-global outdir  	  "output"
-global logdir     "log"
-global tempdir    "tempdata"
 
-local outcome `1' 
+local dataset `1' 
 
-* Open a log file
-capture log close
-log using "$logdir/08_an_tablecontent_HRtable_`outcome'", text replace
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+*list of comorbidities for adjustment
+global comorbidadjlist i.coMorbCat	
 
+prog drop _all
 
-***********************************************************************************************************************
-*Generic code to ouput the HRs across outcomes for all levels of a particular variables, in the right shape for table
-cap prog drop outputHRsforvar
 prog define outputHRsforvar
-syntax, variable(string) min(real) max(real) outcome(string)
-foreach dataset in MAIN W2 {
-forvalues x=0/1 {
-file write tablecontents ("age") ("`x'") _n
-forvalues i=`min'/`max'{
-local endwith "_tab"
+	syntax, variable(string) catLabel(string) min(real) max(real) ethnicity(real) outcome(string) 
 
-	*put the varname and condition to left so that alignment can be checked vs shell
-	file write tablecontents ("`variable'") _tab ("`i'") _tab ("`dataset'") _tab 
-	
-	use "$tempdir/cr_create_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta", clear
-	*put total N, PYFU and Rate in table
-	cou if `variable' == `i' & _d == 1
-	local event = r(N)
-    bysort `variable': egen total_follow_up = total(_t)
-	su total_follow_up if `variable' == `i'
-	local person_days = r(mean)
-	local person_years=`person_days'/365.25
-	local rate = 100000*(`event'/`person_years')
-	
-	file write tablecontents (`event') _tab %10.0f (`person_years') _tab %3.2f (`rate') _tab
-	drop total_follow_up
-	
-	
-	*models
-	foreach modeltype of any minadj demogadj fulladj  {
-	
-		local noestimatesflag 0 /*reset*/
+	*calculation of rates
+				strate `variable' 
+				*cox regression
+				stcox i.`variable' $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
 
-*CHANGE THE OUTCOME BELOW TO LAST IF BRINGING IN MORE COLS
-		if "`modeltype'"=="fulladj" local endwith "_n"
-
-		***********************
-		*1) GET THE RIGHT ESTIMATES INTO MEMORY
-		
-		if "`modeltype'"=="minadj" {
-			cap estimates use ./output/an_univariable_cox_models_`variable'_`outcome'_AGESEX_ageband_`x'`dataset'
-			if _rc!=0 local noestimatesflag 1
-			}
-		if "`modeltype'"=="demogadj" {
-			cap estimates use ./output/an_multivariate_cox_models_`outcome'_`variable'_DEMOGADJ_ageband_`x'`dataset'
-			if _rc!=0 local noestimatesflag 1
-			}
-		if "`modeltype'"=="fulladj" {
-			cap estimates use ./output/an_multivariate_cox_models_`outcome'_`variable'_MAINFULLYADJMODEL_ageband_`x'`dataset' 
-			if _rc!=0 local noestimatesflag 1
-			}
-		
-		***********************
-		*2) WRITE THE HRs TO THE OUTPUT FILE
-		
-		if `noestimatesflag'==0{
-			cap lincom `i'.`variable', eform
-			if _rc==0 file write tablecontents %4.2f (r(estimate)) (" (") %4.2f (r(lb)) ("-") %4.2f (r(ub)) (")") `endwith'
-				else file write tablecontents %4.2f ("ERR IN MODEL") `endwith'
-			}
-			else file write tablecontents %4.2f ("DID NOT FIT") `endwith' 
+				forvalues i=`min'/`max' {
+					display "variable category=`i'"
+					display 
+					*get overall number
+					cou if `variable' == `i'
+					*get number of events
+					cou if `variable' == `i' & _d == 1
+					local event = r(N)
+					*get person time and rate
+					bysort `variable': egen total_follow_up = total(_t)
+					su total_follow_up if `variable' == `i'
+					local n_people = r(N)
+					local person_days = r(mean)
+					local person_years=`person_days'/365.25
+					local rate = 100000*(`event'/`person_years')
+					*get HRs
+					cap lincom `i'.`variable', eform
+					local hr = r(estimate)
+					local lb = r(lb)
+					local ub = r(ub)
+					
+					*get variable name
+					local lab: variable label `variable'
+					*file write tablecontents  _tab  (`i') _n
+					*get category name
+					local category: label `catLabel' `i'
+					display "Category label: `category'"
+					
+					*write each row
+					file write tablecontents  _tab ("`category'") _tab  (`n_people') _tab (`event')  _tab (`person_days') _tab %3.2f (`rate') _tab %4.2f (`hr')  " (" %4.2f (`lb') "-" %4.2f (`ub') ")" _n
 			
-		*3) Save the estimates for plotting
-		if `noestimatesflag'==0{
-			if "`modeltype'"=="fulladj" {
-				local hr = r(estimate)
-				local lb = r(lb)
-				local ub = r(ub)
-				cap gen `variable'=.
-				testparm i.`variable'
-				*drop `variable'
+					display "**`variable' category: `i'**"
+					display "N: `n_people'"
+					display "Event: `event'"
+					display "Person years: `person_years'"
+					display "Rate: `rate'"
+					drop total_follow_up
+				
+					display "**`variable' category: `i'**"
+					display "HR:  `hr' (`lb' - `ub')"
 				}
-		}	
-		} /*min adj, full adj*/
-		
-} /*variable levels*/
-
-} /*agebands*/
-
-} /*Waves*/
+				*variable category
 end
-***********************************************************************************************************************
-/*Generic code to write a full row of "ref category" to the output file
-cap prog drop refline
-prog define refline
-file write tablecontents _tab _tab ("1.00 (ref)") _tab ("1.00 (ref)")  _n
-end*/
-***********************************************************************************************************************
 
-*MAIN CODE TO PRODUCE TABLE CONTENTS
+********Code that calls program and outputs tables*******
 
-cap file close tablecontents
-file open tablecontents using ./output/an_tablecontents_HRtable_`outcome'.txt, t w replace 
+/*I think what I want here FOR EACH WAVE is
+ - A single page PER OUTCOME containing
+ - Results FOR EACH ETHNICITY for that outcome
+*/
 
-*Primary exposure
-outputHRsforvar, variable("kids_cat4") min(0) max(3) outcome(`outcome')
-file write tablecontents _n
+*Testing outcomes
+foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
+	
+	* Open a log file
+	capture log close
+	log using "./logs/08_hhClassif_tablecontent_HRtable_`outcome'_`dataset'", text replace
+	
+	*open table
+	file open tablecontents using ./output/hhClassif_tablecontents_HRtable_`outcome'_`dataset'.txt, t w replace
+	
+	*write table title and column headers
+	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
+	file write tablecontents _tab _tab ("N") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("MV adjusted") _n
+	
+	forvalues e=1/5 {
+		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3_ethnicity_`e'`dataset'.dta, clear
+		if `e'==1 {
+			file write tablecontents "Ethnicity: White" _n
+		}
+		else if `e'==2 {
+			file write tablecontents "Ethnicity: South Asian" _n
+		}
+		else if `e'==3 {
+			file write tablecontents "Ethnicity: Black" _n
+		}
+		else if `e'==4 {
+			file write tablecontents "Ethnicity: Mixed" _n
+		}
+		else if `e'==5 {
+			file write tablecontents "Ethnicity: Other" _n
+		}
+		display "ETHNICITY: `e'"
+		cap noisily outputHRsforvar, variable(hhRiskCatExp) catLabel(hhRiskCat67PLUS) min(1) max(8) ethnicity(`e') outcome(`outcome')
+		file write tablecontents _n
+	}
+	cap file close tablecontents 
+	cap log close
+	*output excel
+	*insheet using ./output/hhClassif_tablecontents_HRtable_`outcome'_`dataset'.txt, clear
+	*export excel using ./output/hhClassif_tablecontents_HRtable_`outcome'_`dataset'.xlsx, replace
+}
 
-*Number kids
-outputHRsforvar, variable("gp_number_kids") min(0) max(4) outcome(`outcome')
-file write tablecontents _n 
-
-file close tablecontents
-
-
-log close
