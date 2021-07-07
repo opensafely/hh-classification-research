@@ -203,10 +203,7 @@ actions:
         table2: output/hhClassif_tablecontents_HRtable_covidHosp_MAIN.txt
         table3: output/hhClassif_tablecontents_HRtable_covidHospOrDeath_MAIN.txt
         table4: output/hhClassif_tablecontents_HRtable_nonCovidDeath_MAIN.txt
-        table5: output/hhClassif_tablecontents_HRtable_covidDeath_MAIN.xlsx
-        table6: output/hhClassif_tablecontents_HRtable_covidHosp_MAIN.xlsx
-        table7: output/hhClassif_tablecontents_HRtable_covidHospOrDeath_MAIN.xlsx
-        table8: output/hhClassif_tablecontents_HRtable_nonCovidDeath_MAIN.xlsx
+
 
   08_hhClassif_an_mv_analysis_perEth5Group_HR_table_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -221,10 +218,7 @@ actions:
         table2: output/hhClassif_tablecontents_HRtable_covidHosp_W2.txt
         table3: output/hhClassif_tablecontents_HRtable_covidHospOrDeath_W2.txt
         table4: output/hhClassif_tablecontents_HRtable_nonCovidDeath_W2.txt
-        table5: output/hhClassif_tablecontents_HRtable_covidDeath_W2.xlsx
-        table6: output/hhClassif_tablecontents_HRtable_covidHosp_W2.xlsx
-        table7: output/hhClassif_tablecontents_HRtable_covidHospOrDeath_W2.xlsx
-        table8: output/hhClassif_tablecontents_HRtable_nonCovidDeath_W2.xlsx
+
 
 
 
