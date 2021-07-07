@@ -210,7 +210,7 @@ actions:
     run: stata-mp:latest analysis/08_hhClassif_an_mv_analysis_perEth5Group_HR_table.do W2
     outputs:
       moderately_sensitive:
-        log1: logs/08_hhClassif_tablecontent_HRtable_covidDeath_W2log
+        log1: logs/08_hhClassif_tablecontent_HRtable_covidDeath_W2.log
         log2: logs/08_hhClassif_tablecontent_HRtable_covidHosp_W2.log
         log3: logs/08_hhClassif_tablecontent_HRtable_covidHospOrDeath_W2.log
         log4: logs/08_hhClassif_tablecontent_HRtable_nonCovidDeath_W2.log
