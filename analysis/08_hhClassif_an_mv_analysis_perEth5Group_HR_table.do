@@ -26,11 +26,23 @@ prog define outputHRsforvar
 
 	*calculation of rates
 				strate `variable' 
-				*cox regression
+				**cox regressiona**
+				*crude (only utla matched)
+				stcox i.`variable', strata(utla_group) vce(cluster hh_id)
+				estimates store crude
+				*age-adjusted
+				stcox i.`variable' age1 age2 age3, strata(utla_group) vce(cluster hh_id)
+				estimates store ageAdj
+				*MV adjusted (without household size)
 				stcox i.`variable' $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
+				estimates store mvAdj
+				*MV adjusted (with household size)
+				capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+				capture noisily estimates store mvAdjWHHSize
+				
+				
 
 				forvalues i=`min'/`max' {
-					display "variable category=`i'"
 					display 
 					*get overall number
 					cou if `variable' == `i'
@@ -44,12 +56,32 @@ prog define outputHRsforvar
 					local person_days = r(mean)
 					local person_years=`person_days'/365.25
 					local rate = 100000*(`event'/`person_years')
-					*get HRs
+					*get HRs for each regression analysis
+					*crude 
+					estimates restore crude
 					cap lincom `i'.`variable', eform
-					local hr = r(estimate)
-					local lb = r(lb)
-					local ub = r(ub)
-					
+					local hr_crude = r(estimate)
+					local lb_crude = r(lb)
+					local ub_crude = r(ub)
+					*age adjusted
+					estimates restore ageAdj
+					cap lincom `i'.`variable', eform
+					local hr_ageAdj = r(estimate)
+					local lb_ageAdj = r(lb)
+					local ub_ageAdj = r(ub)
+					*mv adjusted
+					estimates restore mvAdj
+					cap lincom `i'.`variable', eform
+					local hr_mvAdj = r(estimate)
+					local lb_mvAdj = r(lb)
+					local ub_mvAdj = r(ub)
+					*mv adjusted with hh size
+					capture noisly estimates restore mvAdjWHHSize
+					cap noisily lincom `i'.`variable', eform
+					capture noisily local hr_mvAdjWHHSize = r(estimate)
+					capture noisily local lb_mvAdjWHHSize = r(lb)
+					capture noisily local ub_mvAdjWHHSize = r(ub)
+
 					*get variable name
 					local lab: variable label `variable'
 					*file write tablecontents  _tab  (`i') _n
@@ -58,17 +90,10 @@ prog define outputHRsforvar
 					display "Category label: `category'"
 					
 					*write each row
-					file write tablecontents  _tab ("`category'") _tab  (`n_people') _tab (`event')  _tab (`person_days') _tab %3.2f (`rate') _tab %4.2f (`hr')  " (" %4.2f (`lb') "-" %4.2f (`ub') ")" _n
+					file write tablecontents  _tab ("`category'") _tab  (`n_people') _tab (`event')  _tab (`person_days') _tab %3.2f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _tab %4.2f (`hr_mvAdjWHHSize')  " (" %4.2f (`lb_mvAdjWHHSize') "-" %4.2f (`ub_mvAdjWHHSize') ")"  _n
 			
-					display "**`variable' category: `i'**"
-					display "N: `n_people'"
-					display "Event: `event'"
-					display "Person years: `person_years'"
-					display "Rate: `rate'"
 					drop total_follow_up
-				
-					display "**`variable' category: `i'**"
-					display "HR:  `hr' (`lb' - `ub')"
+
 				}
 				*variable category
 end
@@ -92,7 +117,7 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
-	file write tablecontents _tab _tab ("N") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("MV adjusted") _n
+	file write tablecontents _tab _tab ("N") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _n
 	
 	forvalues e=1/5 {
 		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3_ethnicity_`e'`dataset'.dta, clear
