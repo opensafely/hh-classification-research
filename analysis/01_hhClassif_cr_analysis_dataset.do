@@ -36,7 +36,10 @@ else if "`dataset'"=="W2" global indexdate = "1/9/2020"
 
 *Censor dates
 if "`dataset'"=="MAIN" global study_end_censor   	= "31/08/2020"
-else if "`dataset'"=="W2" global study_end_censor   	= "18/12/2020"
+else if "`dataset'"=="W2" global study_end_censor   	= "30/04/2021"
+*****set up sensitivity analysis up to 31/01/2021*******
+***be ready to censor 2 weeks after vaccination also as a subsequent analysis*****
+***also to consider: impact of wild-type vs alpha over time, is this an issue*****
 
 
 * Open a log file

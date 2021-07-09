@@ -76,7 +76,7 @@ prog define outputHRsforvar
 					local lb_mvAdj = r(lb)
 					local ub_mvAdj = r(ub)
 					*mv adjusted with hh size
-					capture noisly estimates restore mvAdjWHHSize
+					capture noisily estimates restore mvAdjWHHSize
 					cap noisily lincom `i'.`variable', eform
 					capture noisily local hr_mvAdjWHHSize = r(estimate)
 					capture noisily local lb_mvAdjWHHSize = r(lb)
