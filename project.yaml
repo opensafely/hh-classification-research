@@ -219,6 +219,35 @@ actions:
         table3: output/hhClassif_tablecontents_HRtable_covidHospOrDeath_W2.txt
         table4: output/hhClassif_tablecontents_HRtable_nonCovidDeath_W2.txt
 
+  09_hhClassif_an_mv_analysis_perEth16Group_HR_table:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/09_hhClassif_an_mv_analysis_perEth16Group_HR_table.do MAIN
+    outputs:
+      moderately_sensitive:
+        log1: logs/09_hhClassif_tablecontent_HRtable_eth16_covidDeath_MAIN.log
+        log2: logs/09_hhClassif_tablecontent_HRtable_eth16_covidHosp_MAIN.log
+        log3: logs/09_hhClassif_tablecontent_HRtable_eth16_covidHospOrDeath_MAIN.log
+        log4: logs/09_hhClassif_tablecontent_HRtable_eth16_nonCovidDeath_MAIN.log
+        table1: output/hhClassif_tablecontents_HRtable_eth16_covidDeath_MAIN.txt
+        table2: output/hhClassif_tablecontents_HRtable_eth16_covidHosp_MAIN.txt
+        table3: output/hhClassif_tablecontents_HRtable_eth16_covidHospOrDeath_MAIN.txt
+        table4: output/hhClassif_tablecontents_HRtable_eth16_nonCovidDeath_MAIN.txt
+
+
+  09_hhClassif_an_mv_analysis_perEth16Group_HR_table_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/09_hhClassif_an_mv_analysis_perEth16Group_HR_table.do W2
+    outputs:
+      moderately_sensitive:
+        log1: logs/09_hhClassif_tablecontent_HRtable_eth16_covidDeath_W2.log
+        log2: logs/09_hhClassif_tablecontent_HRtable_eth16_covidHosp_W2.log
+        log3: logs/09_hhClassif_tablecontent_HRtable_eth16_covidHospOrDeath_W2.log
+        log4: logs/09_hhClassif_tablecontent_HRtable_eth16_nonCovidDeath_W2.log
+        table1: output/hhClassif_tablecontents_HRtable_eth16_covidDeath_W2.txt
+        table2: output/hhClassif_tablecontents_HRtable_eth16_covidHosp_W2.txt
+        table3: output/hhClassif_tablecontents_HRtable_eth16_covidHospOrDeath_W2.txt
+        table4: output/hhClassif_tablecontents_HRtable_eth16_nonCovidDeath_W2.txt
+
 
 
 
