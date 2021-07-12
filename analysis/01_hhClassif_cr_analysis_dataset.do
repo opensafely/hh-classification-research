@@ -36,8 +36,8 @@ else if "`dataset'"=="W2" global indexdate = "1/9/2020"
 
 *Censor dates
 if "`dataset'"=="MAIN" global study_end_censor   	= "31/08/2020"
-else if "`dataset'"=="W2" global study_end_censor   	= "30/04/2021"
-*****set up sensitivity analysis up to 31/01/2021*******
+else if "`dataset'"=="W2" global study_end_censor   	= "31/01/2021"
+*****have already performed a sensitivity/testing assumptions analysis up to 31/04/2021*******
 ***be ready to censor 2 weeks after vaccination also as a subsequent analysis*****
 ***also to consider: impact of wild-type vs alpha over time, is this an issue*****
 
@@ -1475,7 +1475,9 @@ preserve
 	mkspline age = age, cubic nknots(4)
 	save ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, replace
 restore
-*now create versions for each ethnicity (1 "White" 2 "South Asian"	3 "Black" 4 "Mixed"	5 "Other"
+
+
+*now create versions for each eth5 ethnicity (1 "White" 2 "South Asian"	3 "Black" 4 "Mixed"	5 "Other"
 sum eth5
 local maxEth5Cat=r(max)
 forvalues ethCat=1/`maxEth5Cat' {
@@ -1487,9 +1489,20 @@ forvalues ethCat=1/`maxEth5Cat' {
 	restore
 }
 
+*and create versions for each South Asian eth16 ethnicity category I am interested in (4 "Indian" 5 "Pakistani"	6 "Bangladeshi")
+forvalues eth16Cat=4/6 {
+	display "eth16Cat: `eth16Cat'"
+	preserve
+		capture noisily keep if eth16==`ethCat'
+		capture noisily mkspline age = age, cubic nknots(4)
+		capture noisily save ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
+	restore
+}
+	
 
 
-*now stset for each agegroup overall and for each ethnicity separately for each of the three outcomes
+
+*now stset for each agegroup overall and for each eth5 ethnicity and each eth16 separately for each of the three outcomes
 forvalues x=2/3 {
 	*(1)**nonCovidDeath**
 	*overall
@@ -1499,11 +1512,19 @@ forvalues x=2/3 {
 	*for each ethnicity
 	sum eth5
 	local maxEth5Cat=r(max)
+	*eth5 categories
 	forvalues ethCat=1/`maxEth5Cat' {
 		display "ethCat: `ethCat'"
 		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
 		capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 		capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
+	}
+	*eth16 categories
+	forvalues eth16Cat=4/6 {
+		display "eth16Cat: `eth16Cat'"
+		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, clear
+		capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, replace
 	}
 		
 	*(2)**covidHospCase**
@@ -1514,11 +1535,19 @@ forvalues x=2/3 {
 	*for each ethnicity
 	sum eth5
 	local maxEth5Cat=r(max)
+	*eth5 categories
 	forvalues ethCat=1/`maxEth5Cat' {
 		display "ethCat: `ethCat'"
 		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
 		capture noisily stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
 		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
+	}
+	*eth16 categories
+	forvalues eth16Cat=4/6 {
+		display "eth16Cat: `eth16Cat'"
+		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, clear
+		capture noisily stset stime_nonCOVIDDeathCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, replace
 	}
 
 	*(3)**covidDeath**
@@ -1527,11 +1556,19 @@ forvalues x=2/3 {
 	stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 	save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'`dataset'.dta, replace
 	*for each ethnicity
+	*eth5 categories
 	forvalues ethCat=1/`maxEth5Cat' {
 		display "ethCat: `ethCat'"
 		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
 		capture noisily stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
+	}
+	*eth16 categories
+	forvalues eth16Cat=4/6 {
+		display "eth16Cat: `eth16Cat'"
+		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, clear
+		capture noisily stset stime_nonCOVIDDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, replace
 	}
 	
 	*(4)**covidHospOrDeathCase**
@@ -1540,11 +1577,19 @@ forvalues x=2/3 {
 	stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 	save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_`x'`dataset'.dta, replace
 	*for each ethnicity
+	*eth5 categories
 	forvalues ethCat=1/`maxEth5Cat' {
 		display "ethCat: `ethCat'"
 		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
 		capture noisily stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
+	}
+	*eth16 categories
+	forvalues eth16Cat=4/6 {
+		display "eth16Cat: `eth16Cat'"
+		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, clear
+		capture noisily stset stime_nonCOVIDDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, replace
 	}
 }
 
