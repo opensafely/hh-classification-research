@@ -1493,7 +1493,7 @@ forvalues ethCat=1/`maxEth5Cat' {
 forvalues eth16Cat=4/6 {
 	display "eth16Cat: `eth16Cat'"
 	preserve
-		capture noisily keep if eth16==`ethCat'
+		capture noisily keep if eth16==`eth16Cat'
 		capture noisily mkspline age = age, cubic nknots(4)
 		capture noisily save ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
 	restore
