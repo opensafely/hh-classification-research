@@ -23,20 +23,15 @@ pwd
 cap log close
 log using ./logs/10_hh_imd_descriptives_W1.log, replace t
 
-* Open Stata dataset
-use ./output/hhClassif_analysis_datasetMAIN.dta, clear
-*use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
-
-keep patient_id hhRiskCat hh_size* hhRiskCatBROAD ethnicity ethnicity_16 hh_size eth5 imd eth16
 
  /* PROGRAMS TO AUTOMATE TABULATIONS===========================================*/ 
 
 ********************************************************************************
 * All below code from K Baskharan 
-* Generic code to output one row of table
+* Generic code to output one row of table for ethnicity
 
-cap prog drop generaterow
-program define generaterow
+cap prog drop generaterow_eth
+program define generaterow_eth
 syntax, variable(varname) condition(string) 
 	
 	cou
@@ -55,146 +50,110 @@ syntax, variable(varname) condition(string)
 	cou if `variable' `condition'
 	local rowdenom = r(N)
 	local colpct = 100*(r(N)/`overalldenom')
-	*file write tablecontent %9.0gc (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
-	file write tablecontent %9.0f (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
+	file write tablecontent %9.0f (`rowdenom') _tab   %3.1f (`colpct')  _tab
 
 	/*this loops through groups*/
-	forvalues i=1/3{
-	cou if hhRiskCatBROAD == `i'
+	forvalues i=1/5{
+	cou if eth5 == `i'
 	local rowdenom = r(N)
-	cou if hhRiskCatBROAD == `i' & `variable' `condition'
+	cou if eth5 == `i' & `variable' `condition'
 	local pct = 100*(r(N)/`rowdenom') 
-	*file write tablecontent %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
-	file write tablecontent %9.0f (r(N)) (" (") %3.1f (`pct') (")") _tab
+	*file write tablecontent %9.0gc (r(N))  %3.1f (`pct')  _tab
+	file write tablecontent %9.0f (r(N)) _tab  %3.1f (`pct')  _tab
 	}
 	
 	file write tablecontent _n
 end
 
-
-* Output one row of table for co-morbidities and meds
-
-cap prog drop generaterow2 /*this puts it all on the same row, is rohini's edit*/
-program define generaterow2
-syntax, variable(varname) condition(string) 
-	
-	cou
-	local overalldenom=r(N)5
-	
-	cou if `variable' `condition'
-	local rowdenom = r(N)
-	local colpct = 100*(r(N)/`overalldenom')
-	file write tablecontent %9.0gc (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
-
-	forvalues i=1/3{
-	cou if hhRiskCatBROAD == `i'
-	local rowdenom = r(N)
-	cou if hhRiskCatBROAD == `i' & `variable' `condition'
-	local pct = 100*(r(N)/`rowdenom') 
-	file write tablecontent %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
-	}
-	
-	file write tablecontent _n
-end
-
-
-
-/* Explanatory Notes 
-
-defines a program (SAS macro/R function equivalent), generate row
-the syntax row specifies two inputs for the program: 
-
-	a VARNAME which is your variable 
-	a CONDITION which is a string of some condition you impose 
-	
-the program counts if variable and condition and returns the counts
-column percentages are then automatically generated
-this is then written to the text file 'tablecontent' 
-the number followed by space, brackets, formatted pct, end bracket and then tab
-
-the format %3.1f specifies length of 3, followed by 1 dp. 
-
-*/ 
 
 ********************************************************************************
 * Generic code to output one section (varible) within table (calls above)
 
-cap prog drop tabulatevariable
-prog define tabulatevariable
+cap prog drop tabulatevariable_eth
+prog define tabulatevariable_eth
 syntax, variable(varname) min(real) max(real) [missing]
 
 	local lab: variable label `variable'
 	file write tablecontent ("`lab'") _n 
 
 	forvalues varlevel = `min'/`max'{ 
-		generaterow, variable(`variable') condition("==`varlevel'")
+		generaterow_eth, variable(`variable') condition("==`varlevel'")
 	}
 	
-	if "`missing'"!="" generaterow, variable(`variable') condition("== 12")
+	if "`missing'"!="" generaterow_eth, variable(`variable') condition("== 12")
 	
-
-
 end
 
 ********************************************************************************
+* All below code from K Baskharan 
+* Generic code to output one row of table for ethnicity-imd combined variable
 
-/* Explanatory Notes 
+cap prog drop generaterow_ethimd
+program define generaterow_ethimd
+syntax, variable(varname) condition(string) 
+	
+	cou
+	local overalldenom=r(N)
+	
+	sum `variable' if `variable' `condition'
+	**K Wing additional code to aoutput variable category labels**
+	local level=substr("`condition'",3,.)
+	local lab: label `variable'Label `level'
+	file write tablecontent (" `lab'") _tab
+	
+	*local lab: label hhRiskCatBROADLabel 4
 
-defines program tabulate variable 
-syntax is : 
+	
+	/*this is the overall column*/
+	cou if `variable' `condition'
+	local rowdenom = r(N)
+	local colpct = 100*(r(N)/`overalldenom')
+	file write tablecontent %9.0f (`rowdenom') _tab   %3.1f (`colpct')  _tab
 
-	- a VARNAME which you stick in variable 
-	- a numeric minimum 
-	- a numeric maximum 
-	- optional missing option, default value is . 
+	/*this loops through groups*/
+	forvalues i=1/10{
+	cou if eth_imd == `i'
+	local rowdenom = r(N)
+	cou if eth_imd == `i' & `variable' `condition'
+	local pct = 100*(r(N)/`rowdenom') 
+	*file write tablecontent %9.0gc (r(N))  %3.1f (`pct')  _tab
+	file write tablecontent %9.0f (r(N)) _tab  %3.1f (`pct')  _tab
+	}
+	
+	file write tablecontent _n
+end
 
-forvalues lowest to highest of the variable, manually set for each var
-run the generate row program for the level of the variable 
-if there is a missing specified, then run the generate row for missing vals
-
-*/ 
 
 ********************************************************************************
-* Generic code to qui summarize a continous variable 
+* Generic code to output one section (varible) within table (calls above)
 
-cap prog drop summarizevariable 
-prog define summarizevariable
-syntax, variable(varname) 
+cap prog drop tabulatevariable_ethimd
+prog define tabulatevariable_ethimd
+syntax, variable(varname) min(real) max(real) [missing]
 
 	local lab: variable label `variable'
 	file write tablecontent ("`lab'") _n 
 
-
-	qui summarize `variable', d
-	file write tablecontent ("Mean (SD)") _tab 
-	file write tablecontent  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
-	
-	forvalues i=1/3{							
-	qui summarize `variable' if hhRiskCatBROAD == `i', d
-	file write tablecontent  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
-	}
-
-file write tablecontent _n
-
-	
-	qui summarize `variable', d
-	file write tablecontent ("Median (IQR)") _tab 
-	file write tablecontent %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
-	
-	forvalues i=1/3{
-	qui summarize `variable' if hhRiskCatBROAD == `i', d
-	file write tablecontent %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
+	forvalues varlevel = `min'/`max'{ 
+		generaterow_ethimd, variable(`variable') condition("==`varlevel'")
 	}
 	
-file write tablecontent _n
+	if "`missing'"!="" generaterow_ethimd, variable(`variable') condition("== 12")
 	
 end
 
+
 /* INVOKE PROGRAMS FOR TABLE 1================================================*/ 
+
+* Open Stata dataset
+use ./output/hhClassif_analysis_datasetMAIN.dta, clear
+*use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
+
+keep patient_id hhRiskCat hh_size* hhRiskCatBROAD ethnicity ethnicity_16 hh_size eth5 imd eth16
 
 *Set up output file
 cap file close tablecontent
-file open tablecontent using ./output/table_hh_descriptives`dataset'.txt, write text replace
+file open tablecontent using ./output/table_ethnicity_descriptivesMAIN.txt, write text replace
 
 file write tablecontent ("Table x: Household size by ethnic group") _n
 
@@ -208,26 +167,103 @@ local lab5: label eth5 5
 
 
 
-file write tablecontent _tab ("Total")				  			  _tab ///
-							 ("`lab1'")  						  _tab ///
-							 ("`lab2'")  						  _tab ///
-							 ("`lab3'")  						  _tab ///
-							 ("`lab4'")  						  _tab ///
-							 ("`lab5'")  						  _n
+file write tablecontent _tab ("Total")				  			  _tab _tab ///
+							 ("`lab1'")  						  _tab _tab ///
+							 ("`lab2'")  						  _tab _tab ///
+							 ("`lab3'")  						  _tab _tab ///
+							 ("`lab4'")  						  _tab _tab ///
+							 ("`lab5'")  						  _tab _n
 							 
 
 
 
 *HOUSEHOLD GENERATIONS BROAD
-tabulatevariable, variable( hhRiskCatBROAD) min(1) max(3) 
+tabulatevariable_eth, variable( hhRiskCatBROAD) min(1) max(3) 
 file write tablecontent _n 
 
 *HOUSEHOLD SIZE
-tabulatevariable, variable(hh_size5cat) min(1) max(4) 
+tabulatevariable_eth, variable(hh_size5cat) min(1) max(4) 
 file write tablecontent _n 
 
 *HOUSEHOLD GENERATIONS DETAILED
-tabulatevariable, variable(hhRiskCat) min(1) max(14) 
+tabulatevariable_eth, variable(hhRiskCat) min(1) max(14) 
+file write tablecontent _n 
+
+
+file write tablecontent _n _n
+file close tablecontent
+insheet using ./output/table_ethnicity_descriptivesMAIN.txt, clear
+
+
+
+* HOUSEHOLD SIZE BY ETHNICITY AND IMD
+
+* Open Stata dataset
+use ./output/hhClassif_analysis_datasetMAIN.dta, clear
+*use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
+
+keep patient_id hhRiskCat hh_size* hhRiskCatBROAD ethnicity ethnicity_16 hh_size eth5 imd eth16
+
+*Set up output file
+file open tablecontent using ./output/table_ethimd_descriptivesMAIN.txt, write text replace
+
+file write tablecontent ("Table x: Household size by ethnic and IMD") _n
+
+*gen eth-imd variable for white and SA
+gen eth_imd=1 if eth5==1 & imd==1
+replace eth_imd=2 if eth5==1 & imd==2
+replace eth_imd=3 if eth5==1 & imd==3
+replace eth_imd=4 if eth5==1 & imd==4
+replace eth_imd=5 if eth5==1 & imd==5
+replace eth_imd=6 if eth5==2 & imd==1
+replace eth_imd=7 if eth5==2 & imd==2
+replace eth_imd=8 if eth5==2 & imd==3
+replace eth_imd=9 if eth5==2 & imd==4
+replace eth_imd=10 if eth5==2 & imd==5
+
+label define eth_imd 1"White Q1" 2"White Q2" 3"White Q3" 4"White Q4" 5"White Q5" ///
+6"SA Q1" 7"SA Q2" 8"SA Q3" 9"SA Q4" 10"SA Q5" 
+
+label values eth_imd eth_imd
+tab eth_imd
+
+local lab1: label eth_imd 1
+local lab2: label eth_imd 2
+local lab3: label eth_imd 3
+local lab4: label eth_imd 4
+local lab5: label eth_imd 5
+local lab5: label eth_imd 6
+local lab5: label eth_imd 7
+local lab5: label eth_imd 8
+local lab5: label eth_imd 9
+local lab5: label eth_imd 10
+
+
+file write tablecontent _tab ("Total")				  			  _tab _tab ///
+							 ("`lab1'")  						  _tab _tab ///
+							 ("`lab2'")  						  _tab _tab ///
+							 ("`lab3'")  						  _tab _tab ///
+							 ("`lab4'")  						  _tab _tab ///
+							 ("`lab5'")  						  _tab _tab ///
+							 ("`lab6'")  						  _tab _tab ///
+							 ("`lab7'")  						  _tab _tab ///
+							 ("`lab8'")  						  _tab  _tab ///
+							 ("`lab9'")  						  _tab _tab  ///
+							 ("`lab10'")  						  _n
+							 
+
+
+
+*HOUSEHOLD GENERATIONS BROAD
+tabulatevariable_ethimd, variable( hhRiskCatBROAD) min(1) max(3) 
+file write tablecontent _n 
+
+*HOUSEHOLD SIZE
+tabulatevariable_ethimd, variable(hh_size5cat) min(1) max(4) 
+file write tablecontent _n 
+
+*HOUSEHOLD GENERATIONS DETAILED
+tabulatevariable_ethimd, variable(hhRiskCat) min(1) max(14) 
 file write tablecontent _n 
 
 
@@ -235,13 +271,6 @@ file write tablecontent _n _n
 
 
 file close tablecontent
-
-clear
-insheet using ./output/table_hh_descriptives`dataset'.txt, clear
-export excel using ./output/table_hh_descriptives`dataset'.xlsx, replace
-
-
-* HOUSEHOLD SIZE BY ETHNICITY AND IMD
 
 
 
@@ -251,6 +280,8 @@ log close
 
 
 
+*check imd
+insheet using ./output/table_ethimd_descriptivesMAIN.txt, clear
 
 
 
