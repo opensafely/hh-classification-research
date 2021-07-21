@@ -139,6 +139,10 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 		display "ETHNICITY: `e'"
 		cap noisily outputHRsforvar, variable(hhRiskCatExp) catLabel(hhRiskCat67PLUS) min(1) max(8) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
+		*include version with broad exposure categories
+		file write tablecontents "Broad categories:" _n
+		cap noisily outputHRsforvar, variable(hhRiskCatExp_3cats) catLabel(hhRiskCat67PLUS_3cats) min(1) max(3) ethnicity(`e') outcome(`outcome')
+		file write tablecontents _n
 	}
 	cap file close tablecontents 
 	cap log close

@@ -158,21 +158,19 @@ actions:
         log: logs/05_hhClassif_an_multivariable_analysis_W2.log
         data: output/hhClassif_multivariableAllEthnicities_*_ageband_*W2.ster
 
-  #06_hhClassif_an_multivariable_analysis_eth5Interaction:
-  #  needs: [01_hhClassif_cr_analysis_dataset]
-  #  run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5Interaction.do MAIN
-  #  outputs:
-  #    moderately_sensitive:
-  #      log: logs/06_hhClassif_an_eth5Interaction_analysis_MAIN.log
-  #      data: output/hhClassif_multvariableAnalysisEth5Interaction_*_ageband_*MAIN.ster
+  06_hhClassif_an_multivariable_analysis_eth5Interaction:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5Interaction.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/06_hhClassif_an_eth5Interaction_analysis_MAIN.log
 
-  #06_hhClassif_an_multivariable_analysis_eth5Interaction_W2:
-  #  needs: [01_hhClassif_cr_analysis_dataset_W2]
-  #  run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5Interaction.do W2
-  #  outputs:
-  #    moderately_sensitive:
-  #      log: logs/06_hhClassif_an_eth5Interaction_analysis_W2.log
-  #      data: output/hhClassif_multvariableAnalysisEth5Interaction_*_ageband_*W2.ster
+  06_hhClassif_an_multivariable_analysis_eth5Interaction_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/06_hhClassif_an_multivariable_analysis_eth5Interaction.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/06_hhClassif_an_eth5Interaction_analysis_W2.log
 
   07_hhClassif_an_multivariable_analysis_perEth5Group:
     needs: [01_hhClassif_cr_analysis_dataset]
