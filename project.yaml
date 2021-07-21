@@ -250,10 +250,10 @@ actions:
 
   10_rohini:
     needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/10_hh_imd_descriptives_W1
+    run: stata-mp:latest analysis/10_hh_imd_descriptives_W1.do
     outputs:
       moderately_sensitive:
-        log: logs/10_hh_imd_descriptives_W1.log
+        log: logs/10_eth_imd_descriptives_W1.log
         table1: output/table_ethnicity_descriptivesMAIN.txt
         table2: output/table_ethimd_descriptivesMAIN.txt
         fig1: output/rohini_hhbroad_ethMAIN.gph
