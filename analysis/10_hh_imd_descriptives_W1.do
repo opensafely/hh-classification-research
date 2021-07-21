@@ -294,11 +294,11 @@ tab  hh_size5cat, generate(size)
 tab  hhRiskCat, generate(hhcat)
 
 *BY ETHNICITY 
-graph bar broad1 broad2 broad3, over(eth5) saving(./output/rohini_hhbroad_eth.gph, replace)
+graph bar broad1 broad2 broad3, over(eth5) saving(./output/rohini_hhbroad_ethMAIN.gph, replace)
 
-graph bar size1 size2 size3 size4, over(eth5) saving(./output/rohini_hhsize_eth.gph, replace)
+graph bar size1 size2 size3 size4, over(eth5) saving(./output/rohini_hhsize_ethMAIN.gph, replace)
 
-graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth5) saving(./output/rohini_hhcat_eth.gph, replace)
+graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth5) saving(./output/rohini_hhcat_ethMAIN.gph, replace)
 
 *BY ETHNICITY AND IMD
 *gen eth-imd variable for white and SA
@@ -320,11 +320,11 @@ label values eth_imd eth_imd
 tab eth_imd
 
 							  
-graph bar broad1 broad2 broad3, over(eth_imd) saving(./output/rohini_hhbroad_ethimd.gph, replace)
+graph bar broad1 broad2 broad3, over(eth_imd) saving(./output/rohini_hhbroad_ethimdMAIN.gph, replace)
 
-graph bar size1 size2 size3 size4, over(eth_imd) saving(./output/rohini_hhsize_ethimd.gph, replace)
+graph bar size1 size2 size3 size4, over(eth_imd) saving(./output/rohini_hhsize_ethimdMAIN.gph, replace)
 
-graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth_imd) saving(./output/rohini_hhcat_ethimd.gph, replace) legend(off)
+graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth_imd) saving(./output/rohini_hhcat_ethimdMAIN.gph, replace) legend(off)
 
 
 
