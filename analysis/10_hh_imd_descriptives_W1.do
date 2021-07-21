@@ -21,7 +21,7 @@ pwd
 
 * Open a log file
 cap log close
-log using ./logs/10_hh_imd_descriptives_W1.log, replace t
+log using ./logs/10_eth_imd_descriptives_W1.log, replace t
 
 
  /* PROGRAMS TO AUTOMATE TABULATIONS===========================================*/ 
@@ -293,14 +293,6 @@ tab  hhRiskCatBROAD, generate(broad)
 tab  hh_size5cat, generate(size)
 tab  hhRiskCat, generate(hhcat)
 
-*BY ETHNICITY 
-graph bar broad1 broad2 broad3, over(eth5) saving(./output/rohini_hhbroad_ethMAIN.gph, replace)
-
-graph bar size1 size2 size3 size4, over(eth5) saving(./output/rohini_hhsize_ethMAIN.gph, replace)
-
-graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth5) saving(./output/rohini_hhcat_ethMAIN.gph, replace)
-
-*BY ETHNICITY AND IMD
 *gen eth-imd variable for white and SA
 gen eth_imd=1 if eth5==1 & imd==1
 replace eth_imd=2 if eth5==1 & imd==2
@@ -319,10 +311,19 @@ label define eth_imd 1"White Q1" 2"White Q2" 3"White Q3" 4"White Q4" 5"White Q5"
 label values eth_imd eth_imd
 tab eth_imd
 
-							  
+
+*BY ETHNICITY 
+graph bar broad1 broad2 broad3, over(eth5) saving(./output/rohini_hhbroad_ethMAIN.gph, replace)
+
+cap graph bar size1 size2 size3 size4 size5, over(eth5) saving(./output/rohini_hhsize_ethMAIN.gph, replace)
+
+graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth5) saving(./output/rohini_hhcat_ethMAIN.gph, replace) legend(off)
+
+*BY ETHNICITY AND IMD
+						  
 graph bar broad1 broad2 broad3, over(eth_imd) saving(./output/rohini_hhbroad_ethimdMAIN.gph, replace)
 
-graph bar size1 size2 size3 size4, over(eth_imd) saving(./output/rohini_hhsize_ethimdMAIN.gph, replace)
+cap graph bar size1 size2 size3 size4 size5, over(eth_imd) saving(./output/rohini_hhsize_ethimdMAIN.gph, replace)
 
 graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth_imd) saving(./output/rohini_hhcat_ethimdMAIN.gph, replace) legend(off)
 
