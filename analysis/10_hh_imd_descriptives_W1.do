@@ -285,19 +285,46 @@ insheet using ./output/table_ethimd_descriptivesMAIN.txt, clear
 
 
 
+**BAR CHARTS
 
+use ./output/hhClassif_analysis_datasetMAIN.dta, clear
+keep eth5 imd hhRiskCatBROAD hh_size5cat hhRiskCat
+tab  hhRiskCatBROAD, generate(broad)
+tab  hh_size5cat, generate(size)
+tab  hhRiskCat, generate(hhcat)
 
+*BY ETHNICITY 
+graph bar broad1 broad2 broad3, over(eth5) saving(./output/rohini_hhbroad_eth.gph, replace)
 
+graph bar size1 size2 size3 size4, over(eth5) saving(./output/rohini_hhsize_eth.gph, replace)
 
+graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth5) saving(./output/rohini_hhcat_eth.gph, replace)
 
+*BY ETHNICITY AND IMD
+*gen eth-imd variable for white and SA
+gen eth_imd=1 if eth5==1 & imd==1
+replace eth_imd=2 if eth5==1 & imd==2
+replace eth_imd=3 if eth5==1 & imd==3
+replace eth_imd=4 if eth5==1 & imd==4
+replace eth_imd=5 if eth5==1 & imd==5
+replace eth_imd=6 if eth5==2 & imd==1
+replace eth_imd=7 if eth5==2 & imd==2
+replace eth_imd=8 if eth5==2 & imd==3
+replace eth_imd=9 if eth5==2 & imd==4
+replace eth_imd=10 if eth5==2 & imd==5
 
+label define eth_imd 1"White Q1" 2"White Q2" 3"White Q3" 4"White Q4" 5"White Q5" ///
+6"SA Q1" 7"SA Q2" 8"SA Q3" 9"SA Q4" 10"SA Q5" 
 
-
-
-
-
+label values eth_imd eth_imd
+tab eth_imd
 
 							  
+graph bar broad1 broad2 broad3, over(eth_imd) saving(./output/rohini_hhbroad_ethimd.gph, replace)
+
+graph bar size1 size2 size3 size4, over(eth_imd) saving(./output/rohini_hhsize_ethimd.gph, replace)
+
+graph bar hhcat1 hhcat2 hhcat3 hhcat4 hhcat5 hhcat6 hhcat7 hhcat8 hhcat9 hhcat10 hhcat11 hhcat12 hhcat13 hhcat14, over(eth_imd) saving(./output/rohini_hhcat_ethimd.gph, replace) legend(off)
 
 
 
