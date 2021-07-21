@@ -42,38 +42,81 @@ log using ./logs/06_hhClassif_an_eth5Interaction_analysis_`dataset', replace t
 
 
 *(b) Multivariable, stratified by ethnicity and including adjustment for SES
-foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
+*foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath
+foreach outcome in covidHospOrDeath {
 *2 and 3 here are the two age categories I've created so far, need to change these when there are more
-	forvalues x=2/3 {
 
-		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_`x'`dataset'.dta, clear
+	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
+	
+	*Perform LRT test to get p-value for interaction
+	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	est store A
+	capture noisily stcox i.hhRiskCatExp_3cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	est store B
+	display "***************LRT TEST 5 ETH CATEGORIES*****************"
+	lrtest A B, force
 
-		*Fit and save model
-		cap erase ./output/hhClassif_multvariableAnalysisEth5Interaction_`outcome'_ageband_`x'`dataset'.ster
-		display "***********Outcome: `outcome', ageband: `x', dataset: `dataset' - stratified by ethnicity and adjusted for imd*************************"
-		stcox i.hhRiskCatExp##i.eth5 $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
-		
-		*helper variables
-		sum eth5
-		local maxEth5=r(max) 
-		sum hhRiskCatExp
-		local maxhhRiskCat=r(max)
+	*Fit and save model for outputting HRs
+	display "***********ALL 5 ETHNICITY CATEGORIES - Outcome: `outcome', ageband: 67+, dataset: `dataset' - broad categories, interaction with ethnicity*************************"
+	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store mvAdjWHHSize		
+	
+	
+	*helper variables
+	sum eth5
+	local maxEth5=r(max) 
+	sum hhRiskCatExp
+	local maxhhRiskCat=r(max)
 
-		*for each ethnicity category, output hhrisk hazard ratios
-		forvalues ethCat=1/`maxEth5' {
-			display "*************Ethnicity: `ethCat'************ "
-			forvalues riskCat=1/`maxhhRiskCat' {
-				display "`ethCat'"
-				display "`riskCat'"
-				capture noisily lincom `riskCat'.hhRiskCatExp + `riskCat'.hhRiskCatExp#`ethCat'.eth5, eform
-			}
+	*for each ethnicity category, output hhrisk hazard ratios
+	forvalues ethCat=1/`maxEth5' {
+		display "*************Ethnicity: `ethCat'************ "
+		forvalues riskCat=1/`maxhhRiskCat' {
+			display "`ethCat'"
+			display "`riskCat'"
+			capture noisily lincom `riskCat'.hhRiskCatExp_3cats + `riskCat'.hhRiskCatExp_3cats#`ethCat'.eth5, eform
 		}
-		if _rc==0 {
-			estimates
-			estimates save ./output/hhClassif_multvariableAnalysisEth5Interaction_`outcome'_ageband_`x'`dataset'.ster, replace
-			}
-		else di "WARNING - `var' vs `outcome' MODEL DID NOT SUCCESSFULLY FIT"*/
+	}
+}
 
+
+
+foreach outcome in covidHospOrDeath {
+*foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
+*2 and 3 here are the two age categories I've created so far, need to change these when there are more
+
+	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
+	*keep only white and south asian
+	drop if eth5>2
+	
+	*Perform LRT test to get p-value for interaction
+	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	est store A
+	capture noisily stcox i.hhRiskCatExp_3cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	est store B
+	display "***************LRT TEST 2 ETH CATEGORIES*****************"
+	lrtest A B, force
+
+	*Fit and save model
+	display "***********ONLY WHITE AND SOUTH ASIAN EHTNICITY CATEGORIES - Outcome: `outcome', ageband: 67+, dataset: `dataset' - broad categories, interaction with ethnicity*************************"
+	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store mvAdjWHHSize		
+	
+	
+	*helper variables
+	sum eth5
+	local maxEth5=r(max) 
+	sum hhRiskCatExp
+	local maxhhRiskCat=r(max)
+
+	*for each ethnicity category, output hhrisk hazard ratios
+	forvalues ethCat=1/`maxEth5' {
+		display "*************Ethnicity: `ethCat'************ "
+		forvalues riskCat=1/`maxhhRiskCat' {
+			display "`ethCat'"
+			display "`riskCat'"
+			capture noisily lincom `riskCat'.hhRiskCatExp_3cats + `riskCat'.hhRiskCatExp_3cats#`ethCat'.eth5, eform
+		}
 	}
 }
 * Close log file
@@ -81,6 +124,8 @@ log close
 
 
 
+
+/*
 
 
 ******MANUAL BUGHUNTING OF LINCOM ISSUES*******(comment out unless bughunting locally)
