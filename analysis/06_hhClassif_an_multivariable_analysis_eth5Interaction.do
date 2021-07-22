@@ -65,7 +65,7 @@ foreach outcome in covidHospOrDeath {
 	*helper variables
 	sum eth5
 	local maxEth5=r(max) 
-	sum hhRiskCatExp
+	sum hhRiskCatExp_3cats
 	local maxhhRiskCat=r(max)
 
 	*for each ethnicity category, output hhrisk hazard ratios
@@ -106,7 +106,7 @@ foreach outcome in covidHospOrDeath {
 	*helper variables
 	sum eth5
 	local maxEth5=r(max) 
-	sum hhRiskCatExp
+	sum hhRiskCatExp_3cats
 	local maxhhRiskCat=r(max)
 
 	*for each ethnicity category, output hhrisk hazard ratios

@@ -267,6 +267,16 @@ actions:
 
 
 
+  10_hh_imd_descriptives_W1:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/09_hhClassif_an_mv_analysis_perEth16Group_HR_table.do MAIN
+    outputs:
+      moderately_sensitive:
+        log1: logs/10_eth_imd_descriptives_W1.log
+        table1: output/table_ethnicity_descriptivesMAIN.txt
+        table2: output/table_ethimd_descriptivesMAIN.txt
+
+
 
 
     
