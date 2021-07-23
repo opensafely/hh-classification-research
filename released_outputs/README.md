@@ -15,3 +15,4 @@
   * [output/rohini_hhcat_ethMAIN.gph](output/rohini_hhcat_ethMAIN.gph)
   * [output/table1_hhClassif.txt](output/table1_hhClassif.txt)
   * [output/table1_hhClassif.xlsx](output/table1_hhClassif.xlsx)
+  * [output/table_ethimd_descriptivesMAIN.txt](output/table_ethimd_descriptivesMAIN.txt)
