@@ -86,8 +86,8 @@ foreach outcome in covidHospOrDeath {
 *2 and 3 here are the two age categories I've created so far, need to change these when there are more
 
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
-	*keep only white and south asian
-	drop if eth5>2
+	*keep only white and south asian (eth5 categories one and 2)
+	keep if eth5<3
 	
 	*Perform LRT test to get p-value for interaction
 	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)

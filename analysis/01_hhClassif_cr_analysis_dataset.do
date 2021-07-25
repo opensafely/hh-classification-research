@@ -248,8 +248,8 @@ drop imd_o
 * Reverse the order (so high is more deprived)
 recode imd 5 = 1 4 = 2 3 = 3 2 = 4 1 = 5 .u = .u
 
-label define imdLabel 1 "1 least deprived" 2 "2" 3 "3" 4 "4" 5 "5 most deprived" .u "Unknown"
-label values imd imdLabel 
+label define imd 1 "1 least deprived" 2 "2" 3 "3" 4 "4" 5 "5 most deprived" .u "Unknown"
+label values imd imd
 
 
 
@@ -273,14 +273,20 @@ Note that U=private home, PC=care home, PN=nursing home, PS=care or nursing home
 *remove people from hh_cat if they live in a care home
 replace hh_total_cat=. if care_home_type!="U"
 */
-*keep only private homes
+
+********************NEEDS RE-ORDE
+
+
+*keep only people marked as living in private homes
 drop if care_home_type!="U"
+
+*might need to 
 			
-label define hh_total_catLabel  1 "1-2" ///
+label define hh_total_cat  1 "1-2" ///
 								2 "3-5" ///
 								3 "6+" ///
 											
-label values hh_total_cat hh_total_catLabel
+label values hh_total_cat hh_total_cat
 
 safetab hh_total_cat,m
 safetab hh_total_cat care_home_type,m
@@ -1240,10 +1246,10 @@ replace coMorbCat=0 if totComorbsOfInterest==0
 replace coMorbCat=1 if totComorbsOfInterest==1
 replace coMorbCat=2 if totComorbsOfInterest>1
 la var coMorbCat "Categorical number of comorbidites of interest"
-label define coMorbCatLabel 	0 "No comorbidities" 	///
+label define coMorbCat 	0 "No comorbidities" 	///
 						1 "1 comorbidity"		///
 						2 "2 or more comorbidities"			
-label values coMorbCat coMorbCatLabel
+label values coMorbCat coMorbCat
 safetab coMorbCat
 
 
@@ -1388,8 +1394,8 @@ replace rural_urbanFive=2 if rural_urban==2
 replace rural_urbanFive=3 if rural_urban==3|rural_urban==4
 replace rural_urbanFive=4 if rural_urban==5|rural_urban==6
 replace rural_urbanFive=5 if rural_urban==7|rural_urban==8
-label define rural_urbanFiveLabel 1 "Urban major conurbation" 2 "Urban minor conurbation" 3 "Urban city and town" 4 "Rural town and fringe" 5 "Rural village and dispersed"
-label values rural_urbanFive rural_urbanFiveLabel
+label define rural_urbanFive 1 "Urban major conurbation" 2 "Urban minor conurbation" 3 "Urban city and town" 4 "Rural town and fringe" 5 "Rural village and dispersed"
+label values rural_urbanFive rural_urbanFive
 safetab rural_urbanFive, miss
 
 *generate a binary rural urban (with missing assigned to urban)
