@@ -289,6 +289,20 @@ actions:
         table3: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHospOrDeath_W2.txt
         # table4: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_nonCovidDeath_W2.txt
 
+  12_hhClassif_an_MV_analysis_W_SA_multipleInteractions:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/12_hhClassif_an_MV_analysis_W_SA_multipleInteractions.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/12_hhClassif_an_MV_analysis_W_SA_multipleinteractions_MAIN.log
+
+  12_hhClassif_an_MV_analysis_W_SA_multipleinteractions_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/12_hhClassif_an_MV_analysis_W_SA_multipleInteractions.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/12_hhClassif_an_MV_analysis_W_SA_multipleinteractions_W2.log
+
 
 
     
