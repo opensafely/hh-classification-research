@@ -60,10 +60,34 @@ est store B
 display "***************LRT TEST: ETHNICITY-IMD*****************"
 lrtest A B, force
 
-**Testing main exposure-ethnicity interaction while also including other interactions
-capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+*Testing obesity interaction
+capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male  i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-OBESITY*****************"
+lrtest A B, force
+
+*Testing rural urban interaction
+capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male  i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-RURALURBAN*****************"
+lrtest A B, force
+
+*Testing hh size interaction
+capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.hh_total_cat i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.hh_total_cat i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-HHSIZE*****************"
+lrtest A B, force
+
+**Testing main exposure-ethnicity interaction while also including other interactions
+capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.hh_total_cat##i.eth5 age1 age2 age3 i.male i.coMorbCat , strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.hh_total_cat##i.eth5 age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 est store B
 display "***************LRT TEST: ETHNICITY-HHCOMPOSITION*****************"
 lrtest A B, force
