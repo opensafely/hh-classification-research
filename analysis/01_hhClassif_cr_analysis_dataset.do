@@ -438,6 +438,18 @@ label define hhRiskCat67PLUS_3cats 1 "Only 67+" 2 "67+ & 1 other gen" 3 "67+ & >
 label values hhRiskCat67PLUS_3cats hhRiskCat67PLUS_3cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_3cats, miss
 
+*create another version that has 4 categories (1) living with only one generation (2) living with one other generation (3) living with two other generations (4) living with three other gens
+generate hhRiskCat67PLUS_4cats=.
+la var hhRiskCat67PLUS_4cats "hhRiskCat for the over 67 year old age group - 4 categories"
+replace hhRiskCat67PLUS_4cats=1 if hhRiskCat67PLUS==1
+replace hhRiskCat67PLUS_4cats=2 if hhRiskCat67PLUS>1 & hhRiskCat67PLUS<5
+replace hhRiskCat67PLUS_4cats=3 if hhRiskCat67PLUS>4 & hhRiskCat67PLUS<8
+replace hhRiskCat67PLUS_4cats=4 if hhRiskCat67PLUS==8
+*label variable
+label define hhRiskCat67PLUS_4cats 1 "Only 67+" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
+label values hhRiskCat67PLUS_4cats hhRiskCat67PLUS_4cats
+safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
+
 
 *(b) variable for stratifying by the 30-66 year olds 
 generate hhRiskCat33TO66=.
@@ -1487,6 +1499,7 @@ keep if ageCatHHRisk==3
 tab hhRiskCat
 rename hhRiskCat67PLUS hhRiskCatExp
 rename hhRiskCat67PLUS_3cats hhRiskCatExp_3cats
+rename hhRiskCat67PLUS_4cats hhRiskCatExp_4cats
 *******************tabulation to check these variables make sense***************
 tab hhRiskCatExp hhRiskCatExp_3cats
 tab hhRiskCatExp, miss
