@@ -252,14 +252,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/10_eth_imd_descriptives_W1.log
-        table1: output/table_ethnicity_descriptivesMAIN.txt
-        table2: output/table_ethimd_descriptivesMAIN.txt
-        fig1: output/rohini_hhbroad_ethMAIN.gph
-        # fig2: output/rohini_hhsize_ethMAIN.gph
-        fig3: output/rohini_hhcat_ethMAIN.gph
-        fig4: output/rohini_hhbroad_ethimdMAIN.gph
-        # fig5: output/rohini_hhsize_ethimdMAIN.gph
-        fig6: output/rohini_hhcat_ethimdMAIN.gph
+        table: output/table_ethnicity_descriptivesMAIN.txt
 
   11_hhClassif_an_mv_perEth5Group_HR_3CATSFULLMVtable:
     needs: [01_hhClassif_cr_analysis_dataset]
