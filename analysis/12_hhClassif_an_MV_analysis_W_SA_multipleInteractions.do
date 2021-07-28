@@ -45,55 +45,55 @@ log using ./logs/12_hhClassif_an_MV_analysis_W_SA_multipleinteractions_`dataset'
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
 keep if eth5<3
 
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5##i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: ETHNICITY-SMOKING*****************"
+display "***************LRT TEST: ETHNICITY-SMOKING result - evidence for interaction*****************"
 lrtest A B, force
 
 *Testing IMD-ethnicity interaction
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.imd i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5##i.imd i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.imd i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.imd i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: ETHNICITY-IMD*****************"
+display "***************LRT TEST: ETHNICITY-IMD - evidence for interaction*****************"
 lrtest A B, force
 
 *Testing obesity interaction
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5##i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male  i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male  i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: ETHNICITY-OBESITY*****************"
+display "***************LRT TEST: ETHNICITY-OBESITY - evidence for interaction*****************"
 lrtest A B, force
 
 *Testing rural urban interaction
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5##i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male  i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male  i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: ETHNICITY-RURALURBAN*****************"
+display "***************LRT TEST: ETHNICITY-RURALURBAN - NO evidence for interaction*****************"
 lrtest A B, force
 
-*Testing hh size interaction
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.hh_total_cat i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+*Testing hh_size interaction
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5##i.hh_total_cat i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5##i.hh_total_cat i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.hh_total_cat i.rural_urbanFive i.obese4cat i.imd i.smoke_nomiss age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: ETHNICITY-HHSIZE*****************"
+display "***************LRT TEST: ETHNICITY-HHSIZE - CODING ERROR, REDOING*****************"
 lrtest A B, force
 
 **Testing main exposure-ethnicity interaction while also including other interactions
-capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.hh_total_cat##i.eth5 age1 age2 age3 i.male i.coMorbCat , strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive age1 age2 age3 i.male i.coMorbCat , strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_3cats i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.hh_total_cat##i.eth5 age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: ETHNICITY-HHCOMPOSITION*****************"
+display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - evidence for interaction (hooray)*****************"
 lrtest A B, force
 *output lincom for this
 *Fit and save model
-capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive age1 age2 age3 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 capture noisily estimates store mvAdjWHHSize		
 *helper variables
 sum eth5
@@ -125,16 +125,16 @@ foreach outcome in covidHospOrDeath {
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
 	
 	*Perform LRT test to get p-value for interaction
-	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store A
-	capture noisily stcox i.hhRiskCatExp_3cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store B
 	display "***************LRT TEST 5 ETH CATEGORIES*****************"
 	lrtest A B, force
 
 	*Fit and save model for outputting HRs
 	display "***********ALL 5 ETHNICITY CATEGORIES - Outcome: `outcome', ageband: 67+, dataset: `dataset' - broad categories, interaction with ethnicity*************************"
-	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store mvAdjWHHSize		
 	
 	
@@ -166,16 +166,16 @@ foreach outcome in covidHospOrDeath {
 	keep if eth5<3
 	
 	*Perform LRT test to get p-value for interaction
-	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store A
-	capture noisily stcox i.hhRiskCatExp_3cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store B
 	display "***************LRT TEST 2 ETH CATEGORIES*****************"
 	lrtest A B, force
 
 	*Fit and save model
 	display "***********ONLY WHITE AND SOUTH ASIAN EHTNICITY CATEGORIES - Outcome: `outcome', ageband: 67+, dataset: `dataset' - broad categories, interaction with ethnicity*************************"
-	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store mvAdjWHHSize		
 	
 	
