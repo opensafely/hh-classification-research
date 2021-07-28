@@ -4,7 +4,7 @@
 * output
   * [output/hh_size_T1.xlsx](output/hh_size_T1.xlsx)
   * [output/hhClassif_fullMVtables_forWhiteAndSouthAsian.ods](output/hhClassif_fullMVtables_forWhiteAndSouthAsian.ods)
-  * [output/hhclassif_tablecontents_HRtable_eth16_covidHospOrDeath_W2.txt](output/hhclassif_tablecontents_HRtable_eth16_covidHospOrDeath_W2.txt)
+  * [output/hhclassif_tablecontents_HRtable_eth16_covidHospOrDeath_W2_REDACTED.txt](output/hhclassif_tablecontents_HRtable_eth16_covidHospOrDeath_W2_REDACTED.txt)
   * [output/HHdistHists_MAIN.pdf](output/HHdistHists_MAIN.pdf)
   * [output/MeetingThomasLorenzo22Jul.ods](output/MeetingThomasLorenzo22Jul.ods)
   * [output/ov65HHdistHists_MAIN.pdf](output/ov65HHdistHists_MAIN.pdf)
