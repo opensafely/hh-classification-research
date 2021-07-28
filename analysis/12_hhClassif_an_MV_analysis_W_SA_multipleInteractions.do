@@ -94,9 +94,9 @@ lrtest A B, force*/
 
 
 **Testing main exposure-ethnicity interaction while also including INTERACTIONS WITH ALL OTHER VARIABLES (BASED ON MEETING WITH STEPHEN 28 JUL)
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 age1##i.eth5 age2##i.eth5 age3##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 age1 age2 age3 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 age1##i.eth5 age2##i.eth5 age3##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 age1 age2 age3 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store B
 display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING INTERACTIONS FOR ALL OTHER VARIABLES*****************"
 lrtest A B, force
@@ -104,7 +104,7 @@ lrtest A B, force
 
 *output lincom for this
 *Fit and save model
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 age1##i.eth5 age2##i.eth5 age3##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 age1 age2 age3 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 capture noisily estimates store mvAdjWHHSize		
 *helper variables
 sum eth5
