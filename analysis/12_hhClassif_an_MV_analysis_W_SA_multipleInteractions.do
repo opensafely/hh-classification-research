@@ -40,11 +40,12 @@ local dataset `2'
 capture log close
 log using ./logs/12_hhClassif_an_MV_analysis_W_SA_multipleinteractions_`dataset', replace t
 
-
-*Testing smoking-ethnicity interaction
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
 keep if eth5<3
 
+
+/*
+*Testing smoking-ethnicity interaction
 capture noisily stcox i.hhRiskCatExp_4cats i.eth5##i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.smoke_nomiss age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
@@ -91,6 +92,7 @@ capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke_nomiss##
 est store B
 display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - evidence for interaction (hooray)*****************"
 lrtest A B, force*/
+*/
 
 
 **Testing main exposure-ethnicity interaction while also including INTERACTIONS WITH ALL OTHER VARIABLES (BASED ON MEETING WITH STEPHEN 28 JUL)
