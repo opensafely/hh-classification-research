@@ -21,10 +21,9 @@
 
 local dataset `1'
 
-*list of demographic variables for adjustment: age (spline), sex, BMI, smoking, density of housing, geographic area (already taken account of in stratified analysis)
-*global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
 *list of comorbidities for adjustment
-*global comorbidadjlist i.coMorbCat	
+global comorbidadjlist i.coMorbCat	
 
 /*
 local outcome `1' 
@@ -40,9 +39,14 @@ local dataset `2'
 capture log close
 log using ./logs/13_hhClassif_an_MV_analysis_test_for_trend_`dataset', replace t
 
+use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_2`dataset'.dta, clear
 
-*include hhRiskCatExp_4cats as a linear variable and see what p-value is in output
-capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke_nomiss##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 age1 age2 age3 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+*model with hhRiskCatExp_4 cats as linear
+capture noisily stcox hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+
+*model with categorical to check I have the right one and results are as I expect
+capture noisily stcox i.hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+
 
 log close
 
