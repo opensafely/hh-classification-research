@@ -39,6 +39,9 @@ local dataset `2'
 capture log close
 log using ./logs/13_hhClassif_an_MV_analysis_test_for_trend_`dataset', replace t
 
+
+**************TEST FOR TREND ONE: SOUTH ASIAN ETHNICITY (PARTICULARLY INTERESTED IN WAVE 2)**********************
+
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_2`dataset'.dta, clear
 
 *model with hhRiskCatExp_4 cats as linear
@@ -46,6 +49,19 @@ capture noisily stcox hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.
 
 *model with categorical to check I have the right one and results are as I expect
 capture noisily stcox i.hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+
+
+
+**************TEST FOR TREND TWO: WHITE ETHNICITY (PARTICULARLY INTERESTED IN WAVE 1)**********************
+
+use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_1`dataset'.dta, clear
+
+*model with hhRiskCatExp_4 cats as linear
+capture noisily stcox hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+
+*model with categorical to check I have the right one and results are as I expect
+capture noisily stcox i.hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+
 
 
 log close
