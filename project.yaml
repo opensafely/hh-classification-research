@@ -312,6 +312,20 @@ actions:
       moderately_sensitive:
         log: logs/13_hhClassif_an_MV_analysis_test_for_trend_W2.log
 
+  14_hhClassif_an_MV_analyses_p_values_for_var_associations:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/14_hhClassif_an_MV_analyses_p_values_for_var_associations.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/14_hhClassif_an_MV_analyses_p_values_for_var_associations_MAIN.log
+
+  14_hhClassif_an_MV_analyses_p_values_for_var_associations_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/14_hhClassif_an_MV_analyses_p_values_for_var_associations.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/14_hhClassif_an_MV_analyses_p_values_for_var_associations_W2.log
+
 
 
     
