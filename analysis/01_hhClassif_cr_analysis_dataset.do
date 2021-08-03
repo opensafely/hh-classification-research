@@ -109,14 +109,14 @@ safetab ethnicity
  replace eth5=5 if ethnicity==5
  replace eth5=. if ethnicity==.
 
- label define eth5Label	 	1 "White"  					///
+ label define eth5 			1 "White"  					///
 							2 "South Asian"				///						
 							3 "Black"  					///
 							4 "Mixed"					///
 							5 "Other"					
 					
 
-label values eth5 eth5Label
+label values eth5 eth5
 safetab eth5, m
 
 
@@ -332,8 +332,8 @@ safetab hh_size
 *first of all, create age bands that I need for this
 egen ageCatHHRisk=cut(age), at (0, 18, 30, 67, 200)
 recode ageCatHHRisk 0=0 18=1 30=2 67=3 
-label define ageCatHHRiskLabel 0 "0-17" 1 "18-29" 2 "30-66" 3 "67+"
-label values ageCatHHRisk ageCatHHRiskLabel
+label define ageCatHHRisk 0 "0-17" 1 "18-29" 2 "30-66" 3 "67+"
+label values ageCatHHRisk ageCatHHRisk
 safetab ageCatHHRisk, miss
 la var ageCatHHRisk "Age categorised for HH risk analysis"
 
@@ -386,7 +386,7 @@ preserve
 	
 	*label variable
 	label define hhRiskCatLabel 0 "Only <18"  1 "Only 18-29" 2 "Only 30-66" 3 "Only 67+" 4 "0-17 & 18-29" 5 "0-17 & 30-66" 6 "0-17 & 67+" 7 "18-29 & 30-66" 8 "18-29 & 67+" 9 "30-66 & 67+" 10 "0-17, 18-29 & 30-66" 11 "0-17, 18-29 & 67+" 12 "0-17, 30-66 & 67+" 13 "18-29, 30-66 & 67+" 14 "0-17, 18-29, 30-66 & 67+"
-	label values hhRiskCat hhRiskCatLabel
+	label values hhRiskCat hhRiskCat
 	la var hhRiskCat "Age group(s) of hh occupants"
 	safetab hhRiskCat, miss
 	keep hh_id hhRiskCat
@@ -407,8 +407,8 @@ replace hhRiskCatBROAD=1 if hhRiskCat>=1 & hhRiskCat<=3
 replace hhRiskCatBROAD=2 if hhRiskCat>=4 & hhRiskCat<=9
 replace hhRiskCatBROAD=3 if hhRiskCat>=10 & hhRiskCat<=14
 *label variable
-label define hhRiskCatBROADLabel 1 "1 gen" 2 "2 gens" 3 "3+ gens"
-label values hhRiskCatBROAD hhRiskCatBROADLabel
+label define hhRiskCatBROAD 1 "1 gen" 2 "2 gens" 3 "3+ gens"
+label values hhRiskCatBROAD hhRiskCatBROAD
 safetab hhRiskCat hhRiskCatBROAD 
 
 *(b) variable for stratifying by the oldest age group (67+)
@@ -643,14 +643,14 @@ recode  bmicat . = 5 if bmi<40
 recode  bmicat . = 6 if bmi<.
 replace bmicat = .u if bmi>=.
 
-label define bmicatLabel 	1 "Underweight (<18.5)" 	///
+label define bmicat 	1 "Underweight (<18.5)" 	///
 							2 "Normal (18.5-24.9)"		///
 							3 "Overweight (25-29.9)"	///
 							4 "Obese I (30-34.9)"		///
 							5 "Obese II (35-39.9)"		///
 							6 "Obese III (40+)"			///
 							.u "Unknown (.u)"
-label values bmicat bmicatLabel
+label values bmicat bmicat
 
 * Create more granular categorisation
 
@@ -677,22 +677,22 @@ replace bmicat_sa = 6 if bmi>=37.5 & bmi < . & ethnicity ==3
 
 safetab bmicat_sa
 
-label define bmicat_saLabel 1 "Underweight (<18.5)" 	///
+label define bmicat_sa 1 "Underweight (<18.5)" 	///
 					2 "Normal (18.5-24.9 / 22.9)"		///
 					3 "Overweight (25-29.9 / 23-27.4)"	///
 					4 "Obese I (30-34.9 / 27.4-32.4)"		///
 					5 "Obese II (35-39.9 / 32.5- 37.4)"		///
 					6 "Obese III (40+ / 37.5+)"			///
 					.u "Unknown (.u)"
-label values bmicat_sa bmicat_saLabel
+label values bmicat_sa bmicat_sa
 
 * Create more granular categorisation
 recode bmicat_sa 1/3 .u = 1 4=2 5=3 6=4, gen(obese4cat_sa)
 
 label define obese4cat_sa 	1 "No record of obesity" 	///
-						2 "Obese I (30-34.9 / 27.5-32.5)"		///
-						3 "Obese II (35-39.9 / 32.5- 37.4)"		///
-						4 "Obese III (40+ / 37.5+)"		
+							2 "Obese I (30-34.9 / 27.5-32.5)"		///
+							3 "Obese II (35-39.9 / 32.5- 37.4)"		///
+							4 "Obese III (40+ / 37.5+)"		
 label values obese4cat_sa obese4cat_sa
 order obese4cat_sa, after(bmicat_sa)
 
@@ -700,7 +700,7 @@ order obese4cat_sa, after(bmicat_sa)
 /*  Smoking  */
 
 * Smoking 
-label define smoke 1 "Never" 2 "Former" 3 "Current" .u "Unknown (.u)"
+capture noisily label define smoke 1 "Never" 2 "Former" 3 "Current" .u "Unknown (.u)"
 
 gen     smoke = 1  if smoking_status == "N"
 replace smoke = 2  if smoking_status == "E"
@@ -1355,8 +1355,8 @@ replace sex2=2 if sex=="M"
 drop sex
 rename sex2 sex
 safetab sex
-label define sexLabel 1 "F" 2 "M"
-label values sex sexLabel
+label define sex 1 "F" 2 "M"
+label values sex sex
 label var sex "Sex"
 
 *sort out region
@@ -1373,21 +1373,21 @@ replace region2=8 if region=="Yorkshire and The Humber"
 drop region
 rename region2 region
 label var region "region of England"
-label define regionLabel 0 "East" 1 "East Midlands"  2 "London" 3 "North East" 4 "North West" 5 "South East" 6 "South West" 7 "West Midlands" 8 "Yorkshire and The Humber"
-label values region regionLabel
+label define region 0 "East" 1 "East Midlands"  2 "London" 3 "North East" 4 "North West" 5 "South East" 6 "South West" 7 "West Midlands" 8 "Yorkshire and The Humber"
+label values region region
 
 *create an IMD variable with two categories
 safetab imd
 generate imdBroad=.
 replace imdBroad=1 if imd==1|imd==2|imd==3
 replace imdBroad=2 if imd==4|imd==5
-label define imdBroadLabel 1 "Less deprived" 2 "More deprived"
-label values imdBroad imdBroadLabel
+label define imdBroad 1 "Less deprived" 2 "More deprived"
+label values imdBroad imdBroad
 la var imdBroad "IMD in two categories (1=1-3, 2=4-5)"
 
 *label the urban rural categories
 replace rural_urban=. if rural_urban<1|rural_urban>8
-label define rural_urbanLabel 1 "urban major conurbation" ///
+label define rural_urban 1 "urban major conurbation" ///
 							  2 "urban minor conurbation" ///
 							  3 "urban city and town" ///
 							  4 "urban city and town in a sparse setting" ///
@@ -1395,7 +1395,7 @@ label define rural_urbanLabel 1 "urban major conurbation" ///
 							  6 "rural town and fringe in a sparse setting" ///
 							  7 "rural village and dispersed" ///
 							  8 "rural village and dispersed in a sparse setting"
-label values rural_urban rural_urbanLabel
+label values rural_urban rural_urban
 safetab rural_urban, miss
 
 *create a 4 category rural urban variable based upon meeting with Roz 21st October
@@ -1414,8 +1414,8 @@ safetab rural_urbanFive, miss
 generate rural_urbanBroad=.
 replace rural_urbanBroad=1 if rural_urban<=4|rural_urban==.
 replace rural_urbanBroad=0 if rural_urban>4 & rural_urban!=.
-label define rural_urbanBroadLabel 0 "Rural" 1 "Urban"
-label values rural_urbanBroad rural_urbanBroadLabel
+label define rural_urbanBroad 0 "Rural" 1 "Urban"
+label values rural_urbanBroad rural_urbanBroad
 safetab rural_urbanBroad rural_urban, miss
 label var rural_urbanBroad "Rural-Urban"
 
@@ -1426,15 +1426,16 @@ replace hh_size5cat=2 if hh_size==4|hh_size==5
 replace hh_size5cat=3 if hh_size==6|hh_size==7
 replace hh_size5cat=4 if hh_size==8|hh_size==9|hh_size==10
 
-label define hh_size5catLabel 1 "2-3" 2 "4-5" 3 "6-7" 4 "8-10"
-label values hh_size5cat hh_size5catLabel
+label define hh_size5cat 1 "2-3" 2 "4-5" 3 "6-7" 4 "8-10"
+label values hh_size5cat hh_size5cat
 safetab hh_size5cat hh_size, miss
 
 *create smoking variable with an unknwon category
 safetab smoke, miss
 replace smoke=4 if smoke==.u
-label define smokeLabel 1 "Never" 2 "Former" 3 "Current" 4 "Unknown"
-label values smoke smokeLabel
+label drop smoke
+label define smoke 1 "Never" 2 "Former" 3 "Current" 4 "Unknown"
+label values smoke smoke
 safetab smoke
 
 ***************

@@ -47,8 +47,8 @@ local dataset `1'
 capture log close
 log using ./logs/03e_hhClassif_an_descriptive_table_1_`dataset'.log, replace t
 
-* Open Stata dataset
-use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
+* Open Stata dataset - contains over 67 year olds only
+use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
 
 
 
@@ -70,10 +70,10 @@ syntax, variable(varname) condition(string)
 	sum `variable' if `variable' `condition'
 	**K Wing additional code to aoutput variable category labels**
 	local level=substr("`condition'",3,.)
-	local lab: label `variable'Label `level'
+	local lab: label `variable' `level'
 	file write tablecontent (" `lab'") _tab
 	
-	*local lab: label hhRiskCatBROADLabel 4
+	*local lab: label hhRiskCatExp_4catsLabel 4
 
 	
 	/*this is the overall column*/
@@ -84,10 +84,10 @@ syntax, variable(varname) condition(string)
 	file write tablecontent %9.0f (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
 
 	/*this loops through groups*/
-	forvalues i=1/3{
-	cou if hhRiskCatBROAD == `i'
+	forvalues i=1/4{
+	cou if hhRiskCatExp_4cats == `i'
 	local rowdenom = r(N)
-	cou if hhRiskCatBROAD == `i' & `variable' `condition'
+	cou if hhRiskCatExp_4cats == `i' & `variable' `condition'
 	local pct = 100*(r(N)/`rowdenom') 
 	*file write tablecontent %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
 	file write tablecontent %9.0f (r(N)) (" (") %3.1f (`pct') (")") _tab
@@ -111,10 +111,10 @@ syntax, variable(varname) condition(string)
 	local colpct = 100*(r(N)/`overalldenom')
 	file write tablecontent %9.0gc (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
 
-	forvalues i=1/3{
-	cou if hhRiskCatBROAD == `i'
+	forvalues i=1/4{
+	cou if hhRiskCatExp_4cats == `i'
 	local rowdenom = r(N)
-	cou if hhRiskCatBROAD == `i' & `variable' `condition'
+	cou if hhRiskCatExp_4cats == `i' & `variable' `condition'
 	local pct = 100*(r(N)/`rowdenom') 
 	file write tablecontent %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
 	}
@@ -194,8 +194,8 @@ syntax, variable(varname)
 	file write tablecontent ("Mean (SD)") _tab 
 	file write tablecontent  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
 	
-	forvalues i=1/3{							
-	qui summarize `variable' if hhRiskCatBROAD == `i', d
+	forvalues i=1/4{							
+	qui summarize `variable' if hhRiskCatExp_4cats == `i', d
 	file write tablecontent  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
 	}
 
@@ -206,8 +206,8 @@ file write tablecontent _n
 	file write tablecontent ("Median (IQR)") _tab 
 	file write tablecontent %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
 	
-	forvalues i=1/3{
-	qui summarize `variable' if hhRiskCatBROAD == `i', d
+	forvalues i=1/4{
+	qui summarize `variable' if hhRiskCatExp_4cats == `i', d
 	file write tablecontent %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
 	}
 	
@@ -221,14 +221,14 @@ end
 cap file close tablecontent
 file open tablecontent using ./output/table1_hhClassif`dataset'.txt, write text replace
 
-file write tablecontent ("Table 1: Demographic and Clinical Characteristics") _n
+file write tablecontent ("Table 1: Demographic and Clinical Characteristics - `dataset'") _n
 
 * eth5 labelled columns *THESE WOULD BE HOUSEHOLD LABELS, eth5 is the equivqlent of the hh size variable
 
-local lab1: label hhRiskCatBROADLabel 1
-local lab2: label hhRiskCatBROADLabel 2
-local lab3: label hhRiskCatBROADLabel 3
-*local lab4: label hhRiskCatBROADLabel 4
+local lab1: label hhRiskCatExp_4cats 1
+local lab2: label hhRiskCatExp_4cats 2
+local lab3: label hhRiskCatExp_4cats 3
+local lab4: label hhRiskCatExp_4cats 4
 *local lab5: label eth5 5
 *local lab6: label eth5 6
 
@@ -237,8 +237,8 @@ local lab3: label hhRiskCatBROADLabel 3
 file write tablecontent _tab ("Total")				  			  _tab ///
 							 ("`lab1'")  						  _tab ///
 							 ("`lab2'")  						  _tab ///
-							 ("`lab3'")  						  _n
-							 *("`lab4'")  						  _n
+							 ("`lab3'")  						  _tab ///
+							 ("`lab4'")  						  _n
 							 *("`lab5'")  						  _tab
 							 *("`lab6'")  						  _n 							 
 							 
@@ -323,6 +323,7 @@ file close tablecontent
 * Close log file 
 log close
 
+/*
 clear
 insheet using ./output/table1_hhClassif`dataset'.txt, clear
 
