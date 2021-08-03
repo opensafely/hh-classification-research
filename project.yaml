@@ -115,7 +115,7 @@ actions:
       moderately_sensitive:
         log: logs/03e_hhClassif_an_descriptive_table_1_MAIN.log
         tableTxt: output/table1_hhClassifMAIN.txt
-        tableExcel: output/table1_hhClassifMAIN.xlsx
+       # tableExcel: output/table1_hhClassifMAIN.xlsx
 
   03e_hhClassif_an_descriptive_table_1_W2:
     run: stata-mp:latest analysis/03e_hhClassif_an_descriptive_table_1.do W2
@@ -124,7 +124,7 @@ actions:
       moderately_sensitive:
         log: logs/03e_hhClassif_an_descriptive_table_1_W2.log
         tableTxt: output/table1_hhClassifW2.txt
-        tableExcel: output/table1_hhClassifW2.xlsx
+      #  tableExcel: output/table1_hhClassifW2.xlsx
 
   04_hhClassif_an_univariable_analysis:
     needs: [01_hhClassif_cr_analysis_dataset]
