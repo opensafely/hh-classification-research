@@ -51,7 +51,17 @@ log using ./logs/03e_hhClassif_an_descriptive_table_1_`dataset'.log, replace t
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
 
 
-
+*make an age category variable here (next time I rerun 01, need to move this code there)
+egen ageCatfor67Plus=cut(age), at (67, 70, 75, 80, 85, 200)
+recode ageCatfor67Plus 67=0 70=1 75=2 80=3 85=4 
+label define ageCatfor67Plus 0 "67-69" 1 "70-74" 2 "75-79" 3 "80-84" 4 "85+"
+label values ageCatfor67Plus ageCatfor67Plus
+safetab ageCatfor67Plus, miss
+la var ageCatHHRisk "Age categorised for Table 1 (over 67 year olds only)"
+*check groupins
+forvalues i=0/4{
+	sum age if ageCatfor67Plus==`i'
+}
 
 
  /* PROGRAMS TO AUTOMATE TABULATIONS===========================================*/ 
