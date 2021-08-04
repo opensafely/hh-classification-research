@@ -57,7 +57,7 @@ recode ageCatfor67Plus 67=0 70=1 75=2 80=3 85=4
 label define ageCatfor67Plus 0 "67-69" 1 "70-74" 2 "75-79" 3 "80-84" 4 "85+"
 label values ageCatfor67Plus ageCatfor67Plus
 safetab ageCatfor67Plus, miss
-la var ageCatHHRisk "Age categorised for Table 1 (over 67 year olds only)"
+la var ageCatfor67Plus "Age (categories)"
 *check groupins
 forvalues i=0/4{
 	sum age if ageCatfor67Plus==`i'
@@ -287,7 +287,7 @@ file write tablecontent _n
 qui summarizevariable, variable(age) 
 file write tablecontent _n
 
-tabulatevariable, variable(ageCatHHRisk) min(0) max(3) 
+tabulatevariable, variable(ageCatfor67Plus) min(0) max(4) 
 file write tablecontent _n 
 
 *ETHNICITY
