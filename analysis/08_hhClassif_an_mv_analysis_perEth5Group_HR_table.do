@@ -107,7 +107,7 @@ end
 
 *Testing outcomes
 
-foreach outcome in covidHospOrDeath {
+foreach outcome in covidHospOrDeath covidHosp covidDeath nonCovidDeath {
 	
 	* Open a log file
 	capture log close
