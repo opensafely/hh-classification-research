@@ -40,22 +40,24 @@ prog define outputHRsforvar
 				capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 				capture noisily estimates store mvAdjWHHSize
 				
-				
 
 				forvalues i=`min'/`max' {
 					display 
-					*get overall number
+					*get overall number for each category
 					cou if `variable' == `i'
 					*get number of events
 					cou if `variable' == `i' & _d == 1
 					local event = r(N)
-					*get person time and rate
+					*get person time and rate and counts
 					bysort `variable': egen total_follow_up = total(_t)
+					su total_follow_up
+					local n_people_All = r(N)
 					su total_follow_up if `variable' == `i'
 					local n_people = r(N)
 					local person_days = r(mean)
 					local person_years=`person_days'/365.25
 					local rate = 100000*(`event'/`person_years')
+					local percent=100*(`n_people'/`n_people_All')
 					*get HRs for each regression analysis
 					*crude 
 					estimates restore crude
@@ -90,7 +92,12 @@ prog define outputHRsforvar
 					display "Category label: `category'"
 					
 					*write each row
-					file write tablecontents  _tab ("`category'") _tab  (`n_people') _tab (`event')  _tab (`person_years') _tab %3.2f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _tab %4.2f (`hr_mvAdjWHHSize')  " (" %4.2f (`lb_mvAdjWHHSize') "-" %4.2f (`ub_mvAdjWHHSize') ")"  _n
+					if `i'==1 {
+						file write tablecontents  _tab ("`category'") _tab  (`n_people') _tab %3.0f (`percent')  _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab "1"  _tab "1" _tab "1" _tab "1"  _n
+					}
+					else {
+					file write tablecontents  _tab ("`category'") _tab  (`n_people') _tab %3.0f (`percent') _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _tab %4.2f (`hr_mvAdjWHHSize')  " (" %4.2f (`lb_mvAdjWHHSize') "-" %4.2f (`ub_mvAdjWHHSize') ")"  _n
+					}
 			
 					drop total_follow_up
 
@@ -107,7 +114,7 @@ end
 
 *Testing outcomes
 
-foreach outcome in covidHospOrDeath covidHosp covidDeath nonCovidDeath {
+foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 	
 	* Open a log file
 	capture log close
@@ -118,7 +125,7 @@ foreach outcome in covidHospOrDeath covidHosp covidDeath nonCovidDeath {
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
-	file write tablecontents _tab _tab ("N") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _n
+	file write tablecontents _tab _tab ("N") _tab ("%") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _n
 	
 	forvalues e=1/5 {
 		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3_ethnicity_`e'`dataset'.dta, clear
@@ -147,8 +154,6 @@ foreach outcome in covidHospOrDeath covidHosp covidDeath nonCovidDeath {
 		*include version with four exposure categories
 		file write tablecontents "Four categories:" _n
 		cap noisily outputHRsforvar, variable(hhRiskCatExp_4cats) catLabel(hhRiskCat67PLUS_4cats) min(1) max(4) ethnicity(`e') outcome(`outcome')
-		file write tablecontents _n
-		
 	}
 	cap file close tablecontents 
 	cap log close
