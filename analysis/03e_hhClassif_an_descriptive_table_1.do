@@ -47,21 +47,24 @@ local dataset `1'
 capture log close
 log using ./logs/03e_hhClassif_an_descriptive_table_1_`dataset'.log, replace t
 
-* Open Stata dataset - contains over 67 year olds only
+
+* Open Stata dataset
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
+*update variable with missing so that . is shown as unknown (just for this table)
+*(1) ethnicity
+replace eth5=6 if eth5==.
+label drop eth5
+label define eth5 			1 "White"  					///
+							2 "South Asian"				///						
+							3 "Black"  					///
+							4 "Mixed"					///
+							5 "Other"					///
+							6 "Unknown"
+					
 
+label values eth5 eth5
+safetab eth5, m
 
-*make an age category variable here (next time I rerun 01, need to move this code there)
-egen ageCatfor67Plus=cut(age), at (67, 70, 75, 80, 85, 200)
-recode ageCatfor67Plus 67=0 70=1 75=2 80=3 85=4 
-label define ageCatfor67Plus 0 "67-69" 1 "70-74" 2 "75-79" 3 "80-84" 4 "85+"
-label values ageCatfor67Plus ageCatfor67Plus
-safetab ageCatfor67Plus, miss
-la var ageCatfor67Plus "Age (categories)"
-*check groupins
-forvalues i=0/4{
-	sum age if ageCatfor67Plus==`i'
-}
 
 
  /* PROGRAMS TO AUTOMATE TABULATIONS===========================================*/ 
@@ -235,10 +238,10 @@ file write tablecontent ("Table 1: Demographic and Clinical Characteristics - `d
 
 * eth5 labelled columns *THESE WOULD BE HOUSEHOLD LABELS, eth5 is the equivqlent of the hh size variable
 
-local lab1: label hhRiskCatExp_4cats 1
-local lab2: label hhRiskCatExp_4cats 2
-local lab3: label hhRiskCatExp_4cats 3
-local lab4: label hhRiskCatExp_4cats 4
+local lab1: label hhRiskCat67PLUS_4cats 1
+local lab2: label hhRiskCat67PLUS_4cats 2
+local lab3: label hhRiskCat67PLUS_4cats 3
+local lab4: label hhRiskCat67PLUS_4cats 4
 *local lab5: label eth5 5
 *local lab6: label eth5 6
 
@@ -291,7 +294,7 @@ tabulatevariable, variable(ageCatfor67Plus) min(0) max(4)
 file write tablecontent _n 
 
 *ETHNICITY
-tabulatevariable, variable(eth5) min(1) max(5) 
+tabulatevariable, variable(eth5) min(1) max(6) 
 file write tablecontent _n 
 
 *BMI
@@ -299,7 +302,7 @@ tabulatevariable, variable(bmicat) min(1) max(6)
 file write tablecontent _n 
 
 *SMOKING
-tabulatevariable, variable(smoke) min(1) max(4) 
+tabulatevariable, variable(smoke) min(1) max(3) 
 file write tablecontent _n 
 
 *IMD

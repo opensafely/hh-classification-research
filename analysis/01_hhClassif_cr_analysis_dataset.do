@@ -337,6 +337,18 @@ label values ageCatHHRisk ageCatHHRisk
 safetab ageCatHHRisk, miss
 la var ageCatHHRisk "Age categorised for HH risk analysis"
 
+*make an age category variable here that is for table 1 of the 67+ year old analysis
+egen ageCatfor67Plus=cut(age), at (67, 70, 75, 80, 85, 200)
+recode ageCatfor67Plus 67=0 70=1 75=2 80=3 85=4 
+label define ageCatfor67Plus 0 "67-69" 1 "70-74" 2 "75-79" 3 "80-84" 4 "85+"
+label values ageCatfor67Plus ageCatfor67Plus
+safetab ageCatfor67Plus, miss
+la var ageCatfor67Plus "Age (categories)"
+*check groupins
+forvalues i=0/4{
+	sum age if ageCatfor67Plus==`i'
+}
+
 preserve
 	*keep only the variables I need to work this out
 	keep hh_id patient_id ageCatHHRisk
@@ -449,7 +461,6 @@ replace hhRiskCat67PLUS_4cats=4 if hhRiskCat67PLUS==8
 label define hhRiskCat67PLUS_4cats 1 "Only 67+" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
 label values hhRiskCat67PLUS_4cats hhRiskCat67PLUS_4cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
-
 
 *(b) variable for stratifying by the 30-66 year olds 
 generate hhRiskCat33TO66=.
@@ -633,7 +644,7 @@ replace bmi = . if bmi_measured_date == .
 replace bmi_measured_date = . if bmi == . 
 replace bmi_measured = . if bmi == . 
 
-* BMI (NB: watch for missingness)
+* BMI (NB: watch for missingness) - as per protocol, needed to change this so that missing were set to normal weight
 gen 	bmicat = .
 recode  bmicat . = 1 if bmi<18.5
 recode  bmicat . = 2 if bmi<25
@@ -641,15 +652,15 @@ recode  bmicat . = 3 if bmi<30
 recode  bmicat . = 4 if bmi<35
 recode  bmicat . = 5 if bmi<40
 recode  bmicat . = 6 if bmi<.
-replace bmicat = .u if bmi>=.
+*this is where missing is set to normal weight
+replace bmicat = 2 if bmi>=.
 
 label define bmicat 	1 "Underweight (<18.5)" 	///
 							2 "Normal (18.5-24.9)"		///
 							3 "Overweight (25-29.9)"	///
 							4 "Obese I (30-34.9)"		///
 							5 "Obese II (35-39.9)"		///
-							6 "Obese III (40+)"			///
-							.u "Unknown (.u)"
+							6 "Obese III (40+)"			
 label values bmicat bmicat
 
 * Create more granular categorisation
@@ -699,23 +710,24 @@ order obese4cat_sa, after(bmicat_sa)
 
 /*  Smoking  */
 
-* Smoking 
+* Smoking - need to set missing to never as per protocol
 capture noisily label define smoke 1 "Never" 2 "Former" 3 "Current" .u "Unknown (.u)"
 
 gen     smoke = 1  if smoking_status == "N"
 replace smoke = 2  if smoking_status == "E"
 replace smoke = 3  if smoking_status == "S"
-replace smoke = .u if smoking_status == "M"
-replace smoke = .u if smoking_status == "" 
+*this is where unknown is set to never
+replace smoke = 1 if smoking_status == "M"
+replace smoke = 1 if smoking_status == "" 
 
 label values smoke smoke
 drop smoking_status
 
 * Create non-missing 3-category variable for current smoking
 * Assumes missing smoking is never smoking 
-recode smoke .u = 1, gen(smoke_nomiss)
+/*recode smoke .u = 1, gen(smoke_nomiss)
 order smoke_nomiss, after(smoke)
-label values smoke_nomiss smoke
+label values smoke_nomiss smoke*/
 
 /* CLINICAL COMORBIDITIES */ 
 
@@ -1098,7 +1110,7 @@ label var bmi_measured_date  		"Body Mass Index (BMI, kg/m2), date measured"
 label var obese4cat					"Obesity (4 categories)"
 label var obese4cat_sa				"Obesity with SA categories"
 label var smoke		 				"Smoking status"
-label var smoke_nomiss	 			"Smoking status (missing set to non)"
+*label var smoke_nomiss	 			"Smoking status (missing set to non)"
 label var imd 						"Index of Multiple Deprivation (IMD)"
 label var eth5						"Eth 5 categories"
 label var ethnicity_16				"Eth 16 categories"
@@ -1431,12 +1443,14 @@ label values hh_size5cat hh_size5cat
 safetab hh_size5cat hh_size, miss
 
 *create smoking variable with an unknwon category
+/*()
 safetab smoke, miss
 replace smoke=4 if smoke==.u
 label drop smoke
 label define smoke 1 "Never" 2 "Former" 3 "Current" 4 "Unknown"
 label values smoke smoke
 safetab smoke
+*/
 
 ***************
 *  Save data  *
