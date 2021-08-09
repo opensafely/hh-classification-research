@@ -39,7 +39,9 @@ prog define outputHRsforvar
 				*MV adjusted (with household size)
 				capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 				capture noisily estimates store mvAdjWHHSize
-				
+				*get total count of people by for each ethnicity
+				count
+				local total = r(N)				
 
 				forvalues i=`min'/`max' {
 					display 
@@ -91,12 +93,16 @@ prog define outputHRsforvar
 					local category: label `catLabel' `i'
 					display "Category label: `category'"
 					
-					*write each row
+					
+					
+					*write each row hg
 					if `i'==1 {
-						file write tablecontents  _tab ("`category'")   _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab "1"  _tab "1" _tab "1" _tab "1"  _n
+						*write the total
+						file write tablecontents "(N="(`total') ")" _n
+						file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")") _tab (`event') _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab "1"  _tab "1" _tab "1" _tab "1"  _n
 					}
 					else {
-					file write tablecontents  _tab ("`category'")  _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _tab %4.2f (`hr_mvAdjWHHSize')  " (" %4.2f (`lb_mvAdjWHHSize') "-" %4.2f (`ub_mvAdjWHHSize') ")"  _n
+					file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")")  _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _tab %4.2f (`hr_mvAdjWHHSize')  " (" %4.2f (`lb_mvAdjWHHSize') "-" %4.2f (`ub_mvAdjWHHSize') ")"  _n
 					}
 			
 					drop total_follow_up
@@ -125,24 +131,24 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
-	file write tablecontents _tab _tab ("N") _tab ("%") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _n
+	file write tablecontents _tab _tab ("N (%)") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _n
 	
 	forvalues e=1/5 {
 		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3_ethnicity_`e'`dataset'.dta, clear
 		if `e'==1 {
-			file write tablecontents "Ethnicity: White" _n
+			file write tablecontents "Ethnicity: White " 
 		}
 		else if `e'==2 {
-			file write tablecontents "Ethnicity: South Asian" _n
+			file write tablecontents "Ethnicity: South Asian " 
 		}
 		else if `e'==3 {
-			file write tablecontents "Ethnicity: Black" _n
+			file write tablecontents "Ethnicity: Black " 
 		}
 		else if `e'==4 {
-			file write tablecontents "Ethnicity: Mixed" _n
+			file write tablecontents "Ethnicity: Mixed " 
 		}
 		else if `e'==5 {
-			file write tablecontents "Ethnicity: Other" _n
+			file write tablecontents "Ethnicity: Other " 
 		}
 		display "ETHNICITY: `e'"
 		*cap noisily outputHRsforvar, variable(hhRiskCatExp) catLabel(hhRiskCat67PLUS) min(1) max(8) ethnicity(`e') outcome(`outcome')
@@ -152,7 +158,6 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 		*cap noisily outputHRsforvar, variable(hhRiskCatExp_3cats) catLabel(hhRiskCat67PLUS_3cats) min(1) max(3) ethnicity(`e') outcome(`outcome')
 		*file write tablecontents _n
 		*include version with four exposure categories
-		file write tablecontents "Four categories:" _n
 		cap noisily outputHRsforvar, variable(hhRiskCatExp_4cats) catLabel(hhRiskCat67PLUS_4cats) min(1) max(4) ethnicity(`e') outcome(`outcome')
 	}
 	cap file close tablecontents 
