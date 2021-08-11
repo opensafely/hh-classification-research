@@ -74,17 +74,17 @@ syntax, variable(varname) condition(string)
 	
 	/*this is the overall column*/
 	cou if `variable' `condition'
-	local rowdenom = r(N)
+	local total = r(N)
 	local colpct = 100*(r(N)/`overalldenom')
-	*file write tablecontents %9.0gc (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
-	file write tablecontents %9.0f (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
+	*file write tablecontents %9.0gc (`total')  (" (") %3.1f (`colpct') (")") _tab
+	file write tablecontents %9.0f (`total')  (" (") %3.1f (`colpct') (")") _tab
 
 	/*this loops through groups*/
 	forvalues i=1/4{
 	cou if hhRiskCatExp_4cats == `i'
 	local rowdenom = r(N)
 	cou if hhRiskCatExp_4cats == `i' & `variable' `condition'
-	local pct = 100*(r(N)/`rowdenom') 
+	local pct = 100*(r(N)/`total') 
 	*file write tablecontents %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
 	file write tablecontents %9.0f (r(N)) (" (") %3.1f (`pct') (")") _tab
 	}
