@@ -93,6 +93,44 @@ syntax, variable(varname) condition(string)
 end
 
 
+cap prog drop generaterowEight
+program define generaterowEight
+syntax, variable(varname) condition(string) 
+	
+	cou
+	local overalldenom=r(N)
+	
+	sum `variable' if `variable' `condition'
+	**K Wing additional code to aoutput variable category labels**
+	local level=substr("`condition'",3,.)
+	local lab: label `variable' `level'
+	file write tablecontents (" `lab'") _tab
+	
+	*local lab: label hhRiskCatExp_4catsLabel 4
+
+	
+	/*this is the overall column*/
+	cou if `variable' `condition'
+	local total = r(N)
+	local colpct = 100*(r(N)/`overalldenom')
+	*file write tablecontents %9.0gc (`total')  (" (") %3.1f (`colpct') (")") _tab
+	file write tablecontents %9.0f (`total')  (" (") %3.1f (`colpct') (")") _tab
+
+	/*this loops through groups*/
+	forvalues i=1/8{
+	cou if hhRiskCatExp == `i'
+	local rowdenom = r(N)
+	cou if hhRiskCatExp == `i' & `variable' `condition'
+	local pct = 100*(r(N)/`total') 
+	*file write tablecontents %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
+	file write tablecontents %9.0f (r(N)) (" (") %3.1f (`pct') (")") _tab
+	}
+	
+	file write tablecontents _n
+end
+
+
+
 * Output one row of table for co-morbidities and meds
 
 cap prog drop generaterow2 /*this puts it all on the same row, is rohini's edit*/
@@ -157,6 +195,26 @@ syntax, variable(varname) min(real) max(real) [missing]
 
 end
 
+cap prog drop tabulatevariableEight
+prog define tabulatevariableEight
+syntax, variable(varname) min(real) max(real) [missing]
+
+	local lab: variable label `variable'
+	file write tablecontents ("`lab'") _n 
+
+	forvalues varlevel = `min'/`max'{ 
+		generaterowEight, variable(`variable') condition("==`varlevel'")
+	}
+	
+	if "`missing'"!="" generaterowEight, variable(`variable') condition("== 12")
+	
+
+
+end
+
+
+
+
 ********************************************************************************
 
 /* Explanatory Notes 
@@ -211,10 +269,44 @@ file write tablecontents _n
 	
 end
 
+cap prog drop summarizevariableEight
+prog define summarizevariableEight
+syntax, variable(varname) 
+
+	local lab: variable label `variable'
+	file write tablecontents ("`lab'") _n 
+
+
+	qui summarize `variable', d
+	file write tablecontents ("Mean (SD)") _tab 
+	file write tablecontents  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
+	
+	forvalues i=1/8{							
+	qui summarize `variable' if hhRiskCatExp_4cats == `i', d
+	file write tablecontents  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
+	}
+
+file write tablecontents _n
+
+	
+	qui summarize `variable', d
+	file write tablecontents ("Median (IQR)") _tab 
+	file write tablecontents %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
+	
+	forvalues i=1/8{
+	qui summarize `variable' if hhRiskCatExp_4cats == `i', d
+	file write tablecontents %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
+	}
+	
+file write tablecontents _n
+	
+end
+
+
 
 
 *Program that defines which variables are being outputted
-program outputTable
+program outputTableFourCats
 
 * eth5 labelled columns *THESE WOULD BE HOUSEHOLD LABELS, eth5 is the equivqlent of the hh size variable
 
@@ -280,6 +372,82 @@ program outputTable
 end
 
 
+*Program that defines which variables are being outputted
+program outputTableEightCats
+
+* eth5 labelled columns *THESE WOULD BE HOUSEHOLD LABELS, eth5 is the equivqlent of the hh size variable
+
+	local lab1: label hhRiskCat67PLUS 1
+	local lab2: label hhRiskCat67PLUS 2
+	local lab3: label hhRiskCat67PLUS 3
+	local lab4: label hhRiskCat67PLUS 4
+	local lab5: label hhRiskCat67PLUS 5
+	local lab6: label hhRiskCat67PLUS 6
+	local lab7: label hhRiskCat67PLUS 7
+	local lab8: label hhRiskCat67PLUS 8
+	*local lab5: label eth5 5
+	*local lab6: label eth5 6
+
+
+
+	file write tablecontents _tab ("Total")				  			  _tab ///
+								 ("`lab1'")  						  _tab ///
+								 ("`lab2'")  						  _tab ///
+								 ("`lab3'")  						  _tab ///
+								 ("`lab4'")  						  _tab ///
+								 ("`lab5'")  						  _tab ///
+								 ("`lab6'")  						  _tab ///
+								 ("`lab7'")  						  _tab ///
+								 ("`lab8'")  						  _n
+								 *("`lab5'")  						  _tab
+								 *("`lab6'")  						  _n 							 
+								 
+
+	*SEX
+	tabulatevariableEight, variable(sex) min(1) max(2) 
+	file write tablecontents _n 
+
+	*AGE
+	qui summarizevariableEight, variable(age) 
+	file write tablecontents _n
+
+	tabulatevariableEight, variable(ageCatfor67Plus) min(0) max(4) 
+	file write tablecontents _n 
+
+	*BMI
+	tabulatevariableEight, variable(bmicat) min(1) max(6) 
+	file write tablecontents _n 
+
+	*SMOKING
+	tabulatevariableEight, variable(smoke) min(1) max(3) 
+	file write tablecontents _n 
+
+	*IMD
+	tabulatevariableEight, variable(imd) min(1) max(5) 
+	file write tablecontents _n 
+
+	*REGION
+	tabulatevariableEight, variable(region) min(0) max(8) 
+	file write tablecontents _n 
+
+	*RURAL URBAN (five categories)
+	tabulatevariableEight, variable(rural_urbanFive) min(1) max(5) 
+	file write tablecontents _n 
+
+	*HOUSEHOLD SIZE
+	tabulatevariableEight, variable(hh_total_cat) min(1) max(3) 
+	file write tablecontents _n 
+
+	*COMORBIDITIES (3 CATEGORIES)
+	tabulatevariableEight, variable(coMorbCat) min(0) max(2) 
+	file write tablecontents _n 
+
+	file write tablecontents _n _n
+
+end
+
+
+
 
 /* INVOKE PROGRAMS FOR TABLE 1 BY ETHNICITY================================================*/ 
 *Set up output file
@@ -291,34 +459,49 @@ file write tablecontents ("Table 1: Demographic and Clinical Characteristics - `
 forvalues e=1/5 {
 		* Open Stata dataset
 		if `e'==1 {
-			file write tablecontents "Ethnicity: White " 
+			file write tablecontents "Ethnicity: White " _n
 			use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
 			keep if eth5==1
-			outputTable
+			file write tablecontents "-Four categories-" _n
+			outputTableFourCats
+			file write tablecontents "-Eight categories-" _n
+			outputTableEightCats
 		}
 		else if `e'==2 {
 			file write tablecontents "Ethnicity: South Asian " 
 			use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
 			keep if eth5==2
-			outputTable
+			file write tablecontents "-Four categories-" _n
+			outputTableFourCats
+			file write tablecontents "-Eight categories-" _n
+			outputTableEightCats
 		}
 		else if `e'==3 {
 			file write tablecontents "Ethnicity: Black " 
 			use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
 			keep if eth5==3
-			outputTable
+			file write tablecontents "-Four categories-" _n
+			outputTableFourCats
+			file write tablecontents "-Eight categories-" _n
+			outputTableEightCats
 		}
 		else if `e'==4 {
 			file write tablecontents "Ethnicity: Mixed " 
 			use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
 			keep if eth5==4
-			outputTable
+			file write tablecontents "-Four categories-" _n
+			outputTableFourCats
+			file write tablecontents "-Eight categories-" _n
+			outputTableEightCats
 		}
 		else if `e'==5 {
 			file write tablecontents "Ethnicity: Other "
 			use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
 			keep if eth5==5
-			outputTable
+			file write tablecontents "-Four categories-" _n
+			outputTableFourCats
+			file write tablecontents "-Eight categories-" _n
+			outputTableEightCats
 		}
 	}
 cap file close tablecontents
