@@ -12,6 +12,8 @@ DATASETS USED:			data in memory (from output/inputWithHHDependencies.csv)
 DATASETS CREATED: 		none
 OTHER OUTPUT: 			logfiles, printed to folder analysis/$logdir
 
+t
+
 
 sysdir set PLUS "/Users/kw/Documents/GitHub/households-research/analysis/adofiles" 
 sysdir set PERSONAL "/Users/kw/Documents/GitHub/households-research/analysis/adofiles" 
@@ -274,7 +276,25 @@ Note that U=private home, PC=care home, PN=nursing home, PS=care or nursing home
 replace hh_total_cat=. if care_home_type!="U"
 */
 
-********************NEEDS RE-ORDE
+********************NEEDS RE-ORDERED*********
+*save a file here for looking at the distribution of household sizes AFTER carehomes have been dropped
+*save ./output/allHH_beforeDropping_largerThan10_`dataset'.dta, replace
+*create a version of this that only has houses between 1 and 20 in it
+
+preserve
+	drop if hh_size<1
+	drop if hh_size>20
+	save ./output/allHH_sizedBetween1And20_`dataset'.dta, replace
+restore
+
+*drop households we don't need i.e. 1 or smaller or larger than 10
+*note originally dropped at 2, but after discussion with Daniel and Roz decided to keep size 1 hh in
+*also originally dropped greater than 10, but after looking at distribution using histograms am changing this to greater than 12
+drop if hh_size>12
+safetab hh_size
+
+save allHH_sizedBetween1And12_`dataset'.dta, replace
+*this is the file that I need to the descriptive analysis of hh_id versus hh_size on (restricting to people over the age of 67)
 
 
 *keep only people marked as living in private homes
@@ -283,8 +303,8 @@ drop if care_home_type!="U"
 *might need to 
 			
 label define hh_total_cat  1 "1-2" ///
-								2 "3-5" ///
-								3 "6+" ///
+						   2 "3-5" ///
+						   3 "6+" ///
 											
 label values hh_total_cat hh_total_cat
 
@@ -292,21 +312,6 @@ safetab hh_total_cat,m
 safetab hh_total_cat care_home_type,m
 
 safetab hh_size hh_total_cat,m
-
-*save a file here for looking at the distribution of household sizes AFTER carehomes have been dropped
-save ./output/allHH_beforeDropping_largerThan10_`dataset'.dta, replace
-*create a version of this that only has houses between 1 and 20 in it
-preserve
-	drop if hh_size<1
-	drop if hh_size>20
-	save ./output/allHH_sizedBetween1And20_`dataset'.dta
-restore
-
-*drop households we don't need i.e. 1 or smaller or larger than 10
-*note originally dropped at 2, but after discussion with Daniel and Roz decided to keep size 1 hh in
-*also originally dropped greater than 10, but after looking at distribution using histograms am changing this to greater than 12
-drop if hh_size>12
-safetab hh_size
 
 
 
