@@ -269,6 +269,11 @@ gen hh_total_cat=.
 replace hh_total_cat=1 if hh_size >=1 & hh_size<=2
 replace hh_total_cat=2 if hh_size >=3 & hh_size<=5
 replace hh_total_cat=3 if hh_size >=6
+
+label define hh_total_cat  1 "1-2" ///
+						   2 "3-5" ///
+						   3 "6+" ///
+
 		
 /* Rohini code - I think I want to drop them completely rather than just not include in a derived household variable
 Note that U=private home, PC=care home, PN=nursing home, PS=care or nursing home, ""=unknown
@@ -301,11 +306,7 @@ save ./output/allHH_sizedBetween1And12_`dataset'.dta, replace
 drop if care_home_type!="U"
 
 *might need to 
-			
-label define hh_total_cat  1 "1-2" ///
-						   2 "3-5" ///
-						   3 "6+" ///
-											
+														
 label values hh_total_cat hh_total_cat
 
 safetab hh_total_cat,m

@@ -56,6 +56,199 @@ replace hh_size_wrong=1 if hh_size!=kw_hh_size
 display "===================(1) Proportion of all people in hh sized 12 or less where TPP hh_size differs from kw_calculated hh_size============="
 tab hh_size_wrong
 
+*BUT - I THINK I NEED TO FACTOR IN THE TPP % COVERAGE VARIABLE WHEN CALCULATING THE HOUSEHOLD SIZE?
+
+
+
+
+
+*============(2) CHECK TO SEE IF FIXING HH_COMP VARIABLE BY REASSIGNING 67+ YEAR OLDS FROM 3 GENS TO 1 GEN BASED UPON TPP HH SIZE VARIABLE MAKES MORE SIMILAR TO CENSUS================
+*note that possible alternative handling of "U" hasn't been implemented here, will check this in (3) below
+*keep only people marked as living in private homes
+drop if care_home_type!="U"
+			
+label define hh_total_cat  1 "1-2" ///
+						   2 "3-5" ///
+						   3 "6+" ///
+											
+label values hh_total_cat hh_total_cat
+
+safetab hh_total_cat,m
+safetab hh_total_cat care_home_type,m
+
+safetab hh_size hh_total_cat,m
+
+
+*create a household size categorical variable that is based upon my calcuated household size, not the TPP household size
+gen kw_hh_total_cat=.
+replace kw_hh_total_cat=1 if kw_hh_size >=1 & hh_size<=2
+replace kw_hh_total_cat=2 if kw_hh_size >=3 & hh_size<=5
+replace kw_hh_total_cat=3 if kw_hh_size >=6
+
+label define kw_hh_total_cat  1 "1-2" ///
+						   2 "3-5" ///
+						   3 "6+" ///
+
+label values kw_hh_total_cat kw_hh_total_cat
+
+
+******Create household compositon variable
+*first of all, create age bands that I need for this
+egen ageCatHHRisk=cut(age), at (0, 18, 30, 67, 200)
+recode ageCatHHRisk 0=0 18=1 30=2 67=3 
+label define ageCatHHRisk 0 "0-17" 1 "18-29" 2 "30-66" 3 "67+"
+label values ageCatHHRisk ageCatHHRisk
+safetab ageCatHHRisk, miss
+la var ageCatHHRisk "Age categorised for HH risk analysis"
+
+*make an age category variable here that is for table 1 of the 67+ year old analysis
+egen ageCatfor67Plus=cut(age), at (67, 70, 75, 80, 85, 200)
+recode ageCatfor67Plus 67=0 70=1 75=2 80=3 85=4 
+label define ageCatfor67Plus 0 "67-69" 1 "70-74" 2 "75-79" 3 "80-84" 4 "85+"
+label values ageCatfor67Plus ageCatfor67Plus
+safetab ageCatfor67Plus, miss
+la var ageCatfor67Plus "Age (categories)"
+*check groupins
+forvalues i=0/4{
+	sum age if ageCatfor67Plus==`i'
+}
+
+preserve
+	*keep only the variables I need to work this out
+	keep hh_id patient_id ageCatHHRisk
+	sort hh_id ageCatHHRisk
+
+	*mark whether hh has each age category using egen max which returns true (1) or false (0) (see https://www.stata.com/support/faqs/data-management/create-variable-recording/)
+	egen hasUnder18=max(ageCatHHRisk==0), by(hh_id)
+	egen has18_29=max(ageCatHHRisk==1), by(hh_id)
+	egen has30_66=max(ageCatHHRisk==2), by(hh_id)
+	egen has67Plus=max(ageCatHHRisk==3), by(hh_id)
+
+	*now generate the hhRiskCat variable for each person
+	generate hhRiskCat=.
+	la var hhRiskCat "Household risk category"
+	replace hhRiskCat=0 if hasUnder18==1 & has18_29==0 & has30_66==0 & has67Plus==0
+	replace hhRiskCat=1 if hasUnder18==0 & has18_29==1 & has30_66==0 & has67Plus==0
+	replace hhRiskCat=2 if hasUnder18==0 & has18_29==0 & has30_66==1 & has67Plus==0
+	replace hhRiskCat=3 if hasUnder18==0 & has18_29==0 & has30_66==0 & has67Plus==1
+	replace hhRiskCat=4 if hasUnder18==1 & has18_29==1 & has30_66==0 & has67Plus==0
+	replace hhRiskCat=5 if hasUnder18==1 & has18_29==0 & has30_66==1 & has67Plus==0
+	replace hhRiskCat=6 if hasUnder18==1 & has18_29==0 & has30_66==0 & has67Plus==1
+	replace hhRiskCat=7 if hasUnder18==0 & has18_29==1 & has30_66==1 & has67Plus==0
+	replace hhRiskCat=8 if hasUnder18==0 & has18_29==1 & has30_66==0 & has67Plus==1
+	replace hhRiskCat=9 if hasUnder18==0 & has18_29==0 & has30_66==1 & has67Plus==1
+	replace hhRiskCat=10 if hasUnder18==1 & has18_29==1 & has30_66==1 & has67Plus==0
+	replace hhRiskCat=11 if hasUnder18==1 & has18_29==1 & has30_66==0 & has67Plus==1
+	replace hhRiskCat=12 if hasUnder18==1 & has18_29==0 & has30_66==1 & has67Plus==1
+	replace hhRiskCat=13 if hasUnder18==0 & has18_29==1 & has30_66==1 & has67Plus==1
+	replace hhRiskCat=14 if hasUnder18==1 & has18_29==1 & has30_66==1 & has67Plus==1
+	
+	*label variable
+	label define hhRiskCatLabel 0 "Only <18"  1 "Only 18-29" 2 "Only 30-66" 3 "Only 67+" 4 "0-17 & 18-29" 5 "0-17 & 30-66" 6 "0-17 & 67+" 7 "18-29 & 30-66" 8 "18-29 & 67+" 9 "30-66 & 67+" 10 "0-17, 18-29 & 30-66" 11 "0-17, 18-29 & 67+" 12 "0-17, 30-66 & 67+" 13 "18-29, 30-66 & 67+" 14 "0-17, 18-29, 30-66 & 67+"
+	label values hhRiskCat hhRiskCat
+	la var hhRiskCat "Age group(s) of hh occupants"
+	safetab hhRiskCat, miss
+	keep hh_id hhRiskCat
+	duplicates drop hh_id, force
+	tempfile hhRiskCat
+	save `hhRiskCat', replace
+restore
+merge m:1 hh_id using `hhRiskCat'
+drop _merge
+safetab hhRiskCat, miss
+*missing here are likely to be people living in households made up of only under 18 year olds
+
+
+*(b) variable for stratifying by the oldest age group (67+)
+generate hhRiskCat67PLUS=.
+la var hhRiskCat67PLUS "hhRiskCat for the over 67 year old age group"
+replace hhRiskCat67PLUS=1 if hhRiskCat==3
+replace hhRiskCat67PLUS=2 if hhRiskCat==6
+replace hhRiskCat67PLUS=3 if hhRiskCat==8
+replace hhRiskCat67PLUS=4 if hhRiskCat==9
+replace hhRiskCat67PLUS=5 if hhRiskCat==11
+replace hhRiskCat67PLUS=6 if hhRiskCat==12
+replace hhRiskCat67PLUS=7 if hhRiskCat==13
+replace hhRiskCat67PLUS=8 if hhRiskCat==14
+*label variable
+label define hhRiskCat67PLUS 1 "Only 67+" 2 "0-17 & 67+" 3 "18-29 & 67+" 4 "30-66 & 67+" 5 "0-17, 18-29 & 67+" 6 "0-17, 30-66 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
+label values hhRiskCat67PLUS hhRiskCat67PLUS
+safetab hhRiskCat hhRiskCat67PLUS, miss
+
+
+*create another version that has 4 categories (1) living with only one generation (2) living with one other generation (3) living with two other generations (4) living with three other gens
+generate hhRiskCat67PLUS_4cats=.
+la var hhRiskCat67PLUS_4cats "hhRiskCat for the over 67 year old age group - 4 categories"
+replace hhRiskCat67PLUS_4cats=1 if hhRiskCat67PLUS==1
+replace hhRiskCat67PLUS_4cats=2 if hhRiskCat67PLUS>1 & hhRiskCat67PLUS<5
+replace hhRiskCat67PLUS_4cats=3 if hhRiskCat67PLUS>4 & hhRiskCat67PLUS<8
+replace hhRiskCat67PLUS_4cats=4 if hhRiskCat67PLUS==8
+*label variable
+label define hhRiskCat67PLUS_4cats 1 "Only 67+" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
+label values hhRiskCat67PLUS_4cats hhRiskCat67PLUS_4cats
+safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
+
+*reduce to only the over 67 year olds
+keep if age>66
+
+*check what proportion of the 67+ & 3 other generations have incorrect household size 
+safetab hhRiskCat67PLUS
+safetab hhRiskCat67PLUS_4cats
+display "===================(2) Proportion of all people in hh sized 12 or less where TPP hh_size differs from kw_calculated hh_size, by household composition============="
+*i.e. this looks at which household compositions are the worst - am expecting it to be much worse in the larger houses
+safetab hhRiskCat67PLUS_4cats hh_size_wrong, row
+
+*in the ones that are incorrect in the largest category, check to see what the median is of (1) the TPP hh_size and (2) my calculated hh_size
+display "===================(3) In those with incorrect hh_size in the largest category, show median for (1) TPP calculated hh_size (2) my hh_size based upon hh_id============="
+display "(a) TPP calculated hh_size:"
+sum hh_size if hhRiskCat67PLUS_4cats==4 & hh_size_wrong==1, detail
+display "(b) KW houshold size based upon hh_id:"
+sum kw_hh_size if hhRiskCat67PLUS_4cats==4 & hh_size_wrong==1, detail
+
+*compare household size variables within this category of household comppsition
+display "===================(4) In those with incorrect hh_size in the largest category, tabulate household size (tpp) vs household size (kw, based on tpp hh_id)============="
+tab kw_hh_total_cat hh_total_cat if hhRiskCat67PLUS_4cats==4 & hh_size_wrong==1, row
+
+*create new variables of household composition where the problematic 3 gen categories have been assigned to the baseline category
+generate repaired_hhRiskCat67Plus=hhRiskCat67PLUS
+label define repaired_hhRiskCat67Plus 1 "Only 67+" 2 "0-17 & 67+" 3 "18-29 & 67+" 4 "30-66 & 67+" 5 "0-17, 18-29 & 67+" 6 "0-17, 30-66 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
+label values repaired_hhRiskCat67Plus repaired_hhRiskCat67Plus
+la var repaired_hhRiskCat67Plus "Repaired hh composition variable"
+*move people who are in the 3 gen category but only have a household size of 1-2 to the 1-2 category
+replace repaired_hhRiskCat67Plus=1 if repaired_hhRiskCat67Plus==8 & hh_size<3
+display "===================(5) Comparison of household distribution in original hh composition variable vs repaired variable========"
+tab repaired_hhRiskCat67Plus hhRiskCat67PLUS, row
+
+
+
+
+****************************
+*  Create required cohort  *
+****************************
+/*
+* Age: Exclude those with implausible ages
+cap assert age<.
+noi di "DROPPING AGE>105:" 
+drop if age>105
+safecount
+* Sex: Exclude categories other than M and F
+cap assert inlist(sex, "M", "F", "I", "U")
+noi di "DROPPING GENDER NOT M/F:" 
+drop if inlist(sex, "I", "U")
+safecount
+
+gen male = 1 if sex == "M"
+replace male = 0 if sex == "F"
+label define male 0"Female" 1"Male"
+label values male male
+safetab male
+
+
+
+
+*============(3) CHECKS TO ASSESS IMPACT OF DROPPING PEOPLE WHO ARE INDICATED AS NOT BEING IN A CARE HOME (I.E. IS THEIR HOUSE LIKELY TO BE A CARE HOME)?================
+
+
 log close
 
 
