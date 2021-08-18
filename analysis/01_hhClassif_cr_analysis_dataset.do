@@ -293,7 +293,7 @@ restore
 drop if hh_size>12
 safetab hh_size
 
-save allHH_sizedBetween1And12_`dataset'.dta, replace
+save ./output/allHH_sizedBetween1And12_`dataset'.dta, replace
 *this is the file that I need to the descriptive analysis of hh_id versus hh_size on (restricting to people over the age of 67)
 
 
