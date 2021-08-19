@@ -234,7 +234,7 @@ prog define outputVarPercentages
 			local n_people_All = r(N)
 			count if `variable'==`i'
 			local n_people = r(N)
-			local percent=(`n_people'/`n_people_All')
+			local percent=100*(`n_people'/`n_people_All')
 
 			*get variable name
 			local lab: variable label `variable'
