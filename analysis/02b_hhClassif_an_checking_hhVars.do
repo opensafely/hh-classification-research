@@ -35,6 +35,9 @@ log using ./logs/02b_hhClassif_an_checking_hhVars_`dataset'.log, replace t
 
 use ./output/allHH_sizedBetween1And12_`dataset'.dta, clear
 
+*drop people with missing household id(!!!!!!)
+drop if hh_id==0
+
 
 
 *============(1) CHECK TO SEE IF TPP HH_ID AND HH_SIZE ARE DISCREPANT================
@@ -65,8 +68,19 @@ tab hh_size_wrong
 *============(2) CHECK TO SEE IF FIXING HH_COMP VARIABLE BY REASSIGNING 67+ YEAR OLDS FROM 3 GENS TO 1 GEN BASED UPON TPP HH SIZE VARIABLE MAKES MORE SIMILAR TO CENSUS================
 *note that possible alternative handling of "U" hasn't been implemented here, will check this in (3) below
 *keep only people marked as living in private homes
+
+*NOT REMOVING CARE HOMES FOR THE MOMENT
 *drop if care_home_type!="U"
-			
+
+*check to see if hh_size is populated for all records
+codebook hh_size
+
+drop hh_total_cat
+gen hh_total_cat=.
+replace hh_total_cat=1 if hh_size >=1 & hh_size<=2
+replace hh_total_cat=2 if hh_size >=3 & hh_size<=5
+replace hh_total_cat=3 if hh_size >=6
+
 label define hh_total_cat  1 "1-2" ///
 						   2 "3-5" ///
 						   3 "6+" ///
