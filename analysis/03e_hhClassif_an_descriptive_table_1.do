@@ -65,7 +65,9 @@ label define eth5 			1 "White"  					///
 label values eth5 eth5
 safetab eth5, m
 
-
+*****check household id and household size variables*****
+capture noisily assert hh_id!=0
+tab hh_size
 
  /* PROGRAMS TO AUTOMATE TABULATIONS===========================================*/ 
 

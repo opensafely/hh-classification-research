@@ -258,7 +258,8 @@ label values imd imd
 
 
 **************************** HOUSEHOLD VARS*******************************************
-*update with UPRN data
+*drop those with missing hh_id (coded as 0)
+drop if household_id==0
 
 *sum hh_total hh_size
 rename household_id hh_id
@@ -273,6 +274,8 @@ replace hh_total_cat=3 if hh_size >=6
 label define hh_total_cat  1 "1-2" ///
 						   2 "3-5" ///
 						   3 "6+" ///
+						   
+label values hh_total_cat hh_total_cat
 
 		
 /* Rohini code - I think I want to drop them completely rather than just not include in a derived household variable

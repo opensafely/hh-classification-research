@@ -66,8 +66,8 @@ assert inlist(sex, 1, 2)
 * EXCLUDE 1:  MISSING IMD
 assert inlist(imd, 1, 2, 3, 4, 5, .u)
 
-* EXCLUDE 2:  HH with more than 10 people
-datacheck inlist(hh_size, 1, 2, 3, 4, 5,6, 7, 8, 9, 10, .u), nol
+* EXCLUDE 2:  HH with more than 12 people
+datacheck inlist(hh_size, 1, 2, 3, 4, 5,6, 7, 8, 9, 10, 11, 12 .u), nol
 
 /* EXPECTED VALUES============================================================*/ 
 
