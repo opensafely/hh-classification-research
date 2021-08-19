@@ -40,6 +40,7 @@ drop if hh_id==0
 
 
 
+
 *============(1) CHECK TO SEE IF TPP HH_ID AND HH_SIZE ARE DISCREPANT================
 *(a) Create a home made hh_size variable
 *create a home-made household size variable
@@ -81,11 +82,6 @@ replace hh_total_cat=1 if hh_size >=1 & hh_size<=2
 replace hh_total_cat=2 if hh_size >=3 & hh_size<=5
 replace hh_total_cat=3 if hh_size >=6
 
-label define hh_total_cat  1 "1-2" ///
-						   2 "3-5" ///
-						   3 "6+" ///
-											
-label values hh_total_cat hh_total_cat
 
 safetab hh_total_cat,m
 safetab hh_total_cat care_home_type,m
