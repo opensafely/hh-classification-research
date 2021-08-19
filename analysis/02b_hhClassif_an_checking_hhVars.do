@@ -65,7 +65,7 @@ tab hh_size_wrong
 *============(2) CHECK TO SEE IF FIXING HH_COMP VARIABLE BY REASSIGNING 67+ YEAR OLDS FROM 3 GENS TO 1 GEN BASED UPON TPP HH SIZE VARIABLE MAKES MORE SIMILAR TO CENSUS================
 *note that possible alternative handling of "U" hasn't been implemented here, will check this in (3) below
 *keep only people marked as living in private homes
-drop if care_home_type!="U"
+*drop if care_home_type!="U"
 			
 label define hh_total_cat  1 "1-2" ///
 						   2 "3-5" ///
