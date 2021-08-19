@@ -216,8 +216,100 @@ label values repaired_hhRiskCat67Plus repaired_hhRiskCat67Plus
 la var repaired_hhRiskCat67Plus "Repaired hh composition variable"
 *move people who are in the 3 gen category but only have a household size of 1-2 to the 1-2 category
 replace repaired_hhRiskCat67Plus=1 if repaired_hhRiskCat67Plus==8 & hh_size<3
-display "===================(5) Comparison of household distribution in original hh composition variable vs repaired variable========"
-tab repaired_hhRiskCat67Plus hhRiskCat67PLUS, row
+
+
+
+
+
+*============(3) TABULATIONS OF DISTRIBUTION OF HOUSHOLD COMPOSITION BY ETHNICITY BEFORE AND AFTER FIX================
+prog define outputVarPercentages
+	syntax, variable(string) catLabel(string) min(real) max(real)
+
+	*calculation of numbers and %			
+
+		forvalues i=`min'/`max' {
+			display 
+			*get overall number for each category
+			count
+			local n_people_All = r(N)
+			count if `variable'==`i'
+			local n_people = r(N)
+			local percent=(`n_people'/`n_people_All')
+
+			*get variable name
+			local lab: variable label `variable'
+			*file write tablecontents  _tab  (`i') _n
+			*get category name
+			local category: label `catLabel' `i'
+			display "Category label: `category'"
+					
+			*write each row hg
+			file write tablecontents  _tab ("`category'") _tab (`n_people') _tab %3.1f (`percent')  _n
+
+		}
+end
+
+********Code that calls program and outputs tables*******
+*open table
+file open tablecontents using ./output/02b_hhClassif_an_checking_hhVars_`dataset'.txt, t w replace
+
+*write table title and column headers
+file write tablecontents "Wave: `dataset', HH Composition distributions before and after fix" _n
+file write tablecontents _tab _tab ("N") _tab ("%") _n _n
+forvalues e=1/5 {
+	if `e'==1 {
+		preserve
+			keep if eth5==1
+			file write tablecontents "Ethnicity: White " _n
+			file write tablecontents "Before repair" _n
+			cap noisily outputVarPercentages, variable(hhRiskCat67PLUS) catLabel(hhRiskCat67PLUS) min(1) max(8)
+			file write tablecontents "After repair" _n
+			cap noisily outputVarPercentages, variable(repaired_hhRiskCat67Plus) catLabel(repaired_hhRiskCat67Plus) min(1) max(8)
+		restore
+	}
+	else if `e'==2 {
+		preserve
+			keep if eth5==2
+			file write tablecontents _n "Ethnicity: South Asian " _n
+			file write tablecontents "Before repair" _n
+			cap noisily outputVarPercentages, variable(hhRiskCat67PLUS) catLabel(hhRiskCat67PLUS) min(1) max(8)
+			file write tablecontents "After repair" _n
+			cap noisily outputVarPercentages, variable(repaired_hhRiskCat67Plus) catLabel(repaired_hhRiskCat67Plus) min(1) max(8)
+		restore
+	}
+	else if `e'==3 {
+		preserve
+			keep if eth5==3
+			file write tablecontents _n "Ethnicity: Black " _n
+			file write tablecontents "Before repair" _n
+			cap noisily outputVarPercentages, variable(hhRiskCat67PLUS) catLabel(hhRiskCat67PLUS) min(1) max(8)
+			file write tablecontents "After repair" _n
+			cap noisily outputVarPercentages, variable(repaired_hhRiskCat67Plus) catLabel(repaired_hhRiskCat67Plus) min(1) max(8)
+		restore
+	}
+	else if `e'==4 {
+		preserve
+			keep if eth5==4
+			file write tablecontents _n "Ethnicity: Mixed " _n
+			file write tablecontents "Before repair" _n
+			cap noisily outputVarPercentages, variable(hhRiskCat67PLUS) catLabel(hhRiskCat67PLUS) min(1) max(8)
+			file write tablecontents "After repair" _n
+			cap noisily outputVarPercentages, variable(repaired_hhRiskCat67Plus) catLabel(repaired_hhRiskCat67Plus) min(1) max(8)
+		restore
+	}
+	else if `e'==5 {
+		preserve
+			keep if eth5==5
+			file write tablecontents _n "Ethnicity: Other " _n
+			file write tablecontents "Before repair" _n
+			cap noisily outputVarPercentages, variable(hhRiskCat67PLUS) catLabel(hhRiskCat67PLUS) min(1) max(8)
+			file write tablecontents "After repair" _n
+			cap noisily outputVarPercentages, variable(repaired_hhRiskCat67Plus) catLabel(repaired_hhRiskCat67Plus) min(1) max(8)
+		restore
+	}
+}
+cap file close tablecontents 
+cap log close
 
 
 
