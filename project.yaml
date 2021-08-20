@@ -317,6 +317,7 @@ actions:
         # table2: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHosp_W2.txt
         table3: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHospOrDeath_W2.txt
         # table4: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_nonCovidDeath_W2.txt
+        #
         
 
   12_hhClassif_an_MV_analysis_W_SA_multipleInteractions:
