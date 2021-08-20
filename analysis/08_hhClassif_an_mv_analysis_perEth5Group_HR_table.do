@@ -150,15 +150,14 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 		else if `e'==5 {
 			file write tablecontents "Ethnicity: Other " 
 		}
-		display "ETHNICITY: `e'"
-		*cap noisily outputHRsforvar, variable(hhRiskCatExp) catLabel(hhRiskCat67PLUS) min(1) max(8) ethnicity(`e') outcome(`outcome')
-		*file write tablecontents _n
-		*include version with three exposure categories
-		*file write tablecontents "Three categories:" _n
-		*cap noisily outputHRsforvar, variable(hhRiskCatExp_3cats) catLabel(hhRiskCat67PLUS_3cats) min(1) max(3) ethnicity(`e') outcome(`outcome')
-		*file write tablecontents _n
 		*include version with four exposure categories
+		file write tablecontents "Four exposure categories" _n
 		cap noisily outputHRsforvar, variable(hhRiskCatExp_4cats) catLabel(hhRiskCat67PLUS_4cats) min(1) max(4) ethnicity(`e') outcome(`outcome')
+		file write tablecontents _n
+		*Output version with 8 categories
+		file write tablecontents "Eight exposure categories" _n
+		cap noisily outputHRsforvar, variable(hhRiskCatExp) catLabel(hhRiskCat67PLUS) min(1) max(8) ethnicity(`e') outcome(`outcome')
+		file write tablecontents _n
 	}
 	cap file close tablecontents 
 	cap log close

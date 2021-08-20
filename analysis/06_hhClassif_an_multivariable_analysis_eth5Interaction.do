@@ -22,7 +22,7 @@
 local dataset `1'
 
 *list of demographic variables for adjustment: age (spline), sex, BMI, smoking, density of housing, geographic area (already taken account of in stratified analysis)
-global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke i.rural_urbanFive
 *list of comorbidities for adjustment
 global comorbidadjlist i.coMorbCat	
 
@@ -49,23 +49,23 @@ foreach outcome in covidHospOrDeath {
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
 	
 	*Perform LRT test to get p-value for interaction
-	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store A
-	capture noisily stcox i.hhRiskCatExp_3cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store B
 	display "***************LRT TEST 5 ETH CATEGORIES*****************"
 	lrtest A B, force
 
 	*Fit and save model for outputting HRs
 	display "***********ALL 5 ETHNICITY CATEGORIES - Outcome: `outcome', ageband: 67+, dataset: `dataset' - broad categories, interaction with ethnicity*************************"
-	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store mvAdjWHHSize		
 	
 	
 	*helper variables
 	sum eth5
 	local maxEth5=r(max) 
-	sum hhRiskCatExp_3cats
+	sum hhRiskCatExp_4cats
 	local maxhhRiskCat=r(max)
 
 	*for each ethnicity category, output hhrisk hazard ratios
@@ -74,7 +74,7 @@ foreach outcome in covidHospOrDeath {
 		forvalues riskCat=1/`maxhhRiskCat' {
 			display "`ethCat'"
 			display "`riskCat'"
-			capture noisily lincom `riskCat'.hhRiskCatExp_3cats + `riskCat'.hhRiskCatExp_3cats#`ethCat'.eth5, eform
+			capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
 		}
 	}
 }
@@ -90,23 +90,23 @@ foreach outcome in covidHospOrDeath {
 	keep if eth5<3
 	
 	*Perform LRT test to get p-value for interaction
-	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store A
-	capture noisily stcox i.hhRiskCatExp_3cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store B
 	display "***************LRT TEST 2 ETH CATEGORIES*****************"
 	lrtest A B, force
 
 	*Fit and save model
 	display "***********ONLY WHITE AND SOUTH ASIAN EHTNICITY CATEGORIES - Outcome: `outcome', ageband: 67+, dataset: `dataset' - broad categories, interaction with ethnicity*************************"
-	capture noisily stcox i.hhRiskCatExp_3cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store mvAdjWHHSize		
 	
 	
 	*helper variables
 	sum eth5
 	local maxEth5=r(max) 
-	sum hhRiskCatExp_3cats
+	sum hhRiskCatExp_4cats
 	local maxhhRiskCat=r(max)
 
 	*for each ethnicity category, output hhrisk hazard ratios
@@ -115,7 +115,7 @@ foreach outcome in covidHospOrDeath {
 		forvalues riskCat=1/`maxhhRiskCat' {
 			display "`ethCat'"
 			display "`riskCat'"
-			capture noisily lincom `riskCat'.hhRiskCatExp_3cats + `riskCat'.hhRiskCatExp_3cats#`ethCat'.eth5, eform
+			capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
 		}
 	}
 }
@@ -135,7 +135,7 @@ use ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3MAIN.dta
 tab eth5
 tab eth5, nolabel
 
-global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke i.rural_urbanFive
 global comorbidadjlist i.coMorbCat	
 
 stcox i.hhRiskCatExp##i.eth5 $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
@@ -206,7 +206,7 @@ stcox i.hhRiskCatExp##i.eth5 $demogadjlist $comorbidadjlist i.imd, strata(utla_g
 				lincom 7.hhRiskCatExp + 7.hhRiskCatExp#5.eth5, eform
 				lincom 8.hhRiskCatExp + 8.hhRiskCatExp#5.eth5, eform
 
-*lincom 3.smoke_nomiss + 3.smoke_nomiss#1.male, eform
+*lincom 3.smoke + 3.smoke#1.male, eform
 
 *hhRiskCatExp baseline category, by each ethnicity category
 		*lincom 1.hhRiskCatExp + 1.hhRiskCatExp#1.eth5, eform
@@ -258,9 +258,9 @@ stcox i.hhRiskCatExp##i.eth5 $demogadjlist $comorbidadjlist i.imd, strata(utla_g
 		lincom 8.hhRiskCatExp + 8.hhRiskCatExp#5.eth5, eform
 
 *limited version so I can check code
-stcox i.smoke_nomiss##i.male, strata(utla_group) vce(cluster hh_id) base
+stcox i.smoke##i.male, strata(utla_group) vce(cluster hh_id) base
 
-lincom 3.smoke_nomiss + 3.smoke_nomiss#1.male, eform
+lincom 3.smoke + 3.smoke#1.male, eform
 
 lincom 2.hhRiskCatExp + 5*2.hhRiskCatExp#eth5, eform
 
