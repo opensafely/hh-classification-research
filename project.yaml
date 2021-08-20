@@ -317,6 +317,7 @@ actions:
         # table2: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHosp_W2.txt
         table3: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHospOrDeath_W2.txt
         # table4: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_nonCovidDeath_W2.txt
+        #
         
 
   12_hhClassif_an_MV_analysis_W_SA_multipleInteractions:
@@ -375,6 +376,21 @@ actions:
         table2: output/15_hhClassif_forForestPlot_covidHosp_MAIN.txt
         table3: output/15_hhClassif_forForestPlot_covidHospOrDeath_MAIN.txt
         table4: output/15_hhClassif_forForestPlot_nonCovidDeath_MAIN.txt
+
+
+  15_hhClassif_an_mv_analysis_perEth5Group_forForestPlot_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/15_hhClassif_an_mv_analysis_perEth5Group_forForestPlot.do W2
+    outputs:
+      moderately_sensitive:
+        log1: logs/15_hhClassif_forForestPlot_covidDeath_W2.log
+        log2: logs/15_hhClassif_forForestPlot_covidHosp_W2.log
+        log3: logs/15_hhClassif_forForestPlot_covidHospOrDeath_W2.log
+        log4: logs/15_hhClassif_forForestPlot_nonCovidDeath_W2.log
+        table1: output/15_hhClassif_forForestPlot_covidDeath_W2.txt
+        table2: output/15_hhClassif_forForestPlot_covidHosp_W2.txt
+        table3: output/15_hhClassif_forForestPlot_covidHospOrDeath_W2.txt
+        table4: output/15_hhClassif_forForestPlot_nonCovidDeath_W2.txt
 
 
 
