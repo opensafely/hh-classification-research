@@ -98,7 +98,7 @@ prog define outputHRsforvar
 					
 					
 					
-					*write each row hg
+					*write each row
 					if `i'==1 {
 						*write the total
 						file write tablecontents "(N="(`total') ")" _n
