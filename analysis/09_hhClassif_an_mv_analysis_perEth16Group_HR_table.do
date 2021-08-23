@@ -9,13 +9,13 @@
 *
 *Coding: K Wing, base on file from HFORBES, based on file from Krishnan Bhaskaran
 *
-*Date drafted: 17th June 2021
+*Date drafted: 17th June 2021 t
 *************************************************************************
 
 
 local dataset `1' 
 
-global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke i.rural_urbanFive
 *list of comorbidities for adjustment
 global comorbidadjlist i.coMorbCat	
 
