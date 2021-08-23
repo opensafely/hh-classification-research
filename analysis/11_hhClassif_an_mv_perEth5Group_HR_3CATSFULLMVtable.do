@@ -15,7 +15,7 @@
 
 local dataset `1' 
 
-global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke i.rural_urbanFive
 *list of comorbidities for adjustment
 global comorbidadjlist i.coMorbCat	
 
@@ -157,7 +157,7 @@ foreach outcome in covidHospOrDeath {
 		*obesity
 		cap noisily outputHRsforvar, variable(obese4cat) catLabel(obese4cat) min(1) max(4) ethnicity(`e') outcome(`outcome')
 		*smoking
-		cap noisily outputHRsforvar, variable(smoke_nomiss) catLabel(smoke) min(1) max(3) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(smoke) catLabel(smoke) min(1) max(3) ethnicity(`e') outcome(`outcome')
 		*rural urban
 		cap noisily outputHRsforvar, variable(rural_urbanFive) catLabel(rural_urbanFive) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		*comorbidities
