@@ -393,6 +393,24 @@ actions:
         table4: output/15_hhClassif_forForestPlot_nonCovidDeath_W2.txt
 
 
+  16_hhClassif_an_mv_analysis_perEth16Group_forForestPlot:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/16_hhClassif_an_mv_analysis_perEth16Group_forForestPlot.do MAIN
+    outputs:
+      moderately_sensitive:
+        log1: logs/16_hhClassif_forForestPlot_covidHospOrDeath_MAIN.log
+        table1: output/16_hhClassif_forForestPlot_covidHospOrDeath_MAIN.txt
+
+  16_hhClassif_an_mv_analysis_perEth16Group_forForestPlot_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/16_hhClassif_an_mv_analysis_perEth16Group_forForestPlot.do W2
+    outputs:
+      moderately_sensitive:
+        log1: logs/16_hhClassif_forForestPlot_covidHospOrDeath_W2.log
+        table1: output/16_hhClassif_forForestPlot_covidHospOrDeath_W2.txt
+
+
+
 
     
  

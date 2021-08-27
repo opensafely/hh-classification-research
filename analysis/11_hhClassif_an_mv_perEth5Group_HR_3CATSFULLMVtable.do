@@ -147,7 +147,7 @@ foreach outcome in covidHospOrDeath {
 		display "ETHNICITY: `e'"
 		*include version with broad exposure categories (all variables)
 		*hhrisk exposure 3 categories
-		cap noisily outputHRsforvar, variable(hhRiskCatExp_3cats) catLabel(hhRiskCat67PLUS_3cats) min(1) max(3) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCatExp_4cats) catLabel(hhRiskCat67PLUS_4cats) min(1) max(4) ethnicity(`e') outcome(`outcome')
 		*age (3 splines)
 		*cap noisily outputHRsforvar, variable(age1) catLabel(age1) min(0) max(0) ethnicity(`e') outcome(`outcome')
 		*cap noisily outputHRsforvar, variable(age2) catLabel(age2) min(0) max(0) ethnicity(`e') outcome(`outcome')

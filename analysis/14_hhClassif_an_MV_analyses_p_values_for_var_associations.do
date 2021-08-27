@@ -21,7 +21,7 @@
 
 local dataset `1'
 
-global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke i.rural_urbanFive
 *list of comorbidities for adjustment
 global comorbidadjlist i.coMorbCat	
 
@@ -40,15 +40,18 @@ capture log close
 log using ./logs/14_hhClassif_an_MV_analyses_p_values_for_var_associations_`dataset', replace t
 
 
-**************OVERALL P-VALUE FOR HH COMPOSITION: WHITE AND SOUTH ASIAN ETHNCITIES**********************
+**************OVERALL P-VALUE FOR HH COMPOSITION: WHITE, SOUTH ASIAN AND BLACK ETHNCITIES**********************
 
-forvalues e=1/2 {
+forvalues e=1/3 {
 	use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_`e'`dataset'.dta, clear
 	if `e'==1 {
 		display "******Ethnicity: White******" _n
 	}
 	else if `e'==2 {
 		display  "******Ethnicity: South Asian*****" _n
+	}
+	else if `e'==3 {
+		display  "******Ethnicity: Black*****" _n
 	}
 	capture noisily stcox i.hhRiskCatExp_4cats i.eth5 $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	est store A

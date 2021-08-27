@@ -9,7 +9,7 @@
 *
 ********************************************************************************
 *
-*This file tests for interactions with smoking and IMD, in order to see if they should be included as interaction parameters
+*This file allows estimation of p-values for test for trend
 *  
 ********************************************************************************
 
@@ -55,6 +55,17 @@ capture noisily stcox i.hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd 
 **************TEST FOR TREND TWO: WHITE ETHNICITY (PARTICULARLY INTERESTED IN WAVE 1)**********************
 
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_1`dataset'.dta, clear
+
+*model with hhRiskCatExp_4 cats as linear
+capture noisily stcox hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+
+*model with categorical to check I have the right one and results are as I expect
+capture noisily stcox i.hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+
+
+**************TEST FOR TREND THREE: BLACK ETHNICITY (PARTICULARLY INTERESTED IN WAVE 2)**********************
+
+use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_3`dataset'.dta, clear
 
 *model with hhRiskCatExp_4 cats as linear
 capture noisily stcox hhRiskCatExp_4cats $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
