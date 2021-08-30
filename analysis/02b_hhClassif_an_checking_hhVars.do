@@ -38,7 +38,7 @@ use ./output/allHH_sizedBetween1And12_`dataset'.dta, clear
 *drop people with missing household id(!!!!!!)
 drop if hh_id==0
 
-
+*drop with missing sex, IMD and age (plus mark if household has person with missing age and drop the entire household)
 
 
 *============(1) CHECK TO SEE IF TPP HH_ID AND HH_SIZE ARE DISCREPANT================
@@ -66,7 +66,7 @@ tab hh_size_wrong
 
 
 
-*============(2) CHECK TO SEE IF FIXING HH_COMP VARIABLE BY REASSIGNING 67+ YEAR OLDS FROM 3 GENS TO 1 GEN BASED UPON TPP HH SIZE VARIABLE MAKES MORE SIMILAR TO CENSUS================
+*============(2) CREATE HH COMP VARIABLE AND CHECK HOW DISTRIBUTION OF MY HH SIZE VAR COMPARES TO THE TPP HH SIZE VARIABLE================
 *note that possible alternative handling of "U" hasn't been implemented here, will check this in (3) below
 *keep only people marked as living in private homes
 
@@ -102,7 +102,7 @@ label define kw_hh_total_cat  1 "1-2" ///
 label values kw_hh_total_cat kw_hh_total_cat
 
 
-******Create household compositon variable
+************Create household compositon variable******************
 *first of all, create age bands that I need for this
 egen ageCatHHRisk=cut(age), at (0, 18, 30, 67, 200)
 recode ageCatHHRisk 0=0 18=1 30=2 67=3 
@@ -201,13 +201,95 @@ safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
 *reduce to only the over 67 year olds
 keep if age>66
 
-*check what proportion of the 67+ & 3 other generations have incorrect household size 
+* Age: Exclude those with implausible ages
+cap assert age<.
+noi di "DROPPING AGE>105:" 
+drop if age>105
+safecount
+* Sex: Exclude categories other than M and F
+cap assert inlist(sex, "M", "F", "I", "U")
+noi di "DROPPING GENDER NOT M/F:" 
+drop if inlist(sex, "I", "U")
+safecount
+
+*check what proportion of the 67+ & 3 other generations have incorrect household size - this is to confirm it is very low
 safetab hhRiskCat67PLUS
 safetab hhRiskCat67PLUS_4cats
-display "===================(2) Proportion of all people in hh sized 12 or less where TPP hh_size differs from kw_calculated hh_size, by household composition============="
+display "===================(1) Proportion of all people in hh sized 12 or less where TPP hh_size differs from kw_calculated hh_size, by household composition============="
 *i.e. this looks at which household compositions are the worst - am expecting it to be much worse in the larger houses
 safetab hhRiskCat67PLUS_4cats hh_size_wrong, row
 
+
+
+
+*======================================(3) CHECK CARE HOME ASPECTS=========================================
+*based on Anna's short report, care home identifier will do a good job of identifying care homes
+*(1) Look at the percentage 
+
+
+
+*(2) Have a look at the people registered in a care home, and check their household size and composition
+preserve
+	keep if care_home_type=="U"
+
+	tab hh_size
+
+	tab hhRiskCat
+
+	tab hhRiskCat67PLUS_4cats
+restore
+
+
+
+*(3) Have a look at the people living in the single generation category who are NOT in care homes, and check how many have >3 people over the age of 65 living at them
+preserve
+	keep if care_home_type!="U"
+	keep if hhRiskCat==1
+
+	*(2) Have a look at the number of people in these households
+	tab hh_size
+restore
+
+
+
+
+
+
+
+
+
+gen male = 1 if sex == "M"
+replace male = 0 if sex == "F"
+label define male 0"Female" 1"Male"
+label values male male
+safetab male
+
+
+
+
+*============(3) CHECKS TO ASSESS IMPACT OF DROPPING PEOPLE WHO ARE INDICATED AS NOT BEING IN A CARE HOME (I.E. IS THEIR HOUSE LIKELY TO BE A CARE HOME)?================
+
+
+log close
+
+
+
+*(c)Reduce
+
+/*
+
+
+*keep only people marked as living in private homes
+drop if care_home_type!="U"
+
+
+
+
+
+
+
+
+/*SUPERCEDED FOR NOW
 *in the ones that are incorrect in the largest category, check to see what the median is of (1) the TPP hh_size and (2) my calculated hh_size
 display "===================(3) In those with incorrect hh_size in the largest category, show median for (1) TPP calculated hh_size (2) my hh_size based upon hh_id============="
 display "(a) TPP calculated hh_size:"
@@ -219,6 +301,12 @@ sum kw_hh_size if hhRiskCat67PLUS_4cats==4 & hh_size_wrong==1, detail
 display "===================(4) In those with incorrect hh_size in the largest category, tabulate household size (tpp) vs household size (kw, based on tpp hh_id)============="
 tab kw_hh_total_cat hh_total_cat if hhRiskCat67PLUS_4cats==4 & hh_size_wrong==1, row
 
+
+
+
+
+
+/*
 *create new variables of household composition where the problematic 3 gen categories have been assigned to the baseline category
 generate repaired_hhRiskCat67Plus=hhRiskCat67PLUS
 label define repaired_hhRiskCat67Plus 1 "Only 67+" 2 "0-17 & 67+" 3 "18-29 & 67+" 4 "30-66 & 67+" 5 "0-17, 18-29 & 67+" 6 "0-17, 30-66 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
@@ -320,7 +408,7 @@ forvalues e=1/5 {
 }
 cap file close tablecontents 
 cap log close
-
+*/
 
 
 
