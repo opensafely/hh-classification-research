@@ -53,11 +53,6 @@ log using ./logs/01_hhClassif_cr_analysis_dataset`fileextension'.log, replace t
 *import delimited ./output/input.csv, clear
 import delimited ./output/`inputfile', clear
 
-*merge with msoa data (copied from DGrint SGTF repo)
-merge m:1 msoa using ./lookups/MSOA_lookup
-drop if _merge==2
-drop _merge
-
 
 **********for debugging only************
 /*
@@ -1080,7 +1075,7 @@ global outcomes covidDeathCase covidHospCase covidHospOrDeathCase nonCOVIDDeathC
 
 /* APPLY FINAL INCLUSION/EXCLUIONS==================================================*/ 
 
-di "***********************FLOWCHART 10. INDIVIDUALS MISSING IMD OR SEX INFORMATION, AGEND>110 YEARS, DIED OR HAD COVID BEFORE 1st FEB********************:"
+di "***********************FLOWCHART 10. INDIVIDUALS MISSING IMD, MSOA OR SEX INFORMATION, AGE>110 YEARS, DIED OR HAD COVID BEFORE 1st FEB********************:"
 * Age: Exclude those with implausible ages
 *drop people over the age of 110 or under 18 (I can drop the under 18 year old's now as I have already used them in the composition variable)
 noi di "DROP AGE >110:"
@@ -1120,8 +1115,14 @@ foreach i of global outcomes {
 	drop if `i'Date<enter_date	
 }
 
+*merge with msoa data (copied from DGrint SGTF repo)
+merge m:1 msoa using ./lookups/MSOA_lookup
+count if _merge==2
+drop if _merge==2
+drop _merge
 
-di "***********************FLOWCHART 11. INDIVIDUALS WITH ELIGIBLE FOLLOW-UP AND IMD AND SEX DATA********************:"
+
+di "***********************FLOWCHART 11. INDIVIDUALS WITH ELIGIBLE FOLLOW-UP AND IMD, MSOA AND SEX DATA********************:"
 safecount
 
 
