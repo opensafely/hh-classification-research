@@ -1090,7 +1090,7 @@ drop if male==.
 drop sex
 safecount
 
-*If outcome occurs on the first day of follow-up add one day
+*If outcome occurs on te first day of follow-up add one day
 foreach i of global outcomes  {
 	di "`i'"
 	count if `i'Date==date("$indexdate", "DMY")
