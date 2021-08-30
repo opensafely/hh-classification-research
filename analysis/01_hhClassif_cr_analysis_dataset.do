@@ -53,11 +53,6 @@ log using ./logs/01_hhClassif_cr_analysis_dataset`fileextension'.log, replace t
 *import delimited ./output/input.csv, clear
 import delimited ./output/`inputfile', clear
 
-*merge with msoa data (copied from DGrint SGTF repo)
-merge m:1 msoa using ./lookups/MSOA_lookup
-drop if _merge==2
-drop _merge
-
 
 **********for debugging only************
 /*
@@ -71,8 +66,10 @@ import delimited ./output/input.csv, clear
 
 
 
-di "STARTING safecount FROM IMPORT:"
+di "***********************FLOWCHART 1. NUMBER OF PEOPLE REGISTERED WITH TPP WITH 3 MONTHS FOLLOW-UP********************:"
 safecount
+
+
 
 *Start dates - already created above
 *gen index 			= "01/02/2020"
@@ -258,8 +255,17 @@ label values imd imd
 
 
 **************************** HOUSEHOLD VARS*******************************************
+di "***********************FLOWCHART 2. INDIVIDUALS WITH NO VALID HOUSEHOLD ID********************:"
+safecount if household_id==0
+
+
+
 *drop those with missing hh_id (coded as 0)
 drop if household_id==0
+di "***********************FLOWCHART 3. HOUSEHOLDS WITH HOUSEHOLD ID********************:"
+safecount
+
+
 
 *sum hh_total hh_size
 rename household_id hh_id
@@ -298,15 +304,84 @@ restore
 *drop households we don't need i.e. 1 or smaller or larger than 10
 *note originally dropped at 2, but after discussion with Daniel and Roz decided to keep size 1 hh in
 *also originally dropped greater than 10, but after looking at distribution using histograms am changing this to greater than 12
-drop if hh_size>12
-safetab hh_size
+preserve
+	drop if hh_size>12
+	safetab hh_size
 
-save ./output/allHH_sizedBetween1And12_`dataset'.dta, replace
+	save ./output/allHH_sizedBetween1And12_`dataset'.dta, replace
+restore
 *this is the file that I need to the descriptive analysis of hh_id versus hh_size on (restricting to people over the age of 67)
 
 
-*keep only people marked as living in private homes
+*select people only living only people marked as living in private homes
+di "***********************FLOWCHART 4. NUMBER DROPPED RELATED TO CAREHOME ISSUES********************:"
+*for this, need to label all households that have any individuals in them that are marked as being anything other than private home residents
+generate livesInCareHome=0
+replace livesInCareHome=1 if care_home_type!="U"
+la var livesInCareHome "Flags whether person lives in a care home"
+generate livesWithCareHomeResident=0
+la var livesWithCareHomeResident "Flags whether person lives with someone flagged as a carehome resident"
+gsort hh_id -livesInCareHome
+by hh_id: replace livesWithCareHomeResident=1 if livesInCareHome[1]==1
+
+
+di "***********************FLOWCHART 4a. Flagged as living in a carehome********************:"
+safecount if care_home_type!="U"
 drop if care_home_type!="U"
+
+di "***********************FLOWCHART 4b. Living in a house that has someone flagged as living in a carehome********************:"
+safecount if livesWithCareHomeResident==1
+drop if livesWithCareHomeResident==1
+
+di "***********************FLOWCHART 4c. Living in a private home greater than 12 in size********************:"
+safecount if hh_size>12
+drop if hh_size>12
+
+*for next bit need to find all those houses where all people were over the age of 67
+generate ov67YrOld=0
+replace ov67YrOld=1 if age >67 & age!=.
+la var ov67YrOld "Flags whether person is over the age of 67"
+generate allOv67=0
+la var allOv67 "Flags whether everyone in the house is over 67"
+sort hh_id ov67YrOld
+by hh_id: replace allOv67=1 if ov67YrOld[1]==1
+di "***********************FLOWCHART 4d. Living in a private home greater than 3 in size where all occupants are over the age of 60********************:"
+safecount if allOv67==1 & hh_size>3
+drop if allOv67==1 & hh_size>3
+
+di "***********************FLOWCHART 5. INDIVIDUALS in HOUSEHOLDS EXCLUDING CARE HOMES********************:"
+safecount
+
+
+*Sort out household age missing checker
+generate ageMissing=0
+replace ageMissing=1 if age==.
+la var ageMissing "Flags whether age is missing"
+generate anyAgeMissInHH=0
+la var anyAgeMissInHH "Flags whether anyone in the hh has missing age"
+gsort hh_id -anyAgeMissInHH
+by hh_id: replace anyAgeMissInHH=1 if ageMissing[1]==1
+
+
+di "***********************FLOWCHART 6. HOUSEHOLDS WHERE ONE OR MORE PEOPLE ARE MISSING AGE INFORMATION********************:"
+safecount if anyAgeMissInHH==1
+drop if anyAgeMissInHH==1
+
+
+di "***********************FLOWCHART 7. INDIVIDUALS IN HOUSEHOLDS WHERE ALL MEMBERS HAVE AGE INFORMATION********************:"
+safecount
+
+
+
+di "***********************FLOWCHART 8. ADULTS AGED LESS THAN 67********************:"
+safecount if age<67
+drop if age<67
+
+
+di "***********************FLOWCHART 9. ADULTS AGED 67 OR OVER********************:"
+safecount
+
+
 
 *might need to 
 														
@@ -471,6 +546,8 @@ label define hhRiskCat67PLUS_4cats 1 "Only 67+" 2 "67+ & 1 other gen" 3 "67+ & 2
 label values hhRiskCat67PLUS_4cats hhRiskCat67PLUS_4cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
 
+
+/*
 *(b) variable for stratifying by the 30-66 year olds 
 generate hhRiskCat33TO66=.
 la var hhRiskCat33TO66 "hhRiskCat for the 30-66 year old age group"
@@ -503,29 +580,14 @@ replace hhRiskCat18TO29=8 if hhRiskCat==14
 label define hhRiskCat18TO29 1 "Only 18-29" 2 "0-17 & 18-29" 3 "18-29 & 30-66" 4 "18-29 & 67+" 5 "0-17, 18-29 & 30-66" 6 "0-17, 18-29 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
 label values hhRiskCat18TO29 hhRiskCat18TO29
 safetab hhRiskCat hhRiskCat18TO29, miss
-
+*/
 
 
 ****************************
 *  Create required cohort  *
 ****************************
 
-* Age: Exclude those with implausible ages
-cap assert age<.
-noi di "DROPPING AGE<105:" 
-drop if age>105
-safecount
-* Sex: Exclude categories other than M and F
-cap assert inlist(sex, "M", "F", "I", "U")
-noi di "DROPPING GENDER NOT M/F:" 
-drop if inlist(sex, "I", "U")
-safecount
 
-gen male = 1 if sex == "M"
-replace male = 0 if sex == "F"
-label define male 0"Female" 1"Male"
-label values male male
-safetab male
 
 
 * Create binary age (for age stratification)
@@ -694,6 +756,8 @@ replace bmicat_sa = 3 if bmi>=23 & bmi < 27.5 & ethnicity ==3
 replace bmicat_sa = 4 if bmi>=27.5 & bmi < 32.5 & ethnicity ==3
 replace bmicat_sa = 5 if bmi>=32.5 & bmi < 37.5 & ethnicity ==3
 replace bmicat_sa = 6 if bmi>=37.5 & bmi < . & ethnicity ==3
+*this is where missing is set to normal weight
+replace bmicat_sa = 2 if bmi>=.
 
 safetab bmicat_sa
 
@@ -705,6 +769,8 @@ label define bmicat_sa 1 "Underweight (<18.5)" 	///
 					6 "Obese III (40+ / 37.5+)"			///
 					.u "Unknown (.u)"
 label values bmicat_sa bmicat_sa
+*forgot to do this - for south asian ethnicity only, update their bmi_cat so that it equals bmicat_sa (emailed Rohini to check this correct on 30th August)
+replace bmicat=bmicat_sa if eth5==2
 
 * Create more granular categorisation
 recode bmicat_sa 1/3 .u = 1 4=2 5=3 6=4, gen(obese4cat_sa)
@@ -799,6 +865,16 @@ replace creatinine = . if !inrange(creatinine, 20, 3000)
 	
 * Divide by 88.4 (to convert umol/l to mg/dl)
 gen SCr_adj = creatinine/88.4
+
+*reformat sex variable before I use it
+gen male = 1 if sex == "M"
+replace male = 0 if sex == "F"
+replace male =. if sex=="I"
+replace male =. if sex=="U"
+label define male 0"Female" 1"Male"
+label values male male
+safetab male
+safecount
 
 gen min=.
 replace min = SCr_adj/0.7 if male==0
@@ -995,29 +1071,19 @@ tab nonCOVIDDeathCase
 *create a list of the outcomes for reuse
 global outcomes covidDeathCase covidHospCase covidHospOrDeathCase nonCOVIDDeathCase
 
-/*
-*create a total number of cases in the household variable
-bysort hh_id:egen totCasesInHH=total(case)
-la var totCasesInHH "Total number of cases in a specific household"
-*/
-	
-/*
-* Date of Covid death in ONS
-gen onscoviddeath_date = onsdeath_date if died_ons_covid_flag_any == 1
-gen onsconfirmeddeath_date = onsdeath_date if died_ons_confirmedcovid_flag_any ==1
-gen onssuspecteddeath_date = onsdeath_date if died_ons_suspectedcovid_flag_any ==1
-*/
-
-/*
-* Date of non-COVID death in ONS 
-* If missing date of death resulting died_date will also be missing
-gen ons_noncoviddeath_date = onsdeath_date if died_ons_covid_flag_any != 1
-*/
 
 
+/* APPLY FINAL INCLUSION/EXCLUIONS==================================================*/ 
 
-*Date of first severe outcome
-*replace severe_date = min(ae_date, icu_date, onscoviddeath_date)
+di "***********************FLOWCHART 10. INDIVIDUALS MISSING IMD, MSOA OR SEX INFORMATION, AGE>110 YEARS, DIED OR HAD COVID BEFORE 1st FEB********************:"
+* Age: Exclude those with implausible ages
+*drop people over the age of 110 or under 18 (I can drop the under 18 year old's now as I have already used them in the composition variable)
+noi di "DROP AGE >110:"
+drop if age > 110 & age != .
+* Sex: Exclude categories other than M and F
+drop if male==.
+drop sex
+safecount
 
 *If outcome occurs on the first day of follow-up add one day
 foreach i of global outcomes  {
@@ -1025,6 +1091,41 @@ foreach i of global outcomes  {
 	count if `i'Date==date("$indexdate", "DMY")
 	replace `i'Date=`i'Date+1 if `i'Date==date("$indexdate", "DMY")
 }
+
+/**** Create survival times  ****/
+* Outcomes and follow-up
+gen enter_date = date("$indexdate", "DMY")
+format enter_date %td
+gen study_end_censor =date("$study_end_censor", "DMY")
+format study_end_censor %td
+
+label var enter_date		"Date of study start"
+label var study_end_censor	"Date of admin censoring"
+
+*drop if outcomes happened before entry date
+safecount if covidDeathCaseDate <= enter_date
+safecount if covidHospCaseDate <= enter_date
+safecount if nonCOVIDDeathCaseDate <= enter_date
+
+drop if covidDeathCaseDate <= enter_date
+drop if covidHospCaseDate <= enter_date
+drop if nonCOVIDDeathCaseDate <= enter_date
+*drop cases that are dates prior to indexdate
+foreach i of global outcomes {
+	drop if `i'Date<enter_date	
+}
+
+*merge with msoa data (copied from DGrint SGTF repo)
+merge m:1 msoa using ./lookups/MSOA_lookup
+count if _merge==2
+drop if _merge==2
+drop _merge
+
+
+di "***********************FLOWCHART 11. INDIVIDUALS WITH ELIGIBLE FOLLOW-UP AND IMD, MSOA AND SEX DATA********************:"
+safecount
+
+
 *date of deregistration
 rename dereg_date dereg_dstr
 	gen dereg_date = date(dereg_dstr, "YMD")
@@ -1057,16 +1158,6 @@ foreach i of global outcomes {
 * Set implausible BMIs to missing:
 replace bmi = . if !inrange(bmi, 15, 50)
 
-
-/**** Create survival times  ****/
-* Outcomes and follow-up
-gen enter_date = date("$indexdate", "DMY")
-format enter_date %td
-gen study_end_censor =date("$study_end_censor", "DMY")
-format study_end_censor %td
-
-label var enter_date		"Date of study start"
-label var study_end_censor	"Date of admin censoring"
 
 * For looping later, name must be stime_binary_outcome_name
 
@@ -1110,7 +1201,7 @@ label var patient_id				"Patient ID"
 label var age 						"Age (years)"
 *label var agegroup					"Grouped age"
 *label var age66 					"66 years and older"
-label var sex 						"Sex"
+*label var sex 						"Sex"
 label var male 						"Male"
 label var bmi 						"Body Mass Index (BMI, kg/m2)"
 label var bmicat 					"BMI"
@@ -1324,51 +1415,10 @@ ds, not(varlabel)
 drop `r(varlist)'
 	
 
-/* APPLY INCLUSION/EXCLUIONS==================================================*/ 
-
-safecount
-
-*drop people over the age of 110 or under 18 (I can drop the under 18 year old's now as I have already used them in the composition variable)
-noi di "DROP AGE >110:"
-drop if age > 110 & age != .
-noi di "DROP AGE <18:"
-drop if age <18 & age != .
-
-safecount
-noi di "DROP IF DIED BEFORE INDEX"
-
-sum age, detail
-*THIS IS THE LAST TIME THAT AGE VARIABLE DOESN'T JUST DISAPPEAR, SO SOMETHING IS WRONG IN FOLLOWING CODE - FROM HERE WED NIGHT*
-
-*need to sort out deathdates
-/*
-local vars case_date onsdeath_date cpnsdeath_date
-
-foreach var of local vars {
-	confirm string variable `var'
-	rename `var' `var'_dstr
-	gen `var' = date(`var'_dstr, "YMD")
-	drop `var'_dstr
-	format `var' %td 
-}
-*/
-
-
-drop if covidDeathCaseDate <= enter_date
-drop if covidHospCaseDate <= enter_date
-drop if nonCOVIDDeathCaseDate <= enter_date
-
-
-
-*drop cases that are dates prior to indexdate
-foreach i of global outcomes {
-	drop if `i'Date<enter_date	
-}
-
-
 
 *some final tweaks to variables not handled above
 *sort out sex and region etc
+/*
 safetab sex
 generate sex2=.
 replace sex2=1 if sex=="F"
@@ -1379,6 +1429,7 @@ safetab sex
 label define sex 1 "F" 2 "M"
 label values sex sex
 label var sex "Sex"
+*/
 
 *sort out region
 generate region2=.
@@ -1469,8 +1520,27 @@ safecount
 sort patient_id
 save ./output/hhClassif_analysis_dataset_with_missing_ethnicity`dataset'.dta, replace
 
-noi di "DROP NO ETHNICITY DATA"
+di "***********************FLOWCHART 12. INDIVIDUALS WITH MISSING ETHNICITY DATA********************:"
+safecount if ethnicity==.u
+
 keep if ethnicity!=.u
+di "***********************FLOWCHART 13. FINAL COMBINED ETHNICITY COHORT********************:"
+safecount
+
+
+
+di "***********************FLOWCHART 14. FINAL SEPARATE ETHNICITY COHORTS********************:"
+di "White:"
+safecount if eth5==1
+di "South Asian"
+safecount if eth5==2
+di "Black"
+safecount if eth5==3
+di "Mixed"
+safecount if eth5==4
+di "Other"
+safecount if eth5==5
+
 
 save ./output/hhClassif_analysis_dataset`dataset'.dta, replace
 	
@@ -1482,7 +1552,7 @@ save ./output/hhClassif_analysis_dataset`dataset'.dta, replace
 
 
 
-
+/*
 *Age category 2: 30-66
 use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
 tab ageCatHHRisk
@@ -1511,6 +1581,7 @@ forvalues ethCat=1/`maxEth5Cat' {
 		capture noisily save ./output/hhClassif_analysis_dataset_ageband_2_ethnicity_`ethCat'`dataset'.dta, replace
 	restore
 }
+*/
 
 
 *Age category 3: 67+
@@ -1557,98 +1628,98 @@ forvalues eth16Cat=4/6 {
 }
 	
 
-
-
 *now stset for each agegroup overall and for each eth5 ethnicity and each eth16 separately for each of the three outcomes
-forvalues x=2/3 {
-	*(1)**nonCovidDeath**
-	*overall
-	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
-	stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'`dataset'.dta, replace
-	*for each ethnicity
-	sum eth5
-	local maxEth5Cat=r(max)
-	*eth5 categories
-	forvalues ethCat=1/`maxEth5Cat' {
-		display "ethCat: `ethCat'"
-		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
-		capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
-	}
-	*eth16 categories
-	forvalues eth16Cat=4/6 {
-		display "eth16Cat: `eth16Cat'"
-		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, clear
-		capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, replace
-	}
-		
-	*(2)**covidHospCase**
-	* overall
-	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
-	stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
-	save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'`dataset'.dta, replace
-	*for each ethnicity
-	sum eth5
-	local maxEth5Cat=r(max)
-	*eth5 categories
-	forvalues ethCat=1/`maxEth5Cat' {
-		display "ethCat: `ethCat'"
-		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
-		capture noisily stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
-	}
-	*eth16 categories
-	forvalues eth16Cat=4/6 {
-		display "eth16Cat: `eth16Cat'"
-		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, clear
-		capture noisily stset stime_nonCOVIDDeathCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, replace
-	}
-
-	*(3)**covidDeath**
-	*overall
-	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
-	stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'`dataset'.dta, replace
-	*for each ethnicity
-	*eth5 categories
-	forvalues ethCat=1/`maxEth5Cat' {
-		display "ethCat: `ethCat'"
-		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
-		capture noisily stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
-	}
-	*eth16 categories
-	forvalues eth16Cat=4/6 {
-		display "eth16Cat: `eth16Cat'"
-		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, clear
-		capture noisily stset stime_nonCOVIDDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, replace
-	}
+*forvalues x=2/3 {
 	
-	*(4)**covidHospOrDeathCase**
-	*overall
-	use ./output/hhClassif_analysis_dataset_ageband_`x'`dataset', clear
-	stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_`x'`dataset'.dta, replace
-	*for each ethnicity
-	*eth5 categories
-	forvalues ethCat=1/`maxEth5Cat' {
-		display "ethCat: `ethCat'"
-		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, clear
-		capture noisily stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_`x'_ethnicity_`ethCat'`dataset'.dta, replace
-	}
-	*eth16 categories
-	forvalues eth16Cat=4/6 {
-		display "eth16Cat: `eth16Cat'"
-		capture noisily use ./output/hhClassif_analysis_dataset_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, clear
-		capture noisily stset stime_nonCOVIDDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-		capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_`x'_eth16Cat_`eth16Cat'`dataset'.dta, replace
-	}
+
+*(1)**nonCovidDeath**
+*overall
+use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
+stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3`dataset'.dta, replace
+*for each ethnicity
+sum eth5
+local maxEth5Cat=r(max)
+*eth5 categories
+forvalues ethCat=1/`maxEth5Cat' {
+	display "ethCat: `ethCat'"
+	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
+	capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
 }
+*eth16 categories
+forvalues eth16Cat=4/6 {
+	display "eth16Cat: `eth16Cat'"
+	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, clear
+	capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
+}
+	
+*(2)**covidHospCase**
+* overall
+use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
+stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
+save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3`dataset'.dta, replace
+*for each ethnicity
+sum eth5
+local maxEth5Cat=r(max)
+*eth5 categories
+forvalues ethCat=1/`maxEth5Cat' {
+	display "ethCat: `ethCat'"
+	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
+	capture noisily stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
+}
+*eth16 categories
+forvalues eth16Cat=4/6 {
+	display "eth16Cat: `eth16Cat'"
+	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, clear
+	capture noisily stset stime_nonCOVIDDeathCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
+}
+
+*(3)**covidDeath**
+*overall
+use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
+stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, replace
+*for each ethnicity
+*eth5 categories
+forvalues ethCat=1/`maxEth5Cat' {
+	display "ethCat: `ethCat'"
+	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
+	capture noisily stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
+}
+*eth16 categories
+forvalues eth16Cat=4/6 {
+	display "eth16Cat: `eth16Cat'"
+	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, clear
+	capture noisily stset stime_nonCOVIDDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
+}
+
+*(4)**covidHospOrDeathCase**
+*overall
+use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
+stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
+*for each ethnicity
+*eth5 categories
+forvalues ethCat=1/`maxEth5Cat' {
+	display "ethCat: `ethCat'"
+	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
+	capture noisily stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
+}
+*eth16 categories
+forvalues eth16Cat=4/6 {
+	display "eth16Cat: `eth16Cat'"
+	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, clear
+	capture noisily stset stime_nonCOVIDDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
+}
+
 
 * Close log file 
 log close
