@@ -73,7 +73,8 @@ import delimited ./output/input.csv, clear
 
 di "***********************FLOWCHART 1. NUMBER OF PEOPLE REGISTERED WITH TPP WITH 3 MONTHS FOLLOW-UP********************:"
 safecount
-
+*just check that age has some missing values
+codebook age
 
 
 *Start dates - already created above
@@ -208,7 +209,7 @@ summ count2, d
 * Regroup UTLAs with small case numbers
 
 gen utla_group = utla_name
-tab utla_group
+tab utla_group, miss
 
 
 replace utla_group = "Redbridge, Barking and Dagenham" if utla_name == "Barking and Dagenham"
@@ -222,7 +223,7 @@ replace utla_group = "Bucks/Ox/West. Berks/Swindon" if utla_name == "West Berksh
 replace utla_group = "Camden and Westminster" if utla_name == "Camden"
 replace utla_group = "Camden and Westminster" if utla_name == "Westminster"
 
-replace utla_group = "" if utla_name == "Isles of Scilly"
+replace utla_group = "Cornwall" if utla_name == "Isles of Scilly"
 
 replace utla_group = "Richmond and Hounslow" if utla_name == "Richmond upon Thames"
 replace utla_group = "Richmond and Hounslow" if utla_name == "Hounslow"
@@ -317,9 +318,33 @@ preserve
 restore
 *this is the file that I need to the descriptive analysis of hh_id versus hh_size on (restricting to people over the age of 67)
 
+*Sort out household age missing checker - this has to be here as from step 6 onwards I use age to work things out
+codebook age
+sum age, detail
+
+generate ageMissing=0
+replace ageMissing=1 if age==.
+la var ageMissing "Flags whether age is missing"
+generate anyAgeMissInHH=0
+la var anyAgeMissInHH "Flags whether anyone in the hh has missing age"
+gsort hh_id -ageMissing
+by hh_id: replace anyAgeMissInHH=1 if ageMissing[1]==1
+
+
+di "***********************FLOWCHART 4. HOUSEHOLDS WHERE ONE OR MORE PEOPLE ARE MISSING AGE INFORMATION********************:"
+safecount if anyAgeMissInHH==1
+drop if anyAgeMissInHH==1
+
+
+di "***********************FLOWCHART 5. INDIVIDUALS IN HOUSEHOLDS WHERE ALL MEMBERS HAVE AGE INFORMATION********************:"
+safecount
+
+
+
+
 
 *select people only living only people marked as living in private homes
-di "***********************FLOWCHART 4. NUMBER DROPPED RELATED TO CAREHOME ISSUES********************:"
+di "***********************FLOWCHART 6. NUMBER DROPPED RELATED TO CAREHOME ISSUES********************:"
 *for this, need to label all households that have any individuals in them that are marked as being anything other than private home residents
 generate livesInCareHome=0
 replace livesInCareHome=1 if care_home_type!="U"
@@ -330,15 +355,15 @@ gsort hh_id -livesInCareHome
 by hh_id: replace livesWithCareHomeResident=1 if livesInCareHome[1]==1
 
 
-di "***********************FLOWCHART 4a. Flagged as living in a carehome********************:"
+di "***********************FLOWCHART 6a. Flagged as living in a carehome********************:"
 safecount if care_home_type!="U"
 drop if care_home_type!="U"
 
-di "***********************FLOWCHART 4b. Living in a house that has someone flagged as living in a carehome********************:"
+di "***********************FLOWCHART 6b. Living in a house that has someone flagged as living in a carehome********************:"
 safecount if livesWithCareHomeResident==1
 drop if livesWithCareHomeResident==1
 
-di "***********************FLOWCHART 4c. Living in a private home greater than 12 in size********************:"
+di "***********************FLOWCHART 6c. Living in a private home greater than 12 in size********************:"
 safecount if hh_size>12
 drop if hh_size>12
 
@@ -350,30 +375,11 @@ generate allOv67=0
 la var allOv67 "Flags whether everyone in the house is over 67"
 sort hh_id ov67YrOld
 by hh_id: replace allOv67=1 if ov67YrOld[1]==1
-di "***********************FLOWCHART 4d. Living in a private home greater than 3 in size where all occupants are over the age of 60********************:"
+di "***********************FLOWCHART 6d. Living in a private home greater than 3 in size where all occupants are over the age of 60********************:"
 safecount if allOv67==1 & hh_size>3
 drop if allOv67==1 & hh_size>3
 
-di "***********************FLOWCHART 5. INDIVIDUALS in HOUSEHOLDS EXCLUDING CARE HOMES********************:"
-safecount
-
-
-*Sort out household age missing checker
-generate ageMissing=0
-replace ageMissing=1 if age==.
-la var ageMissing "Flags whether age is missing"
-generate anyAgeMissInHH=0
-la var anyAgeMissInHH "Flags whether anyone in the hh has missing age"
-gsort hh_id -anyAgeMissInHH
-by hh_id: replace anyAgeMissInHH=1 if ageMissing[1]==1
-
-
-di "***********************FLOWCHART 6. HOUSEHOLDS WHERE ONE OR MORE PEOPLE ARE MISSING AGE INFORMATION********************:"
-safecount if anyAgeMissInHH==1
-drop if anyAgeMissInHH==1
-
-
-di "***********************FLOWCHART 7. INDIVIDUALS IN HOUSEHOLDS WHERE ALL MEMBERS HAVE AGE INFORMATION********************:"
+di "***********************FLOWCHART 7. INDIVIDUALS in HOUSEHOLDS EXCLUDING CARE HOMES********************:"
 safecount
 
 
@@ -1080,7 +1086,7 @@ global outcomes covidDeathCase covidHospCase covidHospOrDeathCase nonCOVIDDeathC
 
 /* APPLY FINAL INCLUSION/EXCLUIONS==================================================*/ 
 
-di "***********************FLOWCHART 10. INDIVIDUALS MISSING IMD OR SEX INFORMATION, AGEND>110 YEARS, DIED OR HAD COVID BEFORE 1st FEB********************:"
+di "***********************FLOWCHART 10. INDIVIDUALS MISSING IMD, MSOA OR SEX INFORMATION, AGEND>110 YEARS, DIED OR HAD COVID BEFORE 1st FEB********************:"
 * Age: Exclude those with implausible ages
 *drop people over the age of 110 or under 18 (I can drop the under 18 year old's now as I have already used them in the composition variable)
 noi di "DROP AGE >110:"
@@ -1120,8 +1126,11 @@ foreach i of global outcomes {
 	drop if `i'Date<enter_date	
 }
 
+*drop if missing MSOA
+count if utla_group==""
+drop if utla_group==""
 
-di "***********************FLOWCHART 11. INDIVIDUALS WITH ELIGIBLE FOLLOW-UP AND IMD AND SEX DATA********************:"
+di "***********************FLOWCHART 11. INDIVIDUALS WITH ELIGIBLE FOLLOW-UP AND IMD, MSOA AND SEX DATA********************:"
 safecount
 
 
@@ -1520,9 +1529,9 @@ sort patient_id
 save ./output/hhClassif_analysis_dataset_with_missing_ethnicity`dataset'.dta, replace
 
 di "***********************FLOWCHART 12. INDIVIDUALS WITH MISSING ETHNICITY DATA********************:"
-safecount if ethnicity==.u
+safecount if ethnicity==.
 
-keep if ethnicity!=.u
+keep if ethnicity!=.
 di "***********************FLOWCHART 13. FINAL COMBINED ETHNICITY COHORT********************:"
 safecount
 
