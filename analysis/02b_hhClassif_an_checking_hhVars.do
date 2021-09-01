@@ -33,17 +33,18 @@ log using ./logs/02b_hhClassif_an_checking_hhVars_`dataset'.log, replace t
 *PRIORITY FOR THIS FILE IS TO FIX MY COHORT, I CAN COME BACK AND DO FURTHER INVESTIGATIONS LATER!
 *NEED TO THINK ABOUT THE IMPLICATIONS OF HAVING DROPPED HH BIGGER THAN 12 BASED ON TPP HH SIZE!
 
-use ./output/allHH_sizedBetween1And12_`dataset'.dta, clear
+*use ./output/allHH_sizedBetween1And12_`dataset'.dta, clear
 
 *drop people with missing household id(!!!!!!)
-drop if hh_id==0
+*drop if hh_id==0
 
 *drop with missing sex, IMD and age (plus mark if household has person with missing age and drop the entire household)
 
 
-*============(1) CHECK TO SEE IF TPP HH_ID AND HH_SIZE ARE DISCREPANT================
+*============(1) CHECK TO SEE IF TPP HH_ID AND HH_SIZE ARE DISCREPANT IN MY FINAL COHORT================
 *(a) Create a home made hh_size variable
 *create a home-made household size variable
+use ./output/hhClassif_analysis_dataset`dataset'.dta
 generate kw_hh_people_count=.
 bysort hh_id: replace kw_hh_people_count=_n
 la var kw_hh_people_count "kw generated counter for people in house"
@@ -60,11 +61,13 @@ replace hh_size_wrong=1 if hh_size!=kw_hh_size
 display "===================(1) Proportion of all people in hh sized 12 or less where TPP hh_size differs from kw_calculated hh_size============="
 tab hh_size_wrong
 
-*BUT - I THINK I NEED TO FACTOR IN THE TPP % COVERAGE VARIABLE WHEN CALCULATING THE HOUSEHOLD SIZE?
+log close
+
+*BUT - I THINK I NEED TO FACTOR IN THE TPP % COVERAGE VARIABLE WHEN CALCULATING THE HOUSEHOLD SIZE, GOING TO ASSESS THIS AFTER ANNA PROVIDES CODE
 
 
 
-
+/*
 
 *============(2) CREATE HH COMP VARIABLE AND CHECK HOW DISTRIBUTION OF MY HH SIZE VAR COMPARES TO THE TPP HH SIZE VARIABLE================
 *note that possible alternative handling of "U" hasn't been implemented here, will check this in (3) below
