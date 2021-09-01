@@ -41,10 +41,38 @@ log using ./logs/02b_hhClassif_an_checking_hhVars_`dataset'.log, replace t
 *drop with missing sex, IMD and age (plus mark if household has person with missing age and drop the entire household)
 
 
-*============(1) CHECK TO SEE IF TPP HH_ID AND HH_SIZE ARE DISCREPANT IN MY FINAL COHORT================
+*============(1) CHECK TO SEE HOW MUCH TPP HH_SIZE AND KW CALCULATED HH SIZE ARE DISCREPANT IN MY RAW DATA================
 *(a) Create a home made hh_size variable
-*create a home-made household size variable
-use ./output/hhClassif_analysis_dataset`dataset'.dta
+*this is raw data before removing care home people
+use ./output/allHH_sizedBetween1And12_`dataset'.dta, replace
+
+
+*drop carehome-related
+di "***********************FLOWCHART 4. NUMBER DROPPED RELATED TO CAREHOME ISSUES********************:"
+*for this, need to label all households that have any individuals in them that are marked as being anything other than private home residents
+generate livesInCareHome=0
+replace livesInCareHome=1 if care_home_type!="U"
+la var livesInCareHome "Flags whether person lives in a care home"
+generate livesWithCareHomeResident=0
+la var livesWithCareHomeResident "Flags whether person lives with someone flagged as a carehome resident"
+gsort hh_id -livesInCareHome
+by hh_id: replace livesWithCareHomeResident=1 if livesInCareHome[1]==1
+
+
+di "***********************FLOWCHART 4a. Flagged as living in a carehome********************:"
+safecount if care_home_type!="U"
+drop if care_home_type!="U"
+
+di "***********************FLOWCHART 4b. Living in a house that has someone flagged as living in a carehome********************:"
+safecount if livesWithCareHomeResident==1
+drop if livesWithCareHomeResident==1
+
+di "***********************FLOWCHART 4c. Living in a private home greater than 12 in size********************:"
+safecount if hh_size>12
+drop if hh_size>12
+
+
+*create kw counter for people in house
 generate kw_hh_people_count=.
 bysort hh_id: replace kw_hh_people_count=_n
 la var kw_hh_people_count "kw generated counter for people in house"
