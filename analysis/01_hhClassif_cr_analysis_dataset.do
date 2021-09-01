@@ -288,6 +288,7 @@ label define hh_total_cat  1 "1-2" ///
 						   3 "6+" ///
 						   
 label values hh_total_cat hh_total_cat
+la var hh_total_cat "(TPP) hh_size variable in categories"
 
 		
 /* Rohini code - I think I want to drop them completely rather than just not include in a derived household variable
@@ -368,6 +369,7 @@ safecount if hh_size>12
 drop if hh_size>12
 
 *for next bit need to find all those houses where all people were over the age of 67
+
 generate ov67YrOld=0
 replace ov67YrOld=1 if age >67 & age!=.
 la var ov67YrOld "Flags whether person is over the age of 67"
@@ -375,14 +377,15 @@ generate allOv67=0
 la var allOv67 "Flags whether everyone in the house is over 67"
 sort hh_id ov67YrOld
 by hh_id: replace allOv67=1 if ov67YrOld[1]==1
-/*
-di "***********************FLOWCHART 6d. Living in a private home greater than 3 in size where all occupants are over the age of 60********************:"
-safecount if allOv67==1 & hh_size>3
-drop if allOv67==1 & hh_size>3
-*/
+
+di "***********************FLOWCHART 6d. Living in a private home greater than 4 in size where all occupants are over the age of 67********************:"
+safecount if allOv67==1 & hh_size>4
+drop if allOv67==1 & hh_size>4
+
 
 di "***********************FLOWCHART 5. INDIVIDUALS in HOUSEHOLDS EXCLUDING CARE HOMES********************:"
 safecount
+
 
 
 
