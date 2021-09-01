@@ -66,7 +66,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/02b_hhClassif_an_checking_hhVars_MAIN.log
-        table: output/02b_hhClassif_an_checking_hhVars_MAIN.txt
+        #table: output/02b_hhClassif_an_checking_hhVars_MAIN.txt
 
   02b_hhClassif_an_checking_hhVars_W2:
     run: stata-mp:latest analysis/02b_hhClassif_an_checking_hhVars.do W2
@@ -74,7 +74,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/02b_hhClassif_an_checking_hhVars_W2.log
-        table: output/02b_hhClassif_an_checking_hhVars_W2.txt
+        #table: output/02b_hhClassif_an_checking_hhVars_W2.txt
 
   03a_hhClassif_an_hist_hhSizebyEthnicity:
     run: stata-mp:latest analysis/03a_hhClassif_an_hist_hhSizebyEthnicity.do MAIN
