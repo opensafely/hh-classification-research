@@ -36,9 +36,12 @@ prog define outputHRsforvar
 				*MV adjusted (without household size)
 				stcox i.`variable' $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
 				estimates store mvAdj
-				*MV adjusted (with household size)
+				*MV adjusted (with household size categorical)
 				capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 				capture noisily estimates store mvAdjWHHSize
+				*MV adjusted (with household size continuous)
+				capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_size, strata(utla_group) vce(cluster hh_id)
+				capture noisily estimates store mvAdjWHHSizeCONT
 				*get total count of people by for each ethnicity
 				count
 				local total = r(N)				
@@ -85,6 +88,12 @@ prog define outputHRsforvar
 					capture noisily local hr_mvAdjWHHSize = r(estimate)
 					capture noisily local lb_mvAdjWHHSize = r(lb)
 					capture noisily local ub_mvAdjWHHSize = r(ub)
+					*mv adjusted with hh size CONTINOUS
+					capture noisily estimates restore mvAdjWHHSizeCONT
+					cap noisily lincom `i'.`variable', eform
+					capture noisily local hr_mvAdjWHHSizeCONT = r(estimate)
+					capture noisily local lb_mvAdjWHHSizeCONT = r(lb)
+					capture noisily local ub_mvAdjWHHSizeCONT = r(ub)
 
 					*get variable name
 					local lab: variable label `variable'
@@ -99,10 +108,10 @@ prog define outputHRsforvar
 					if `i'==1 {
 						*write the total
 						file write tablecontents "(N="(`total') ")" _n
-						file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")") _tab (`event') _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab "1"  _tab "1" _tab "1" _tab "1"  _n
+						file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")") _tab (`event') _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab "1"  _tab "1" _tab "1" _tab "1" _tab "1"  _n
 					}
 					else {
-					file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")")  _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _tab %4.2f (`hr_mvAdjWHHSize')  " (" %4.2f (`lb_mvAdjWHHSize') "-" %4.2f (`ub_mvAdjWHHSize') ")"  _n
+					file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")")  _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _tab %4.2f (`hr_mvAdjWHHSize')  " (" %4.2f (`lb_mvAdjWHHSize') "-" %4.2f (`ub_mvAdjWHHSize') ")" _tab %4.2f (`hr_mvAdjWHHSizeCONT')  " (" %4.2f (`lb_mvAdjWHHSizeCONT') "-" %4.2f (`ub_mvAdjWHHSizeCONT') ")"  _n
 					}
 			
 					drop total_follow_up
@@ -131,7 +140,7 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
-	file write tablecontents _tab _tab ("N (%)") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _n
+	file write tablecontents _tab _tab ("N (%)") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _tab ("MV adjusted incl HH size as continuous var") _n
 	
 	forvalues e=1/5 {
 		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3_ethnicity_`e'`dataset'.dta, clear
