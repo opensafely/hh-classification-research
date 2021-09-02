@@ -389,16 +389,6 @@ safecount
 
 
 
-di "***********************FLOWCHART 6. ADULTS AGED LESS THAN 67********************:"
-safecount if age<67
-drop if age<67
-
-
-di "***********************FLOWCHART 7. ADULTS AGED 67 OR OVER********************:"
-safecount
-
-
-
 *might need to 
 														
 label values hh_total_cat hh_total_cat
@@ -622,6 +612,20 @@ safetab hhRiskCat hhRiskCat18TO29, miss
 /* CONVERT STRINGS TO DATE====================================================*/
 /* Comorb dates dates are given with month only, so adding day 
 15 to enable  them to be processed as dates 			  */
+
+
+*NOW THAT I HAVE CREATED HHRISK VAR CAN REMOVE!
+
+di "***********************FLOWCHART 6. ADULTS AGED LESS THAN 67********************:"
+safecount if age<67
+drop if age<67
+
+
+di "***********************FLOWCHART 7. ADULTS AGED 67 OR OVER********************:"
+safecount
+
+
+
 
 *cr date for diabetes based on adjudicated type
 gen diabetes=type1_diabetes if diabetes_type=="T1DM"
