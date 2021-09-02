@@ -262,7 +262,7 @@ file write tablecontent _tab ("Total")				  			  _tab ///
 * DEMOGRAPHICS (more than one level, potentially missing) 
 
 /*reminder of variables:
-patient_id age ageCat hh_id hh_size hh_composition case_date case eth5 eth16 ethnicity_16 indexdate sex bmicat smoke imd region comorb_Neuro comorb_Immunosuppression shielding chronic_respiratory_disease chronic_cardiac_disease diabetes chronic_liver_disease cancer egfr_cat hypertension smoke_nomiss rural_urban
+patient_id age ageCat hh_id hh_size hh_composition case_date case eth5 eth16 ethnicity_16 indexdate male bmicat smoke imd region comorb_Neuro comorb_Immunosuppression shielding chronic_respiratory_disease chronic_cardiac_disease diabetes chronic_liver_disease cancer egfr_cat hypertension smoke_nomiss rural_urban
 */
 
 
@@ -284,8 +284,8 @@ file write tablecontent _n
 *file write tablecontent ("ICNARC data") _tab
 *generaterow2, variable(ICNARC) condition("==1")
 
-*SEX
-tabulatevariable, variable(sex) min(1) max(2) 
+*male
+tabulatevariable, variable(male) min(1) max(2) 
 file write tablecontent _n 
 
 *AGE
