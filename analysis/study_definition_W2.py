@@ -218,9 +218,9 @@ study = StudyDefinition(
     ),
 
     # GEOGRAPHIC REGION MSOA
-    msoa=patients.registered_practice_as_of(        
+    msoa=patients.address_as_of(        
         "2020-09-01",
-        returning="msoa_code",
+        returning="msoa",
         return_expectations={
             "rate": "universal",
             "category": {"ratios": dict_msoa},

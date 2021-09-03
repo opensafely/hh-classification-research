@@ -1096,6 +1096,14 @@ global outcomes covidDeathCase covidHospCase covidHospOrDeathCase nonCOVIDDeathC
 /* APPLY FINAL INCLUSION/EXCLUIONS==================================================*/ 
 
 di "***********************FLOWCHART 8. INDIVIDUALS MISSING IMD, MSOA OR SEX INFORMATION, AGEND>110 YEARS, DIED OR HAD COVID BEFORE 1st FEB********************:"
+*count of how many with missing MSOA
+safecount if utla_group==""
+
+*count of how many with missing IMD
+safecount if imd==.
+
+
+
 * Age: Exclude those with implausible ages
 *drop people over the age of 110 or under 18 (I can drop the under 18 year old's now as I have already used them in the composition variable)
 noi di "DROP AGE >110:"
@@ -1138,6 +1146,9 @@ foreach i of global outcomes {
 *drop if missing MSOA
 count if utla_group==""
 drop if utla_group==""
+
+*drop if missing imd
+drop if imd==.
 
 di "***********************FLOWCHART 9. INDIVIDUALS WITH ELIGIBLE FOLLOW-UP AND IMD, MSOA AND SEX DATA********************:"
 safecount
