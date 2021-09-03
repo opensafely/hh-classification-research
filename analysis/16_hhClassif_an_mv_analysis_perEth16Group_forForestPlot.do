@@ -140,13 +140,13 @@ foreach outcome in covidHospOrDeath {
 	forvalues e=4/6 {
 		use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_eth16Cat_`e'`dataset'.dta, clear
 		if `e'==4 {
-		display "*******Ethnicity: Indian******" _n
+			file write tablecontents "*******Ethnicity: Indian******" _n
 		}
 		else if `e'==5 {
-			display "*******Ethnicity: Pakistani******" _n
+			file write tablecontents "*******Ethnicity: Pakistani******" _n
 		}
 		else if `e'==6 {
-			display "*******Ethnicity: Bangladeshi*******" _n
+			file write tablecontents "*******Ethnicity: Bangladeshi*******" _n
 		}
 		*include version with four exposure categories
 		file write tablecontents "Four exposure categories" _n
