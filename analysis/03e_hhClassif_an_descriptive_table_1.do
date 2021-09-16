@@ -285,7 +285,7 @@ file write tablecontent _n
 *generaterow2, variable(ICNARC) condition("==1")
 
 *male
-tabulatevariable, variable(male) min(1) max(2) 
+tabulatevariable, variable(male) min(0) max(1) 
 file write tablecontent _n 
 
 *AGE
