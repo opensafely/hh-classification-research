@@ -21,7 +21,7 @@
 
 local dataset `1'
 
-global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke_nomiss i.rural_urbanFive
+global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke i.rural_urbanFive
 *list of comorbidities for adjustment
 global comorbidadjlist i.coMorbCat	
 
