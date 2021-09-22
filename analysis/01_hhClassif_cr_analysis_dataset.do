@@ -743,7 +743,8 @@ recode  bmicat . = 3 if bmi<30
 recode  bmicat . = 4 if bmi<35
 recode  bmicat . = 5 if bmi<40
 recode  bmicat . = 6 if bmi<.
-*this is where missing is set to normal weight
+
+*set obese to normal
 replace bmicat = 2 if bmi>=.
 
 label define bmicat 	1 "Underweight (<18.5)" 	///
@@ -753,6 +754,31 @@ label define bmicat 	1 "Underweight (<18.5)" 	///
 							5 "Obese II (35-39.9)"		///
 							6 "Obese III (40+)"			
 label values bmicat bmicat
+
+/*
+*create a version for table 1
+gen 	bmicatForTable1 = .
+recode  bmicatForTable1 . = 1 if bmi<18.5
+recode  bmicatForTable1 . = 2 if bmi<25
+recode  bmicatForTable1 . = 3 if bmi<30
+recode  bmicatForTable1 . = 4 if bmi<35
+recode  bmicatForTable1 . = 5 if bmi<40
+recode  bmicatForTable1 . = 6 if bmi<.
+recode  bmicatForTable1 . = 7 if bmi>=.
+
+label define bmicatForTable1 	1 "Underweight (<18.5)" 	///
+								2 "Normal (18.5-24.9)"		///
+								3 "Overweight (25-29.9)"	///
+								4 "Obese I (30-34.9)"		///
+								5 "Obese II (35-39.9)"		///
+								6 "Obese III (40+)"			///	
+								7 "Unknown"				
+label values bmicatForTable1 bmicatForTable1
+la var bmicatForTable1 "BMI showing number unknown"
+*/
+
+
+
 
 * Create more granular categorisation
 
@@ -776,6 +802,12 @@ replace bmicat_sa = 3 if bmi>=23 & bmi < 27.5 & ethnicity ==3
 replace bmicat_sa = 4 if bmi>=27.5 & bmi < 32.5 & ethnicity ==3
 replace bmicat_sa = 5 if bmi>=32.5 & bmi < 37.5 & ethnicity ==3
 replace bmicat_sa = 6 if bmi>=37.5 & bmi < . & ethnicity ==3
+
+/*
+*but also need to update the bmicatForTable1 variable!
+replace bmicatForTable1=bmicat_sa if bmicatForTable1<7
+*/
+
 *this is where missing is set to normal weight
 replace bmicat_sa = 2 if bmi>=.
 
@@ -791,6 +823,8 @@ label define bmicat_sa 1 "Underweight (<18.5)" 	///
 label values bmicat_sa bmicat_sa
 *forgot to do this - for south asian ethnicity only, update their bmi_cat so that it equals bmicat_sa (emailed Rohini to check this correct on 30th August)
 replace bmicat=bmicat_sa if eth5==2
+
+
 
 * Create more granular categorisation
 recode bmicat_sa 1/3 .u = 1 4=2 5=3 6=4, gen(obese4cat_sa)
@@ -816,7 +850,26 @@ replace smoke = 1 if smoking_status == "M"
 replace smoke = 1 if smoking_status == "" 
 
 label values smoke smoke
+
+/*
+*create a version for table 1
+generate smokeForTable1==.
+la var smokeForTable1 "Smoking showing number unknown"
+capture noisily label define smokeForTable1 1 "Never" 2 "Former" 3 "Current" 4 "Unknown"
+replace smokeForTable1 = 1  if smoking_status == "N"
+replace smokeForTable1 = 2  if smoking_status == "E"
+replace smokeForTable1 = 3  if smoking_status == "S"
+*this is where unkown category is populated
+replace smoke = 4 if smoking_status == "M"
+replace smoke = 4 if smoking_status == "" 
+*/
+
+
+
+
 drop smoking_status
+
+
 
 * Create non-missing 3-category variable for current smoking
 * Assumes missing smoking is never smoking 
