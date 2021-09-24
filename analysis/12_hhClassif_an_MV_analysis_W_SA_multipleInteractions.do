@@ -41,8 +41,8 @@ capture log close
 log using ./logs/12_hhClassif_an_MV_analysis_W_SA_multipleinteractions_`dataset', replace t
 
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
-*May also want to do this for all ethnicities?
-keep if eth5<4
+*May also want to do this for all ethnicities? - yes
+*keep if eth5<4
 
 
 /*
