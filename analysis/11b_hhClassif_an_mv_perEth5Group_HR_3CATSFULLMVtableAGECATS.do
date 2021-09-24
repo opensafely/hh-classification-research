@@ -118,10 +118,10 @@ foreach outcome in covidHospOrDeath {
 	
 	* Open a log file
 	capture log close
-	log using "./logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_`outcome'_`dataset'", text replace
+	log using "./logs/11b_hhClassif_tablecontent_HR_3CATSFULLMVtableAGECATS_`outcome'_`dataset'", text replace
 	
 	*open table
-	file open tablecontents using ./output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_`outcome'_`dataset'.txt, t w replace
+	file open tablecontents using ./output/11b_hhClassif_tablecontents_HRtable_3CATSFULLMVtableAGECATS_`outcome'_`dataset'.txt, t w replace
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
