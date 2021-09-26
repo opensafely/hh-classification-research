@@ -102,11 +102,33 @@ capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5
 est store A
 capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING INTERACTIONS FOR ALL OTHER VARIABLES*****************"
+display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING INTERACTIONS BASED ON RESULTS FROM SEPARATE COHORTS*****************"
+lrtest A B, force
+
+*INTERACTIONS FOR OTHER VARIABKLES (AGE, SMOKING, IMD)
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-AGE - INCLUDING INTERACTIONS BASED ON VARIABLES FROM SEPARATE COHORTS*****************"
+lrtest A B, force
+
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-SMOKING - INCLUDING INTERACTIONS BASED ON VARIABLES FROM SEPARATE COHORTS*****************"
+lrtest A B, force
+
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-IMD - INCLUDING INTERACTIONS BASED ON VARIABLES FROM SEPARATE COHORTS*****************"
 lrtest A B, force
 
 
-*output lincom for this
+*output lincom for hh-comp ethnicity interaction
 *Fit and save model
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 capture noisily estimates store mvAdjWHHSize		
