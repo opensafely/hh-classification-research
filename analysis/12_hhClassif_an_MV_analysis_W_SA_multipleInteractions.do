@@ -41,6 +41,10 @@ capture log close
 log using ./logs/12_hhClassif_an_MV_analysis_W_SA_multipleinteractions_`dataset', replace t
 
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
+
+*check number of records in this dataset - should be 2 624 405
+count
+
 *May also want to do this for all ethnicities? - yes
 *keep if eth5<4
 
@@ -98,12 +102,16 @@ lrtest A B, force*/
 
 *THIS VERSION IS WHERE I ONLY LOOK AT INTERACTIONS THAT LOOK LIKE THEY ARE PRESENT FROM TABLE S5 (Age, smoking, IMD)
 **Testing main exposure-ethnicity interaction while also including INTERACTIONS WITH ALL OTHER VARIABLES (BASED ON MEETING WITH STEPHEN 28 JUL)
+/*
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 est store B
 display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING INTERACTIONS BASED ON RESULTS FROM SEPARATE COHORTS*****************"
 lrtest A B, force
+
+
+*THESE ARE ALL INTERACTIONS I HAVE TESTED FOR ALREADY
 
 *INTERACTIONS FOR OTHER VARIABKLES (AGE, SMOKING, IMD)
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
@@ -126,9 +134,20 @@ capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd i.eth5 i.smoke##i.eth5 
 est store B
 display "***************LRT TEST: ETHNICITY-IMD - INCLUDING INTERACTIONS BASED ON VARIABLES FROM SEPARATE COHORTS*****************"
 lrtest A B, force
+*/
+
+*LRT when all interactions are included
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCatExp_4cats i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING ALL INTERACTIONS*****************"
+lrtest A B, force
 
 
-*output lincom for hh-comp ethnicity interaction
+
+/*
+*output lincom for hh-comp ethnicity interaction - only imd, agecat, smoking
 *Fit and save model
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 capture noisily estimates store mvAdjWHHSize		
@@ -137,6 +156,17 @@ sum eth5
 local maxEth5=r(max) 
 sum hhRiskCatExp_4cats
 local maxhhRiskCat=r(max)
+*/
+
+*output lincom for hh-comp ethnicity interaction - interactions with everything, this is to see if this gives HRs like the separate cohorts
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily estimates store mvAdjWHHSize		
+*helper variables
+sum eth5
+local maxEth5=r(max) 
+sum hhRiskCatExp_4cats
+local maxhhRiskCat=r(max)
+
 
 *for each ethnicity category, output hhrisk hazard ratios
 forvalues ethCat=1/`maxEth5' {
@@ -147,7 +177,7 @@ forvalues ethCat=1/`maxEth5' {
 		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
 	}
 }
-*/
+
 
 log close
 
