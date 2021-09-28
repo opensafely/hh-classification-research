@@ -166,7 +166,7 @@ sum eth5
 local maxEth5=r(max) 
 sum hhRiskCatExp_4cats
 local maxhhRiskCat=r(max)
-*/
+
 
 *for each ethnicity category, output hhrisk hazard ratios
 forvalues ethCat=1/`maxEth5' {
@@ -177,7 +177,7 @@ forvalues ethCat=1/`maxEth5' {
 		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
 	}
 }
-
+*/
 
 log close
 
