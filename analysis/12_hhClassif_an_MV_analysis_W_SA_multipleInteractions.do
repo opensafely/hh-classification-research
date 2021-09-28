@@ -136,10 +136,10 @@ display "***************LRT TEST: ETHNICITY-IMD - INCLUDING INTERACTIONS BASED O
 lrtest A B, force
 */
 
-*LRT when all interactions are included
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+*LRT when all interactions are included - but with linear effects for hhrisk, hhsize, age, comorbidities
+capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 ageCatfor67Plus##i.eth5 i.male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCatExp_4cats i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox hhRiskCatExp_4cats i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 ageCatfor67Plus##i.eth5 i.male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store B
 display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING ALL INTERACTIONS*****************"
 lrtest A B, force
@@ -157,7 +157,7 @@ local maxEth5=r(max)
 sum hhRiskCatExp_4cats
 local maxhhRiskCat=r(max)
 */
-
+/* I know what this is already from the previous file
 *output lincom for hh-comp ethnicity interaction - interactions with everything, this is to see if this gives HRs like the separate cohorts
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 capture noisily estimates store mvAdjWHHSize		
@@ -177,7 +177,7 @@ forvalues ethCat=1/`maxEth5' {
 		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
 	}
 }
-
+*/
 
 log close
 
