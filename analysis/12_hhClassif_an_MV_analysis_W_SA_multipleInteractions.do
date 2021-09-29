@@ -136,14 +136,16 @@ display "***************LRT TEST: ETHNICITY-IMD - INCLUDING INTERACTIONS BASED O
 lrtest A B, force
 */
 
-*LRT when all interactions are included - but with linear effects for hhrisk, hhsize, age, comorbidities
-capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 ageCatfor67Plus##i.eth5 i.male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+*LRT when all interactions are included - but with linear effects for hhrisk, hhsize, age, comorbidities, imd
+capture noisily stcox hhRiskCatExp_4cats##i.eth5 imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 ageCatfor67Plus##i.eth5 i.male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox hhRiskCatExp_4cats i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 ageCatfor67Plus##i.eth5 i.male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox hhRiskCatExp_4cats imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 ageCatfor67Plus##i.eth5 i.male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store B
 display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING ALL INTERACTIONS*****************"
 lrtest A B, force
 
+
+*if this doesn't lower it from 0.13 down to past 0.50, need to start doing LRT tests for all and only include those interactions that improve model fit
 
 
 /*
