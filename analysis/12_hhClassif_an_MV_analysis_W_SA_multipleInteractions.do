@@ -158,15 +158,7 @@ lrtest A B, force
 *am also going to try just linear effects for hh risk and not for others
 */
 
-
-*LRT when all interactions are included - testing hhrisk but only with this linear, not the others
-capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
-est store A
-capture noisily stcox hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
-est store B
-display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING ALL INTERACTIONS, WITH ONLY HHRISK LINEAR*****************"
-lrtest A B, force
-
+/*
 *LRT obesity
 capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
@@ -209,24 +201,22 @@ capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i
 est store B
 display "***************LRT TEST: ETHNICITY-COMORB - INCLUDING ALL INTERACTIONS, WITH ONLY HHRISK LINEAR*****************"
 lrtest A B, force
-
-
-
-
-/*
-*output lincom for hh-comp ethnicity interaction - only imd, agecat, smoking
-*Fit and save model
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat i.hh_total_cat i.rural_urbanFive i.ageCatfor67Plus##i.eth5 i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
-capture noisily estimates store mvAdjWHHSize		
-*helper variables
-sum eth5
-local maxEth5=r(max) 
-sum hhRiskCatExp_4cats
-local maxhhRiskCat=r(max)
 */
-/* I know what this is already from the previous file
+
+
+
+*LRT when all interactions are included EXCEPT HH SIZE - testing hhrisk but only with this linear, not the others
+capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING ALL INTERACTIONS, WITH ONLY HHRISK LINEAR*****************"
+lrtest A B, force
+
+
+
 *output lincom for hh-comp ethnicity interaction - interactions with everything, this is to see if this gives HRs like the separate cohorts
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 capture noisily estimates store mvAdjWHHSize		
 *helper variables
 sum eth5
@@ -244,7 +234,7 @@ forvalues ethCat=1/`maxEth5' {
 		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
 	}
 }
-*/
+
 
 log close
 
