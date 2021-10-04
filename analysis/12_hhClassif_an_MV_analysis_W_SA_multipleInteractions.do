@@ -49,6 +49,116 @@ count
 *keep if eth5<4
 
 
+
+
+*Here am going to do a final output that is the two ways of doing it: (1) Interactions with all variables (2) Interactions with all variables except household size
+display "==============(1) INTERACTIONS WITH ALL VARIABLES================="
+capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING ALL INTERACTIONS, WITH ONLY HHRISK LINEAR*****************"
+lrtest A B, force
+
+*output lincom for hh-comp ethnicity interaction - interactions with everything, this is to see if this gives HRs like the separate cohorts
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily estimates store mvAdjWHHSize		
+*helper variables
+sum eth5
+local maxEth5=r(max) 
+sum hhRiskCatExp_4cats
+local maxhhRiskCat=r(max)
+
+
+*for each ethnicity category, output hhrisk hazard ratios
+forvalues ethCat=1/`maxEth5' {
+	display "*************Ethnicity: `ethCat'************ "
+	forvalues riskCat=1/`maxhhRiskCat' {
+		display "`ethCat'"
+		display "`riskCat'"
+		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
+	}
+}
+
+
+
+
+
+display "==============(2) INTERACTIONS WITH ALL VARIABLES EXCEPT HH SIZE================="
+capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING ALL INTERACTIONS EXCEPT HH SIZE*****************"
+lrtest A B, force
+
+*output lincom for hh-comp ethnicity interaction - interactions with everything, this is to see if this gives HRs like the separate cohorts
+capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily estimates store mvAdjWHHSize		
+*helper variables
+sum eth5
+local maxEth5=r(max) 
+sum hhRiskCatExp_4cats
+local maxhhRiskCat=r(max)
+
+
+*for each ethnicity category, output hhrisk hazard ratios
+forvalues ethCat=1/`maxEth5' {
+	display "*************Ethnicity: `ethCat'************ "
+	forvalues riskCat=1/`maxhhRiskCat' {
+		display "`ethCat'"
+		display "`riskCat'"
+		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
+	}
+}
+
+log close
+
+
+
+
+
+
+/***THIS VERSION IS WHERE I ALLOW FOR INTERACTIONS WITH EVERYTHING
+*EDITED THIS SO HH COMPOSITION IS A CONTINOUS VARIABLE
+
+**Testing main exposure-ethnicity interaction while also including INTERACTIONS WITH ALL OTHER VARIABLES (BASED ON MEETING WITH STEPHEN 28 JUL)
+capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING INTERACTIONS FOR ALL OTHER VARIABLES*****************"
+lrtest A B, force
+
+/*
+*output lincom for this
+*Fit and save model
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily estimates store mvAdjWHHSize		
+*helper variables
+sum eth5
+local maxEth5=r(max) 
+sum hhRiskCatExp_4cats
+local maxhhRiskCat=r(max)
+
+*for each ethnicity category, output hhrisk hazard ratios
+forvalues ethCat=1/`maxEth5' {
+	display "*************Ethnicity: `ethCat'************ "
+	forvalues riskCat=1/`maxhhRiskCat' {
+		display "`ethCat'"
+		display "`riskCat'"
+		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
+	}
+}
+*/
+
+log close
+
+
+
+
+*SUPERCEDED CODE
+
 /*
 *Testing smoking-ethnicity interaction
 capture noisily stcox i.hhRiskCatExp_4cats i.eth5##i.smoke age1 age2 age3 i.male i.obese4cat i.rural_urbanFive i.coMorbCat i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
@@ -213,72 +323,3 @@ est store B
 display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING ALL INTERACTIONS, WITH ONLY HHRISK LINEAR*****************"
 lrtest A B, force
 */
-
-
-
-*output lincom for hh-comp ethnicity interaction - interactions with everything, this is to see if this gives HRs like the separate cohorts
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
-capture noisily estimates store mvAdjWHHSize		
-*helper variables
-sum eth5
-local maxEth5=r(max) 
-sum hhRiskCatExp_4cats
-local maxhhRiskCat=r(max)
-
-
-*for each ethnicity category, output hhrisk hazard ratios
-forvalues ethCat=1/`maxEth5' {
-	display "*************Ethnicity: `ethCat'************ "
-	forvalues riskCat=1/`maxhhRiskCat' {
-		display "`ethCat'"
-		display "`riskCat'"
-		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
-	}
-}
-
-
-log close
-
-
-
-
-
-
-/***THIS VERSION IS WHERE I ALLOW FOR INTERACTIONS WITH EVERYTHING
-*EDITED THIS SO HH COMPOSITION IS A CONTINOUS VARIABLE
-
-**Testing main exposure-ethnicity interaction while also including INTERACTIONS WITH ALL OTHER VARIABLES (BASED ON MEETING WITH STEPHEN 28 JUL)
-capture noisily stcox hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
-est store A
-capture noisily stcox hhRiskCatExp_4cats i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
-est store B
-display "***************LRT TEST: ETHNICITY-HHCOMPOSITION - INCLUDING INTERACTIONS FOR ALL OTHER VARIABLES*****************"
-lrtest A B, force
-
-/*
-*output lincom for this
-*Fit and save model
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
-capture noisily estimates store mvAdjWHHSize		
-*helper variables
-sum eth5
-local maxEth5=r(max) 
-sum hhRiskCatExp_4cats
-local maxhhRiskCat=r(max)
-
-*for each ethnicity category, output hhrisk hazard ratios
-forvalues ethCat=1/`maxEth5' {
-	display "*************Ethnicity: `ethCat'************ "
-	forvalues riskCat=1/`maxhhRiskCat' {
-		display "`ethCat'"
-		display "`riskCat'"
-		capture noisily lincom `riskCat'.hhRiskCatExp_4cats + `riskCat'.hhRiskCatExp_4cats#`ethCat'.eth5, eform
-	}
-}
-*/
-
-log close
-
-
-
-
