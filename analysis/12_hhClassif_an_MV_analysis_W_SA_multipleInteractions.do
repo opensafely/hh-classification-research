@@ -45,8 +45,8 @@ use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset
 *check number of records in this dataset - should be 2 624 405
 count
 
-*Keeo just white, south asian, black ethnicities
-*keep if eth5<4
+*Keep just white, south asian
+keep if eth5<3
 
 
 
