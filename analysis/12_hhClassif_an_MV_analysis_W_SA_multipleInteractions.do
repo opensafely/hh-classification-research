@@ -53,6 +53,7 @@ keep if eth5<3
 
 
 ******(1) Age interaction analysis*******
+/*
 display "==============(1) INTERACTIONS WITH ALL VARIABLES, TESTING INTERACTION BETWEEN AGE AND ETHNICITY================="
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
@@ -60,9 +61,11 @@ capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5
 est store B
 display "***************LRT TEST: ETHNICITY-AGE - INCLUDING ALL INTERACTIONS*****************"
 lrtest A B, force
+*/
 
 *output lincom for a ethnicity age interaction (incl interactions with everything), this is to see if this gives HRs like the separate cohorts
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)capture noisily estimates store mvAdjWHHSize		
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+capture noisily estimates store mvAdjWHHSize		
 *helper variables
 sum eth5
 local maxEth5=r(max) 
@@ -73,7 +76,7 @@ local maxAgeCatfor67Plus=r(max)
 *for each ethnicity category, output age-eth5 hazard ratios
 forvalues ethCat=1/`maxEth5' {
 	display "*************Ethnicity: `ethCat'************ "
-	forvalues ageCatfor67PlusCat=1/`maxAgeCatfor67Plus' {
+	forvalues ageCatfor67PlusCat=0/`maxAgeCatfor67Plus' {
 		display "`ethCat'"
 		display "`ageCatfor67PlusCat'"
 		capture noisily lincom `ageCatfor67PlusCat'.ageCatfor67Plus + `ageCatfor67PlusCat'.ageCatfor67Plus#`ethCat'.eth5, eform
@@ -85,6 +88,7 @@ forvalues ethCat=1/`maxEth5' {
 
 
 ******(2) IMD interaction analysis*******
+/*
 display "==============(1) INTERACTIONS WITH ALL VARIABLES, TESTING INTERACTION BETWEEN IMD AND ETHNICITY================="
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
@@ -92,6 +96,7 @@ capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd i.eth5 i.smoke##i.eth5 
 est store B
 display "***************LRT TEST: ETHNICITY-IMD - INCLUDING ALL INTERACTIONS*****************"
 lrtest A B, force
+*/
 
 *output lincom for a ethnicity IMD interaction (incl interactions with everything), this is to see if this gives HRs like the separate cohorts
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
@@ -108,9 +113,10 @@ forvalues ethCat=1/`maxEth5' {
 	forvalues imdCat=1/`maxIMD' {
 		display "`ethCat'"
 		display "`imdCat'"
-		capture noisily lincom `imdCat'.imd + imdCat'.imd#`ethCat'.eth5, eform
+		capture noisily lincom `imdCat'.imd + `imdCat'.imd#`ethCat'.eth5, eform
 	}
 }
+
 
 
 /*
