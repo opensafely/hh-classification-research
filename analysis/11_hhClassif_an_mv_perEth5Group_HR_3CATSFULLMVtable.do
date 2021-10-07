@@ -112,9 +112,9 @@ end
  - A single page PER OUTCOME containing
  - Results FOR EACH ETHNICITY for that outcome
 */
-
+ 
 *Testing outcomes
-foreach outcome in covidHospOrDeath {
+foreach outcome in nonCovidDeath {
 	
 	* Open a log file
 	capture log close
