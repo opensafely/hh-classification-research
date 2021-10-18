@@ -24,6 +24,7 @@ cap log close
 log using ./logs/10_eth_imd_descriptives_W1.log, replace t
 
 
+/*
  /* PROGRAMS TO AUTOMATE TABULATIONS===========================================*/ 
 
 ********************************************************************************
@@ -245,13 +246,26 @@ syntax, variable(varname) min(real) max(real) [missing]
 	
 end
 */
+*/
 
 /* INVOKE PROGRAMS FOR TABLE 1================================================*/ 
 
 * Open Stata dataset
 use ./output/hhClassif_analysis_dataset_ageband_3MAIN.dta, clear //age 67+ only
 
-keep patient_id hhRiskCat hh_size* hhRiskCatBROAD ethnicity ethnicity_16 hh_size eth5 imd eth16
+keep patient_id hhRiskCat hhRiskCatExp_4cats hh_size* hhRiskCatBROAD ethnicity ethnicity_16 hh_size eth5 imd eth16
+
+
+tab hhRiskCatExp_4cats imd if eth5==1, col 
+tab hhRiskCatExp_4cats imd if eth5==2, col
+tab hhRiskCatExp_4cats imd if eth5==3, col
+tab hhRiskCatExp_4cats imd if eth5==4, col
+tab hhRiskCatExp_4cats imd if eth5==5, col
+
+
+log close
+
+/*commented out temporar
 
 *generate new household category which includes living alone
 gen hh_rohini=hhRiskCatBROAD

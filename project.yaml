@@ -288,7 +288,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/10_eth_imd_descriptives_W1.log
-        table: output/table_ethnicity_descriptivesMAIN.txt
+        # table: output/table_ethnicity_descriptivesMAIN.txt
 
   11_hhClassif_an_mv_perEth5Group_HR_3CATSFULLMVtable:
     needs: [01_hhClassif_cr_analysis_dataset]
