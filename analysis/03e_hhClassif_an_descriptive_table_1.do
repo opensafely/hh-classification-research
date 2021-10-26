@@ -351,6 +351,11 @@ generate hh_sizeTemp=hh_size
 replace hh_sizeTemp=6 if hh_sizeTemp>6
 la var hh_sizeTemp "hh_size variable with all hh over the size of 6 in a single category"
 
+*temporary code prior to making correction to main analysis file (for 83 people with incorrectly assigned hh size)
+replace hh_sizeTemp=4 if hhRiskCatExp_4cats==1 & hh_sizeTemp>4
+replace hh_total_cat=2 if hhRiskCatExp_4cats==1 & hh_total_cat>2
+replace hh_size=4 if hhRiskCatExp_4cats==1 & hh_sizeTemp>4
+
 ***Overall***
 tab hh_size
 tab hh_sizeTemp
@@ -384,14 +389,13 @@ forvalues e=1/5 {
 		}
 		*broad hh categories
 		tab hhRiskCatExp_4cats hh_total_cat if eth5==`e', row
-		tab hhRiskCatExp_4cats hh_total_cat if eth5==`e', col
 		*by single hh category
 		tab hhRiskCatExp_4cats hh_size if eth5==`e', row
-		tab hhRiskCatExp_4cats hh_size if eth5==`e', col
 		*by single hh category with 6 or over combined
 		tab hhRiskCatExp_4cats hh_sizeTemp if eth5==`e', row
-		tab hhRiskCatExp_4cats hh_sizeTemp if eth5==`e', col
 }
+
+
 
 log close
 
