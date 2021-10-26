@@ -43,7 +43,7 @@ sysdir set PERSONAL ./analysis/adofiles
 local dataset `1'
 
 * Open a log file
-
+/* TEMPORARILY COMMENTED OUT DUE TO WANTING TO DO A QUICK RUN ON HH SIZE VS HH COMPOSITION OUTPUTS
 capture log close
 log using ./logs/03e_hhClassif_an_descriptive_table_1_`dataset'.log, replace t
 
@@ -337,6 +337,65 @@ file close tablecontent
 
 * Close log file 
 log close
+*/
+
+
+*This section then for any other tabulation that I want to do i.e. tabulation of household size against household composition for each ethncity
+capture log close
+log using ./logs/03e_hhClassif_hhComp_vs_hhSize_`dataset'.log, replace t
+
+use ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, clear
+
+tab hh_size
+generate hh_sizeTemp=hh_size
+replace hh_sizeTemp=6 if hh_sizeTemp>6
+la var hh_sizeTemp "hh_size variable with all hh over the size of 6 in a single category"
+
+***Overall***
+tab hh_size
+tab hh_sizeTemp
+*broad hh categories
+tab hhRiskCatExp_4cats hh_total_cat, row
+tab hhRiskCatExp_4cats hh_total_cat, col
+*by single hh category
+tab hhRiskCatExp_4cats hh_size, row
+tab hhRiskCatExp_4cats hh_size, col
+*by single hh category with 6 or over combined
+tab hhRiskCatExp_4cats hh_sizeTemp, row
+tab hhRiskCatExp_4cats hh_sizeTemp, col
+
+*by ethnicity
+
+forvalues e=1/5 {
+	if `e'==1 {
+			display "Ethnicity: White" _n
+		}
+		else if `e'==2 {
+			display "Ethnicity: South Asian" _n
+		}
+		else if `e'==3 {
+			display "Ethnicity: Black" _n
+		}
+		else if `e'==4 {
+			display "Ethnicity: Mixed" _n
+		}
+		else if `e'==5 {
+			display "Ethnicity: Other" _n
+		}
+		*broad hh categories
+		tab hhRiskCatExp_4cats hh_total_cat if eth5==`e', row
+		tab hhRiskCatExp_4cats hh_total_cat if eth5==`e', col
+		*by single hh category
+		tab hhRiskCatExp_4cats hh_size if eth5==`e', row
+		tab hhRiskCatExp_4cats hh_size if eth5==`e', col
+		*by single hh category with 6 or over combined
+		tab hhRiskCatExp_4cats hh_sizeTemp if eth5==`e', row
+		tab hhRiskCatExp_4cats hh_sizeTemp if eth5==`e', col
+}
+
+log close
+
+
 
 /*
 clear

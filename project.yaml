@@ -131,8 +131,9 @@ actions:
     needs: [01_hhClassif_cr_analysis_dataset]
     outputs:
       moderately_sensitive:
-        log: logs/03e_hhClassif_an_descriptive_table_1_MAIN.log
-        tableTxt: output/table1_hhClassifMAIN.txt
+        # log: logs/03e_hhClassif_an_descriptive_table_1_MAIN.log
+        # tableTxt: output/table1_hhClassifMAIN.txt
+        log: logs/03e_hhClassif_hhComp_vs_hhSize_MAIN.log
        
 
   03e_hhClassif_an_descriptive_table_1_W2:
@@ -140,8 +141,9 @@ actions:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
     outputs:
       moderately_sensitive:
-        log: logs/03e_hhClassif_an_descriptive_table_1_W2.log
-        tableTxt: output/table1_hhClassifW2.txt
+        # log: logs/03e_hhClassif_an_descriptive_table_1_W2.log
+        # tableTxt: output/table1_hhClassifW2.txt
+        log: logs/03e_hhClassif_hhComp_vs_hhSize_W2.log
       
 
   03f_hhClassif_an_descriptive_table_1_sepEthnicities:
