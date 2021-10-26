@@ -354,7 +354,7 @@ la var hh_sizeTemp "hh_size variable with all hh over the size of 6 in a single 
 *temporary code prior to making correction to main analysis file (for 83 people with incorrectly assigned hh size)
 replace hh_sizeTemp=4 if hhRiskCatExp_4cats==1 & hh_sizeTemp>4
 replace hh_total_cat=2 if hhRiskCatExp_4cats==1 & hh_total_cat>2
-replace hh_size=4 if hhRiskCatExp_4cats==1 & hh_sizeTemp>4
+replace hh_size=4 if hhRiskCatExp_4cats==1 & hh_size>4
 
 ***Overall***
 tab hh_size
