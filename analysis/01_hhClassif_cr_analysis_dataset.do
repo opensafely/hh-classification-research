@@ -553,6 +553,13 @@ label values hhRiskCat67PLUS_4cats hhRiskCat67PLUS_4cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
 
 
+*check there are no impossible house sizes, particularly for the single generation houses
+*83 records have an impossible hh size for the smallest category (TPP variable measurement error), correct these here
+replace hh_size=4 if hhRiskCat67PLUS_4cats==1 & hh_size>4
+replace hh_total_cat=2 if hhRiskCat67PLUS_4cats==1 & hh_total_cat>2
+
+
+
 /*
 *(b) variable for stratifying by the 30-66 year olds 
 generate hhRiskCat33TO66=.

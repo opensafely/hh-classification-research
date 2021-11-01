@@ -437,6 +437,20 @@ actions:
         table1: output/16_hhClassif_forForestPlot_covidHospOrDeath_W2.txt
 
 
+  17_hhClassif_an_Additional_Descriptive_Tables:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/17_hhClassif_an_Additional_Descriptive_Tables.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/17_hhClassif_an_Additional_Descriptive_Tables_MAIN.log
+
+  17_hhClassif_an_Additional_Descriptive_Tables_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/17_hhClassif_an_Additional_Descriptive_Tables.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/17_hhClassif_an_Additional_Descriptive_Tables_W2.log
+
 
 
     
