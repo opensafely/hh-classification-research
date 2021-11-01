@@ -302,8 +302,8 @@ actions:
         log3: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidHospOrDeath_MAIN.log
         # log4: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_nonCovidDeath_MAIN.log
         # table1: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidDeath_MAIN.txt
-        #table2: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHosp_MAIN.txt
-        table3: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHospOrDeath_MAIN.txt
+        # table2: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHosp_MAIN.txt
+        # table3: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHospOrDeath_MAIN.txt
         # table4: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_nonCovidDeath_MAIN.txt
 
   11_hhClassif_an_mv_perEth5Group_HR_3CATSFULLMVtable_W2:
@@ -313,12 +313,12 @@ actions:
       moderately_sensitive:
         # log1: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidDeath_W2.log
         # log2: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidHosp_W2.log
-        # log3: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidHospOrDeath_W2.log
-        log4: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_nonCovidDeath_W2.log
+          log3: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidHospOrDeath_W2.log
+        # log4: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_nonCovidDeath_W2.log
         # table1: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidDeath_W2.txt
         # table2: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHosp_W2.txt
         # table3: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHospOrDeath_W2.txt
-        table4: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_nonCovidDeath_W2.txt
+        # table4: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_nonCovidDeath_W2.txt
 
   11b_hhClassif_an_mv_perEth5Group_HR_3CATSFULLMVtableAGECATS:
     needs: [01_hhClassif_cr_analysis_dataset]
