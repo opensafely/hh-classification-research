@@ -12,62 +12,9 @@
 *Date drafted: 17th June 2021
 *************************************************************************
 
-
-*code that outputs rates (1) in the most deprived group (2) by household size (3) by ethnicity
-
 local dataset `1' 
 
-log using "./logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidHospOrDeath_`dataset'", text replace
 
-
-**White**
-use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_1`dataset'.dta, clear
-keep if imd==5
-tab hh_total_cat
-forvalues i=1/3 {
-		*get overall number
-		cou if hh_total_cat == `i'
-		*get number of events
-		cou if hh_total_cat == `i' & _d == 1
-		local event = r(N)
-		*get person time and rate
-		bysort hh_total_cat: egen total_follow_up = total(_t)
-		su total_follow_up if hh_total_cat == `i'
-		local n_people = r(N)
-		local person_days = r(mean)
-		local person_years=`person_days'/365.25
-		local rate = 100000*(`event'/`person_years')
-		display "household size category=`i', number of people=`n_people', person years=`person_years', rate=`rate'"
-		drop total_follow_up
-}
-
-**South Asian*
-use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_2`dataset'.dta, clear
-keep if imd==5
-tab hh_total_cat
-forvalues i=1/3 {
-		*get overall number
-		cou if hh_total_cat == `i'
-		*get number of events
-		cou if hh_total_cat == `i' & _d == 1
-		local event = r(N)
-		*get person time and rate
-		bysort hh_total_cat: egen total_follow_up = total(_t)
-		su total_follow_up if hh_total_cat == `i'
-		local n_people = r(N)
-		local person_days = r(mean)
-		local person_years=`person_days'/365.25
-		local rate = 100000*(`event'/`person_years')
-		display "household size category=`i', number of people=`n_people', person years=`person_years', rate=`rate'"
-		drop total_follow_up
-}
-
-
-log close
-
-
-
-/*
 prog drop _all
 
 prog define outputHRsforvar

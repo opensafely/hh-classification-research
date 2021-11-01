@@ -263,9 +263,7 @@ tab hhRiskCatExp_4cats imd if eth5==4, col
 tab hhRiskCatExp_4cats imd if eth5==5, col
 
 
-log close
 
-/*commented out temporar
 
 *generate new household category which includes living alone
 gen hh_rohini=hhRiskCatBROAD
