@@ -1441,7 +1441,7 @@ rename organ_transplantBin organ_transplant
 tab organ_transplant
 la var organ_transplant "organ transplant"
 *(12) asplenia
-safetab asplenia
+capture safetab asplenia
 generate aspleniaBin=0
 replace aspleniaBin=1 if asplenia!=""
 drop asplenia
