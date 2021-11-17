@@ -1695,12 +1695,31 @@ preserve
 	save ./output/SensAnalysis1_Age60_dataset_ageband_3`dataset'.dta, replace
 restore
 
+*now create versions for each eth5 ethnicity (1 "White" 2 "South Asian"	3 "Black" 4 "Mixed"	5 "Other"
+sum eth5
+local maxEth5Cat=r(max)
+forvalues ethCat=1/`maxEth5Cat' {
+	display "ethCat: `ethCat'"
+	preserve
+		capture noisily keep if eth5==`ethCat'
+		capture noisily mkspline age = age, cubic nknots(4)
+		capture noisily save ./output/SensAnalysis1_Age60_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
+	restore
+}
+
 *(4)**covidHospOrDeathCase**
 *overall
 use ./output/SensAnalysis1_Age60_dataset_ageband_3`dataset', clear
 stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/SensAnalysis1_Age60_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
 *for each ethnicity
+*eth5 categories
+forvalues ethCat=1/`maxEth5Cat' {
+	display "ethCat: `ethCat'"
+	capture noisily use ./output/SensAnalysis1_Age60_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
+	capture noisily stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+	capture noisily save ./output/SensAnalysis1_Age60_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
+}
 
 * Close log file 
 log close

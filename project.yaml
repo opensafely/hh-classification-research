@@ -448,13 +448,13 @@ actions:
         log1: logs/16_hhClassif_forForestPlot_covidHospOrDeath_W2.log
         table1: output/16_hhClassif_forForestPlot_covidHospOrDeath_W2.txt
 
-  17_SensAnalysis1_Age60_HR_3CATSFULLMVtable_W2:
+  17_SensAnalysis_Age60_mv_analysis_perEth5Group_HR_table_W2:
     needs: [01c_SensAnalysis_Age60_hhClassif_cr_analysis_dataset_W2]
-    run: stata-mp:latest analysis/17_SensAnalysis1_Age60_HR_3CATSFULLMVtable.do W2
+    run: stata-mp:latest analysis/17_SensAnalysis_Age60_mv_analysis_perEth5Group_HR_table.do W2
     outputs:
       moderately_sensitive:
-        log: logs/17_SensAnalysis1_Age60_HR_3CATSFULLMVtable_covidHospOrDeath_W2.log
-        table: output/17_SensAnalysis1_Age60_HR_3CATSFULLMVtable_covidHospOrDeath_W2.txt
+        log: logs/17_SensAnalysis_Age60_mv_analysis_perEth5Group_HR_table_covidHospOrDeath_W2.log
+        table: output/17_SensAnalysis_Age60_mv_analysis_perEth5Group_HR_table_covidHospOrDeath_W2.txt
 
 
 
