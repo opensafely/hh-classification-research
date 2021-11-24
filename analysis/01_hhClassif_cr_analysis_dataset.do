@@ -552,6 +552,38 @@ label define hhRiskCat67PLUS_4cats 1 "Only 67+" 2 "67+ & 1 other gen" 3 "67+ & 2
 label values hhRiskCat67PLUS_4cats hhRiskCat67PLUS_4cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
 
+****create a totally new HHRiskCatCOMPandSIZE variable for analysis***
+generate HHRiskCatCOMPandSIZE=.
+la var HHRiskCatCOMPandSIZE "combined hhcomp and hhsize for the over 67 year old age group - 13 categories"
+*single generation
+replace HHRiskCatCOMPandSIZE=1 if hhRiskCat67PLUS==1 & hh_size==1
+replace HHRiskCatCOMPandSIZE=2 if hhRiskCat67PLUS==1 & hh_size==2
+replace HHRiskCatCOMPandSIZE=3 if hhRiskCat67PLUS==1 & hh_size==3
+replace HHRiskCatCOMPandSIZE=3 if hhRiskCat67PLUS==1 & hh_size==4
+*1 younger generation
+replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS==2 & hh_size==2
+replace HHRiskCatCOMPandSIZE=5 if hhRiskCat67PLUS==2 & hh_size==3
+replace HHRiskCatCOMPandSIZE=5 if hhRiskCat67PLUS==2 & hh_size==4
+replace HHRiskCatCOMPandSIZE=6 if hhRiskCat67PLUS==2 & hh_size==5
+replace HHRiskCatCOMPandSIZE=6 if hhRiskCat67PLUS==2 & hh_size==6
+replace HHRiskCatCOMPandSIZE=7 if hhRiskCat67PLUS==2 & hh_size>6
+*2 younger generations
+replace HHRiskCatCOMPandSIZE=8 if hhRiskCat67PLUS==3 & hh_size==3
+replace HHRiskCatCOMPandSIZE=8 if hhRiskCat67PLUS==3 & hh_size==4
+replace HHRiskCatCOMPandSIZE=9 if hhRiskCat67PLUS==3 & hh_size==5
+replace HHRiskCatCOMPandSIZE=9 if hhRiskCat67PLUS==3 & hh_size==6
+replace HHRiskCatCOMPandSIZE=10 if hhRiskCat67PLUS==3 & hh_size>6
+*3 younger generations
+replace HHRiskCatCOMPandSIZE=11 if hhRiskCat67PLUS==4 & hh_size==3
+replace HHRiskCatCOMPandSIZE=11 if hhRiskCat67PLUS==4 & hh_size==4
+replace HHRiskCatCOMPandSIZE=12 if hhRiskCat67PLUS==4 & hh_size==5
+replace HHRiskCatCOMPandSIZE=12 if hhRiskCat67PLUS==4 & hh_size==6
+replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS==4 & hh_size>6
+*label variable
+label define HHRiskCatCOMPandSIZE 1 "67+ living alone (hhsize=1)" 2 "Two 67+ yr olds (hhsize=2)" 3 ">Two 67+ yr olds (hhsize=3-4)" 4 "67+ & 1 gen (hhsize=2)" 5 "67+ & 1 gen (hhsize=3-4)" 6 "67+ & 1 gen (hhsize=5-6)" 7 "67+ & 1 gen (hhsize>6)" 8 "67+ & 2 gen (hhsize=3-4)" 9 "67+ & 2 gen (hhsize=5-6)" 10 "67+ & 2 gen (hhsize>6)" 11 "67+ & 3 gen (hhsize=3-4)" 12 "67+ & 3 gen (hhsize=5-6)" 13 "67+ & 3 gen (hhsize>6)"
+label values HHRiskCatCOMPandSIZE HHRiskCatCOMPandSIZE
+safetab HHRiskCatCOMPandSIZE
+
 
 *check there are no impossible house sizes, particularly for the single generation houses
 *83 records have an impossible hh size for the smallest category (TPP variable measurement error), correct these here
