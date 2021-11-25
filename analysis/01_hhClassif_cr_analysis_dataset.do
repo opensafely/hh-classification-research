@@ -559,28 +559,26 @@ la var HHRiskCatCOMPandSIZE "combined hhcomp and hhsize for the over 67 year old
 replace HHRiskCatCOMPandSIZE=1 if hhRiskCat67PLUS==1 & hh_size==1
 replace HHRiskCatCOMPandSIZE=2 if hhRiskCat67PLUS==1 & hh_size==2
 replace HHRiskCatCOMPandSIZE=3 if hhRiskCat67PLUS==1 & hh_size==3
-replace HHRiskCatCOMPandSIZE=3 if hhRiskCat67PLUS==1 & hh_size==4
+replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS==1 & hh_size==4
+replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS==1 & hh_size==5
 *1 younger generation
-replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS==2 & hh_size==2
-replace HHRiskCatCOMPandSIZE=5 if hhRiskCat67PLUS==2 & hh_size==3
-replace HHRiskCatCOMPandSIZE=5 if hhRiskCat67PLUS==2 & hh_size==4
-replace HHRiskCatCOMPandSIZE=6 if hhRiskCat67PLUS==2 & hh_size==5
-replace HHRiskCatCOMPandSIZE=6 if hhRiskCat67PLUS==2 & hh_size==6
-replace HHRiskCatCOMPandSIZE=7 if hhRiskCat67PLUS==2 & hh_size>6
+replace HHRiskCatCOMPandSIZE=5 if hhRiskCat67PLUS==2 & hh_size==2
+replace HHRiskCatCOMPandSIZE=6 if hhRiskCat67PLUS==2 & hh_size==3
+replace HHRiskCatCOMPandSIZE=7 if hhRiskCat67PLUS==2 & hh_size==4
+replace HHRiskCatCOMPandSIZE=7 if hhRiskCat67PLUS==2 & hh_size==5
+replace HHRiskCatCOMPandSIZE=8 if hhRiskCat67PLUS==2 & hh_size>5
 *2 younger generations
-replace HHRiskCatCOMPandSIZE=8 if hhRiskCat67PLUS==3 & hh_size==3
-replace HHRiskCatCOMPandSIZE=8 if hhRiskCat67PLUS==3 & hh_size==4
-replace HHRiskCatCOMPandSIZE=9 if hhRiskCat67PLUS==3 & hh_size==5
-replace HHRiskCatCOMPandSIZE=9 if hhRiskCat67PLUS==3 & hh_size==6
-replace HHRiskCatCOMPandSIZE=10 if hhRiskCat67PLUS==3 & hh_size>6
+replace HHRiskCatCOMPandSIZE=9 if hhRiskCat67PLUS==3 & hh_size==3
+replace HHRiskCatCOMPandSIZE=10 if hhRiskCat67PLUS==3 & hh_size==4
+replace HHRiskCatCOMPandSIZE=10 if hhRiskCat67PLUS==3 & hh_size==5
+replace HHRiskCatCOMPandSIZE=11 if hhRiskCat67PLUS==3 & hh_size>5
 *3 younger generations
-replace HHRiskCatCOMPandSIZE=11 if hhRiskCat67PLUS==4 & hh_size==3
-replace HHRiskCatCOMPandSIZE=11 if hhRiskCat67PLUS==4 & hh_size==4
-replace HHRiskCatCOMPandSIZE=12 if hhRiskCat67PLUS==4 & hh_size==5
-replace HHRiskCatCOMPandSIZE=12 if hhRiskCat67PLUS==4 & hh_size==6
-replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS==4 & hh_size>6
+replace HHRiskCatCOMPandSIZE=12 if hhRiskCat67PLUS==4 & hh_size==3
+replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS==4 & hh_size==4
+replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS==4 & hh_size==5
+replace HHRiskCatCOMPandSIZE=14 if hhRiskCat67PLUS==4 & hh_size>5
 *label variable
-label define HHRiskCatCOMPandSIZE 1 "67+ living alone (hhsize=1)" 2 "Two 67+ yr olds (hhsize=2)" 3 ">Two 67+ yr olds (hhsize=3-4)" 4 "67+ & 1 gen (hhsize=2)" 5 "67+ & 1 gen (hhsize=3-4)" 6 "67+ & 1 gen (hhsize=5-6)" 7 "67+ & 1 gen (hhsize>6)" 8 "67+ & 2 gen (hhsize=3-4)" 9 "67+ & 2 gen (hhsize=5-6)" 10 "67+ & 2 gen (hhsize>6)" 11 "67+ & 3 gen (hhsize=3-4)" 12 "67+ & 3 gen (hhsize=5-6)" 13 "67+ & 3 gen (hhsize>6)"
+label define HHRiskCatCOMPandSIZE 1 "67+ living alone (hhsize=1)" 2 "Two 67+ yr olds (hhsize=2)" 3 "Three 67+ yr olds (hhsize=3)" 4 "Four 67+ yr olds (hhsize=4-5)" 5 "67+ & 1 gen (hhsize=2)" 6 "67+ & 1 gen (hhsize=3)" 7 "67+ & 1 gen (hhsize=4-5)" 8 "67+ & 1 gen (hhsize=6+)" 9 "67+ & 2 gen (hhsize=3)" 10 "67+ & 2 gen (hhsize=4-5)" 11 "67+ & 2 gen (hhsize=6+)" 12 "67+ & 3 gen (hhsize=3)" 13 "67+ & 3 gen (hhsize=4-5)" 14 "67+ & 3 gen (hhsize=6+)"
 label values HHRiskCatCOMPandSIZE HHRiskCatCOMPandSIZE
 safetab HHRiskCatCOMPandSIZE
 
