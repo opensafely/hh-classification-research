@@ -556,8 +556,8 @@ safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
 generate HHRiskCatCOMPandSIZE=.
 la var HHRiskCatCOMPandSIZE "combined hhcomp and hhsize for the over 67 year old age group - 13 categories"
 *single generation
-replace HHRiskCatCOMPandSIZE=1 if hhRiskCat67PLUS==1 & hh_size==1
-replace HHRiskCatCOMPandSIZE=2 if hhRiskCat67PLUS==1 & hh_size==2
+replace HHRiskCatCOMPandSIZE=2 if hhRiskCat67PLUS==1 & hh_size==1
+replace HHRiskCatCOMPandSIZE=1 if hhRiskCat67PLUS==1 & hh_size==2
 replace HHRiskCatCOMPandSIZE=3 if hhRiskCat67PLUS==1 & hh_size==3
 replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS==1 & hh_size==4
 replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS==1 & hh_size==5
@@ -578,7 +578,7 @@ replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS==4 & hh_size==4
 replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS==4 & hh_size==5
 replace HHRiskCatCOMPandSIZE=14 if hhRiskCat67PLUS==4 & hh_size>5
 *label variable
-label define HHRiskCatCOMPandSIZE 1 "67+ living alone (hhsize=1)" 2 "Two 67+ yr olds (hhsize=2)" 3 "Three 67+ yr olds (hhsize=3)" 4 "Four 67+ yr olds (hhsize=4-5)" 5 "67+ & 1 gen (hhsize=2)" 6 "67+ & 1 gen (hhsize=3)" 7 "67+ & 1 gen (hhsize=4-5)" 8 "67+ & 1 gen (hhsize=6+)" 9 "67+ & 2 gen (hhsize=3)" 10 "67+ & 2 gen (hhsize=4-5)" 11 "67+ & 2 gen (hhsize=6+)" 12 "67+ & 3 gen (hhsize=3)" 13 "67+ & 3 gen (hhsize=4-5)" 14 "67+ & 3 gen (hhsize=6+)"
+label define HHRiskCatCOMPandSIZE 1 "Two 67+ yr olds (hhsize=2)" 2 "67+ living alone (hhsize=1)" 3 "Three 67+ yr olds (hhsize=3)" 4 "Four 67+ yr olds (hhsize=4-5)" 5 "67+ & 1 gen (hhsize=2)" 6 "67+ & 1 gen (hhsize=3)" 7 "67+ & 1 gen (hhsize=4-5)" 8 "67+ & 1 gen (hhsize=6+)" 9 "67+ & 2 gen (hhsize=3)" 10 "67+ & 2 gen (hhsize=4-5)" 11 "67+ & 2 gen (hhsize=6+)" 12 "67+ & 3 gen (hhsize=3)" 13 "67+ & 3 gen (hhsize=4-5)" 14 "67+ & 3 gen (hhsize=6+)"
 label values HHRiskCatCOMPandSIZE HHRiskCatCOMPandSIZE
 safetab HHRiskCatCOMPandSIZE
 
