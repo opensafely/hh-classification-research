@@ -561,7 +561,7 @@ replace hhRiskCat67PLUS_5cats=3 if hhRiskCat67PLUS>1 & hhRiskCat67PLUS<5
 replace hhRiskCat67PLUS_5cats=4 if hhRiskCat67PLUS>4 & hhRiskCat67PLUS<8
 replace hhRiskCat67PLUS_5cats=5 if hhRiskCat67PLUS==8
 *label variable
-label define hhRiskCat67PLUS_5cats 2 "67+ living alone" 1 "2-4 67+ year olds" 2 "67+ & 1 other gen" 4 "67+ & 2 other gens" 5 "67+ & 3 other gens"
+label define hhRiskCat67PLUS_5cats  1 "Multiple 67+ year olds" 2 "67+ living alone" 3 "67+ & 1 other gen" 4 "67+ & 2 other gens" 5 "67+ & 3 other gens"
 label values hhRiskCat67PLUS_5cats hhRiskCat67PLUS_5cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_5cats, miss
 

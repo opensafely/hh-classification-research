@@ -36,11 +36,11 @@ prog define outputHRsforvar
 				*MV adjusted (without household size)
 				stcox i.`variable' $demogadjlist $comorbidadjlist i.imd, strata(utla_group) vce(cluster hh_id)
 				estimates store mvAdj
-				/*
 				*MV adjusted (with household size categorical)
 				capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 				capture noisily estimates store mvAdjWHHSize
 				*MV adjusted (with household size continuous)
+				/*
 				capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_size, strata(utla_group) vce(cluster hh_id)
 				capture noisily estimates store mvAdjWHHSizeCONT
 				*/
@@ -84,6 +84,12 @@ prog define outputHRsforvar
 					local hr_mvAdj = r(estimate)
 					local lb_mvAdj = r(lb)
 					local ub_mvAdj = r(ub)
+					*mv adjusted with hh size
+					capture noisily estimates restore mvAdjWHHSize
+					cap noisily lincom `i'.`variable', eform
+					capture noisily local hr_mvAdjWHHSize = r(estimate)
+					capture noisily local lb_mvAdjWHHSize = r(lb)
+					capture noisily local ub_mvAdjWHHSize = r(ub)
 					*mv adjusted with hh size CONTINOUS
 					/*
 					capture noisily estimates restore mvAdjWHHSizeCONT
@@ -106,10 +112,10 @@ prog define outputHRsforvar
 					if `i'==1 {
 						*write the total
 						file write tablecontents "(N="(`total') ")" _n
-						file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")") _tab (`event') _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab "1"  _tab "1" _tab "1" _n
+						file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")") _tab (`event') _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab "1"  _tab "1" _tab "1" _tab "1"  _n
 					}
 					else {
-					file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")")  _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")"  _n
+					file write tablecontents  _tab ("`category'") _tab (`n_people') (" (") %3.1f (`percent') (")")  _tab (`event')  _tab %3.0f (`person_years') _tab %3.0f (`rate') _tab %4.2f (`hr_crude')  " (" %4.2f (`lb_crude') "-" %4.2f (`ub_crude') ")" _tab %4.2f (`hr_ageAdj')  " (" %4.2f (`lb_ageAdj') "-" %4.2f (`ub_ageAdj') ")" _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _tab %4.2f (`hr_mvAdjWHHSize')  " (" %4.2f (`lb_mvAdjWHHSize') "-" %4.2f (`ub_mvAdjWHHSize') ")"  _n
 					}
 			
 					drop total_follow_up
@@ -131,14 +137,14 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 	
 	* Open a log file
 	capture log close
-	log using "./logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_`outcome'_`dataset'", text replace
+	log using "./logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_`outcome'_`dataset'", text replace
 	
 	*open table
-	file open tablecontents using ./output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_`outcome'_`dataset'.txt, t w replace
+	file open tablecontents using ./output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_`outcome'_`dataset'.txt, t w replace
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
-	file write tablecontents _tab _tab ("N (%)") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _n
+	file write tablecontents _tab _tab ("N (%)") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _n
 	
 	forvalues e=1/5 {
 		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3_ethnicity_`e'`dataset'.dta, clear
@@ -159,12 +165,14 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 		}
 		*include version with four exposure categories
 		file write tablecontents "Four exposure categories" _n
-		cap noisily outputHRsforvar, variable(HHRiskCatCOMPandSIZEBROAD) catLabel(HHRiskCatCOMPandSIZEBROAD) min(1) max(10) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
+		/*
 		*Output version with 8 categories
-		*file write tablecontents "Eight exposure categories" _n
-		*cap noisily outputHRsforvar, variable(hhRiskCatExp) catLabel(hhRiskCat67PLUS) min(1) max(8) ethnicity(`e') outcome(`outcome')
-		*file write tablecontents _n
+		file write tablecontents "Eight exposure categories" _n
+		cap noisily outputHRsforvar, variable(hhRiskCatExp) catLabel(hhRiskCat67PLUS) min(1) max(8) ethnicity(`e') outcome(`outcome')
+		file write tablecontents _n
+		*/
 	}
 	cap file close tablecontents 
 	cap log close

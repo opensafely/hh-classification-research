@@ -456,6 +456,34 @@ actions:
         log: logs/17_SensAnalysis_Age60_mv_analysis_perEth5Group_HR_table_covidHospOrDeath_W2.log
         table: output/17_SensAnalysis_Age60_mv_analysis_perEth5Group_HR_table_covidHospOrDeath_W2.txt
 
+  18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table.do MAIN
+    outputs:
+      moderately_sensitive:
+        log1: logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidDeath_MAIN.log
+        log2: logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidHosp_MAIN.log
+        log3: logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidHospOrDeath_MAIN.log
+        log4: logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_nonCovidDeath_MAIN.log
+        table1: output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidDeath_MAIN.txt
+        table2: output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidHosp_MAIN.txt
+        table3: output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidHospOrDeath_MAIN.txt
+        table4: output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_nonCovidDeath_MAIN.txt
+
+  18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table.do W2
+    outputs:
+      moderately_sensitive:
+        log1: logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidDeath_W2.log
+        log2: logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidHosp_W2.log
+        log3: logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidHospOrDeath_W2.log
+        log4: logs/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_nonCovidDeath_W2.log
+        table1: output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidDeath_W2.txt
+        table2: output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidHosp_W2.txt
+        table3: output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_covidHospOrDeath_W2.txt
+        table4: output/18_hhClassif_an_mv_analysis_perEth5Group_67SEPARATED_HR_table_nonCovidDeath_W2.txt
+
   19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table:
     needs: [01_hhClassif_cr_analysis_dataset]
     run: stata-mp:latest analysis/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table.do MAIN
