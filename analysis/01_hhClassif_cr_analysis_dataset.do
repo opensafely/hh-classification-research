@@ -552,6 +552,19 @@ label define hhRiskCat67PLUS_4cats 1 "Only 67+" 2 "67+ & 1 other gen" 3 "67+ & 2
 label values hhRiskCat67PLUS_4cats hhRiskCat67PLUS_4cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
 
+*create another version that has 5 categories (1) living alone (2) living with only one generation (3) living with one other generation (4) living with two other generations (5) living with three other gens
+generate hhRiskCat67PLUS_5cats=.
+la var hhRiskCat67PLUS_5cats "hhRiskCat for the over 67 year old age group - 4 categories"
+replace hhRiskCat67PLUS_5cats=2 if hh_size==1
+replace hhRiskCat67PLUS_5cats=1 if hhRiskCat67PLUS==1 & hhRiskCat67PLUS_5cats!=2
+replace hhRiskCat67PLUS_5cats=3 if hhRiskCat67PLUS>1 & hhRiskCat67PLUS<5
+replace hhRiskCat67PLUS_5cats=4 if hhRiskCat67PLUS>4 & hhRiskCat67PLUS<8
+replace hhRiskCat67PLUS_5cats=5 if hhRiskCat67PLUS==8
+*label variable
+label define hhRiskCat67PLUS_5cats 2 "67+ living alone" 1 "2-4 67+ year olds" 2 "67+ & 1 other gen" 4 "67+ & 2 other gens" 5 "67+ & 3 other gens"
+label values hhRiskCat67PLUS_5cats hhRiskCat67PLUS_5cats
+safetab hhRiskCat67PLUS hhRiskCat67PLUS_5cats, miss
+
 ****create a totally new HHRiskCatCOMPandSIZE variable for analysis***
 generate HHRiskCatCOMPandSIZE=.
 la var HHRiskCatCOMPandSIZE "combined hhcomp and hhsize for the over 67 year old age group - 13 categories"
@@ -581,6 +594,38 @@ replace HHRiskCatCOMPandSIZE=14 if hhRiskCat67PLUS==4 & hh_size>5
 label define HHRiskCatCOMPandSIZE 1 "Two 67+ yr olds (hhsize=2)" 2 "67+ living alone (hhsize=1)" 3 "Three 67+ yr olds (hhsize=3)" 4 "Four 67+ yr olds (hhsize=4-5)" 5 "67+ & 1 gen (hhsize=2)" 6 "67+ & 1 gen (hhsize=3)" 7 "67+ & 1 gen (hhsize=4-5)" 8 "67+ & 1 gen (hhsize=6+)" 9 "67+ & 2 gen (hhsize=3)" 10 "67+ & 2 gen (hhsize=4-5)" 11 "67+ & 2 gen (hhsize=6+)" 12 "67+ & 3 gen (hhsize=3)" 13 "67+ & 3 gen (hhsize=4-5)" 14 "67+ & 3 gen (hhsize=6+)"
 label values HHRiskCatCOMPandSIZE HHRiskCatCOMPandSIZE
 safetab HHRiskCatCOMPandSIZE
+
+
+****create a BROADER HHRiskCatCOMPandSIZE variable for analysis***
+generate HHRiskCatCOMPandSIZEBROAD=.
+la var HHRiskCatCOMPandSIZEBROAD "combined hhcomp and hhsize for the over 67 year old age group - 9 categories"
+*single generation
+replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCat67PLUS==1 & hh_size==1
+replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==2
+replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==5
+*1 younger generation
+replace HHRiskCatCOMPandSIZEBROAD=3 if hhRiskCat67PLUS==2 & hh_size==2
+replace HHRiskCatCOMPandSIZEBROAD=3 if hhRiskCat67PLUS==2 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS==2 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS==2 & hh_size==5
+replace HHRiskCatCOMPandSIZEBROAD=5 if hhRiskCat67PLUS==2 & hh_size>5
+*2 younger generations
+replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS==3 & hh_size==2
+replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS==3 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=7 if hhRiskCat67PLUS==3 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=7 if hhRiskCat67PLUS==3 & hh_size==5
+replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCat67PLUS==3 & hh_size>5
+*3 younger generations
+replace HHRiskCatCOMPandSIZEBROAD=9 if hhRiskCat67PLUS==4 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=9 if hhRiskCat67PLUS==4 & hh_size==5
+replace HHRiskCatCOMPandSIZEBROAD=10 if hhRiskCat67PLUS==4 & hh_size>5
+*label variable
+label define HHRiskCatCOMPandSIZEBROAD 1 "Multiple 67+ yr olds (hhsize=2-4)" 2 "67+ living alone (hhsize=1)" 3 "67+ & 1 gen (hhsize=2-3)" 4 "67+ & 1 gen (hhsize=4-5)" 5 "67+ & 1 gen (hhsize=6+)" 6 "67+ & 2 gen (hhsize=2-3)" 7 "67+ & 2 gen (hhsize=4-5)" 8 "67+ & 2 gen (hhsize=6+)" 9 "67+ & 3 gen (hhsize=4-5)" 10 "67+ & 3 gen (hhsize=6+)"
+label values HHRiskCatCOMPandSIZEBROAD HHRiskCatCOMPandSIZEBROAD
+safetab HHRiskCatCOMPandSIZEBROAD
+
 
 
 *check there are no impossible house sizes, particularly for the single generation houses
