@@ -22,7 +22,8 @@ global comorbidadjlist i.coMorbCat
 prog drop _all
 
 prog define outputHRsforvar
-	syntax, variable(string) catLabel(string) min(real) max(real) ethnicity(real) outcome(string) 
+	*syntax, variable(string) catLabel(string) min(real) max(real) ethnicity(real) outcome(string) 
+	syntax, variable(string) catLabel(string) min(real) max(real) outcome(string) 
 
 	*calculation of rates
 				strate `variable' 
@@ -127,7 +128,8 @@ end
 
 *Testing outcomes
 
-foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
+*foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
+foreach outcome in covidHospOrDeath {
 	
 	* Open a log file
 	capture log close
@@ -140,8 +142,13 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
 	file write tablecontents _tab _tab ("N (%)") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _n
 	
-	forvalues e=1/5 {
-		use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3_ethnicity_`e'`dataset'.dta, clear
+	*forvalues e=1/5 {
+		*this is commented out, is for when I want to do by separate ethnicity
+		*use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3_ethnicity_`e'`dataset'.dta, clear
+		use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
+		keep if eth5<3
+		
+		/*commented out for same reason as above
 		if `e'==1 {
 			file write tablecontents "Ethnicity: White " 
 		}
@@ -157,15 +164,17 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 		else if `e'==5 {
 			file write tablecontents "Ethnicity: Other " 
 		}
+		*/
 		*include version with four exposure categories
 		file write tablecontents "Four exposure categories" _n
-		cap noisily outputHRsforvar, variable(HHRiskCatCOMPandSIZEBROAD) catLabel(HHRiskCatCOMPandSIZEBROAD) min(1) max(9) ethnicity(`e') outcome(`outcome')
+		*cap noisily outputHRsforvar, variable(HHRiskCatCOMPandSIZEBROAD) catLabel(HHRiskCatCOMPandSIZEBROAD) min(1) max(9) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(HHRiskCatCOMPandSIZEBROAD) catLabel(HHRiskCatCOMPandSIZEBROAD) min(1) max(9) outcome(`outcome')
 		file write tablecontents _n
 		*Output version with 8 categories
 		*file write tablecontents "Eight exposure categories" _n
 		*cap noisily outputHRsforvar, variable(hhRiskCatExp) catLabel(hhRiskCat67PLUS) min(1) max(8) ethnicity(`e') outcome(`outcome')
 		*file write tablecontents _n
-	}
+	*}
 	cap file close tablecontents 
 	cap log close
 	*output excel
