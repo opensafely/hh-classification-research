@@ -159,7 +159,7 @@ foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 		}
 		*include version with four exposure categories
 		file write tablecontents "Four exposure categories" _n
-		cap noisily outputHRsforvar, variable(HHRiskCatCOMPandSIZEBROAD) catLabel(HHRiskCatCOMPandSIZEBROAD) min(1) max(10) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(HHRiskCatCOMPandSIZEBROAD) catLabel(HHRiskCatCOMPandSIZEBROAD) min(1) max(9) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 		*Output version with 8 categories
 		*file write tablecontents "Eight exposure categories" _n
