@@ -88,7 +88,7 @@ syntax, variable(varname) condition(string)
 	local lab: label `variable' `level'
 	file write tablecontent (" `lab'") _tab
 	
-	*local lab: label hhRiskCatExp_4catsLabel 4
+	*local lab: label hhRiskCat67PLUS_5catsLabel 4
 
 	
 	/*this is the overall column*/
@@ -99,10 +99,10 @@ syntax, variable(varname) condition(string)
 	file write tablecontent %9.0f (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
 
 	/*this loops through groups*/
-	forvalues i=1/4{
-	cou if hhRiskCatExp_4cats == `i'
+	forvalues i=1/5{
+	cou if hhRiskCat67PLUS_5cats == `i'
 	local rowdenom = r(N)
-	cou if hhRiskCatExp_4cats == `i' & `variable' `condition'
+	cou if hhRiskCat67PLUS_5cats == `i' & `variable' `condition'
 	local pct = 100*(r(N)/`rowdenom') 
 	*file write tablecontent %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
 	file write tablecontent %9.0f (r(N)) (" (") %3.1f (`pct') (")") _tab
@@ -126,10 +126,10 @@ syntax, variable(varname) condition(string)
 	local colpct = 100*(r(N)/`overalldenom')
 	file write tablecontent %9.0gc (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
 
-	forvalues i=1/4{
-	cou if hhRiskCatExp_4cats == `i'
+	forvalues i=1/5{
+	cou if hhRiskCat67PLUS_5cats == `i'
 	local rowdenom = r(N)
-	cou if hhRiskCatExp_4cats == `i' & `variable' `condition'
+	cou if hhRiskCat67PLUS_5cats == `i' & `variable' `condition'
 	local pct = 100*(r(N)/`rowdenom') 
 	file write tablecontent %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
 	}
@@ -209,8 +209,8 @@ syntax, variable(varname)
 	file write tablecontent ("Mean (SD)") _tab 
 	file write tablecontent  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
 	
-	forvalues i=1/4{							
-	qui summarize `variable' if hhRiskCatExp_4cats == `i', d
+	forvalues i=1/5{							
+	qui summarize `variable' if hhRiskCat67PLUS_5cats == `i', d
 	file write tablecontent  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
 	}
 
@@ -221,8 +221,8 @@ file write tablecontent _n
 	file write tablecontent ("Median (IQR)") _tab 
 	file write tablecontent %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
 	
-	forvalues i=1/4{
-	qui summarize `variable' if hhRiskCatExp_4cats == `i', d
+	forvalues i=1/5{
+	qui summarize `variable' if hhRiskCat67PLUS_5cats == `i', d
 	file write tablecontent %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
 	}
 	
@@ -240,10 +240,11 @@ file write tablecontent ("Table 1: Demographic and Clinical Characteristics - `d
 
 * eth5 labelled columns *THESE WOULD BE HOUSEHOLD LABELS, eth5 is the equivqlent of the hh size variable
 
-local lab1: label hhRiskCat67PLUS_4cats 1
-local lab2: label hhRiskCat67PLUS_4cats 2
-local lab3: label hhRiskCat67PLUS_4cats 3
-local lab4: label hhRiskCat67PLUS_4cats 4
+local lab1: label hhRiskCat67PLUS_5cats 1
+local lab2: label hhRiskCat67PLUS_5cats 2
+local lab3: label hhRiskCat67PLUS_5cats 3
+local lab4: label hhRiskCat67PLUS_5cats 4
+local lab5: label hhRiskCat67PLUS_5cats 5
 *local lab5: label eth5 5
 *local lab6: label eth5 6
 
@@ -253,9 +254,8 @@ file write tablecontent _tab ("Total")				  			  _tab ///
 							 ("`lab1'")  						  _tab ///
 							 ("`lab2'")  						  _tab ///
 							 ("`lab3'")  						  _tab ///
-							 ("`lab4'")  						  _n
-							 *("`lab5'")  						  _tab
-							 *("`lab6'")  						  _n 							 
+							 ("`lab4'")  						  _tab ///
+							 ("`lab5'")  						  _n 							 
 							 
 
 
