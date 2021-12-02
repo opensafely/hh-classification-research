@@ -512,6 +512,19 @@ actions:
         table3: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2.txt
         #table4: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_nonCovidDeath_W2.txt
 
+  20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table.do MAIN
+    outputs:
+      moderately_sensitive:
+        # log1: logs/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_covidDeath_MAIN.log
+        # log2: logs/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_covidHosp_MAIN.log
+        log3: logs/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_covidHospOrDeath_MAIN.log
+        #log4: logs/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_nonCovidDeath_MAIN.log
+        # table1: output/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_covidDeath_MAIN.txt
+        # table2: output/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_covidHosp_MAIN.txt
+        table3: output/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_covidHospOrDeath_MAIN.txt
+        # table4: output/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_nonCovidDeath_MAIN.txt
 
 
 
