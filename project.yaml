@@ -540,5 +540,12 @@ actions:
         table3: output/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_covidHospOrDeath_W2.txt
         # table4: output/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_nonCovidDeath_W2.txt
 
-
+  21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6.do MAIN
+    outputs:
+      moderately_sensitive:
+        log1: logs/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6_MAIN.log
+        # table1: output/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6_MAIN.txt
+     
   
