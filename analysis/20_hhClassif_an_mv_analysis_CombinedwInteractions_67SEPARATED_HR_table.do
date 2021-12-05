@@ -38,10 +38,10 @@ prog define outputHRsforvar
 				stcox i.`variable'##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 				estimates store ageAdj
 				*MV adjusted (without household size)
-				stcox i.`variable' $demogadjlistWInts $comorbidadjlistWInts, strata(utla_group) vce(cluster hh_id)
+				stcox i.`variable'##i.eth5 $demogadjlistWInts $comorbidadjlistWInts, strata(utla_group) vce(cluster hh_id)
 				estimates store mvAdj
 				*MV adjusted (with household size categorical)
-				capture noisily stcox i.`variable' $demogadjlistWInts $comorbidadjlistWInts i.hh_total_cat##i.eth5, strata(utla_group) vce(cluster hh_id)
+				capture noisily stcox i.`variable'##i.eth5 $demogadjlistWInts $comorbidadjlistWInts i.hh_total_cat##i.eth5, strata(utla_group) vce(cluster hh_id)
 				capture noisily estimates store mvAdjWHHSize
 				*MV adjusted (with household size continuous)
 				/*
