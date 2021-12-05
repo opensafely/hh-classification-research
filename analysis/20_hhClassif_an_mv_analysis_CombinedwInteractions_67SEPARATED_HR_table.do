@@ -140,14 +140,20 @@ end
 */
 
 *Testing outcomes
-use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
+*use ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, clear
 
 *foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
-foreach outcome in covidHospOrDeath {
+foreach outcome in covidDeath {
+*foreach outcome in covidHosp {
+*foreach outcome in covidHospOrDeath {
+*foreach outcome in nonCovidDeath {    
 	
 	* Open a log file
 	capture log close
 	log using "./logs/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_`outcome'_`dataset'", text replace
+	
+	*open dataset
+	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
 	
 	*open table
 	file open tablecontents using ./output/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_`outcome'_`dataset'.txt, t w replace
