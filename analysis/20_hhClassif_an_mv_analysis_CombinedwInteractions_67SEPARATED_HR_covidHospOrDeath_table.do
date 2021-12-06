@@ -143,10 +143,10 @@ end
 *use ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, clear
 
 *foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
-foreach outcome in covidDeath {
-*foreach outcome in covidHosp {
-*foreach outcome in covidHospOrDeath {
-*foreach outcome in nonCovidDeath {    
+
+
+foreach outcome in covidHospOrDeath {
+   
 	
 	* Open a log file
 	capture log close
