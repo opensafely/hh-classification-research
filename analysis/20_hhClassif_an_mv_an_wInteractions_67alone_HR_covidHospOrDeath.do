@@ -150,13 +150,13 @@ foreach outcome in covidHospOrDeath {
 	
 	* Open a log file
 	capture log close
-	log using "./logs/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_`outcome'_`dataset'", text replace
+	log using "./logs/20_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'", text replace
 	
 	*open dataset
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
 	
 	*open table
-	file open tablecontents using ./output/20_hhClassif_an_mv_analysis_CombinedwInteractions_67SEPARATED_HR_table_`outcome'_`dataset'.txt, t w replace
+	file open tablecontents using ./output/20_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'.txt, t w replace
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
