@@ -28,26 +28,6 @@ prog drop _all
 prog define outputHRsforvar
 	syntax, variable(string) catLabel(string) min(real) max(real) ethnicity(real) outcome(string) 
 
-	*calculation of rates
-				strate `variable' 
-				**cox regressiona**
-				*crude (only utla matched)
-				stcox i.`variable'##i.eth5, strata(utla_group) vce(cluster hh_id)
-				estimates store crude
-				*age-adjusted
-				stcox i.`variable'##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
-				estimates store ageAdj
-				*MV adjusted (without household size)
-				stcox i.`variable'##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-				estimates store mvAdj
-				*MV adjusted (with household size categorical)
-				capture noisily stcox i.`variable'##i.eth5 $demogadjlistWInts i.hh_total_cat##i.eth5, strata(utla_group) vce(cluster hh_id)
-				capture noisily estimates store mvAdjWHHSize
-				*MV adjusted (with household size continuous)
-				/*
-				capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_size, strata(utla_group) vce(cluster hh_id)
-				capture noisily estimates store mvAdjWHHSizeCONT
-				*/
 				*get total count of people by for each ethnicity
 				count if eth5==`ethnicity'
 				local total = r(N)				
@@ -161,6 +141,29 @@ foreach outcome in covidDeath {
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
 	file write tablecontents _tab _tab ("N (%)") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _tab ("MV adjusted incl HH size") _n
+	
+	**REGRESSIONS**
+	*only need to do the regressions once, so putting that code here and editing the outputHRsforvar program accordingly
+	strate hhRiskCat67PLUS_5cats 
+	**cox regressiona**
+	*crude (only utla matched)
+	stcox i.hhRiskCat67PLUS_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
+	estimates store crude
+	*age-adjusted
+	stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+	estimates store ageAdj
+	*MV adjusted (without household size)
+	stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+	estimates store mvAdj
+	*MV adjusted (with household size categorical)
+	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat##i.eth5, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store mvAdjWHHSize
+	*MV adjusted (with household size continuous)
+	/*
+	capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_size, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store mvAdjWHHSizeCONT
+	*/
+	
 	
 	*helper variables
 	sum eth5
