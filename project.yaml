@@ -618,5 +618,33 @@ actions:
       moderately_sensitive:
         log: logs/23_hhClassif_an_mv_analysis_Eth16wInteractions_67alone_HR_covidHospOrDeath_W2.log
         table: output/23_hhClassif_an_mv_analysis_Eth16wInteractions_67alone_HR_covidHospOrDeath_W2.txt
+
+  24_hhClassif_an_AbsoluteRatesKeyVars:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/24_hhClassif_an_AbsoluteRatesKeyVars.do MAIN
+    outputs:
+      moderately_sensitive:
+        # log1: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidDeath_MAIN.log
+        # log2: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidHosp_MAIN.log
+        log3: logs/24_hhClassif_an_AbsoluteRatesKeyVars_covidHospOrDeath_MAIN.log
+        # log4: logs/11b_hhClassif_tablecontent_HR_3CATSFULLMVtableAGECATS_nonCovidDeath_W2.log
+        # table1: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidDeath_MAIN.txt
+        # table2: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHosp_MAIN.txt
+        table3: output/24_hhClassif_an_AbsoluteRatesKeyVars_covidHospOrDeath_MAIN.txt
+        # table4: output/11b_hhClassif_tablecontents_HRtable_3CATSFULLMVtableAGECATS_nonCovidDeath_W2.txt
+
+  24_hhClassif_an_AbsoluteRatesKeyVars_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/24_hhClassif_an_AbsoluteRatesKeyVars.do W2
+    outputs:
+      moderately_sensitive:
+        # log1: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidDeath_MAIN.log
+        # log2: logs/hhClassif_tablecontent_HR_3CATSFULLMVtable_covidHosp_MAIN.log
+        log3: logs/24_hhClassif_an_AbsoluteRatesKeyVars_covidHospOrDeath_W2.log
+        # log4: logs/11b_hhClassif_tablecontent_HR_3CATSFULLMVtableAGECATS_nonCovidDeath_W2.log
+        # table1: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidDeath_MAIN.txt
+        # table2: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHosp_MAIN.txt
+        table3: output/24_hhClassif_an_AbsoluteRatesKeyVars_covidHospOrDeath_W2.txt
+        # table4: output/11b_hhClassif_tablecontents_HRtable_3CATSFULLMVtableAGECATS_nonCovidDeath_W2.txt
      
   
