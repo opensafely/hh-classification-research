@@ -99,7 +99,8 @@ foreach outcome in covidHospOrDeath {
 		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		*hh size
 		cap noisily outputHRsforvar, variable(hh_total_cat) catLabel(hh_total_cat) min(1) max(3) ethnicity(`e') outcome(`outcome')
-		
+		*comorbidities (for reference)
+		cap noisily outputHRsforvar, variable(coMorbCat) catLabel(coMorbCat) min(0) max(2) ethnicity(`e') outcome(`outcome')
 		*only IMD=5 for specific ethnicity
 		keep if imd==5
 		file write tablecontents "Results for IMD==5" _n
