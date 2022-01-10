@@ -49,6 +49,26 @@ actions:
         log: logs/01_hhClassif_cr_analysis_dataset_W2.log
 
 
+  01b_hhClassif_cr_imputed_datasets:
+    run: stata-mp:latest analysis/01b_hhClassif_cr_imputed_datasets.do MAIN
+    needs: [01_hhClassif_cr_analysis_dataset]
+    outputs:
+      highly_sensitive:
+        imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_*_STSET_*_MAIN.dta
+      moderately_sensitive:
+        log: logs/01b_hhClassif_imputed_datasets_MAIN.log
+
+
+  01b_hhClassif_cr_imputed_datasets_W2:
+    run: stata-mp:latest analysis/01b_hhClassif_cr_imputed_datasets.do W2
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    outputs:
+      highly_sensitive:
+        imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_*_STSET_*_W2.dta
+      moderately_sensitive:
+        log: logs/01b_hhClassif_imputed_datasets_W2.log
+
+
   01c_SensAnalysis_Age60_hhClassif_cr_analysis_dataset_W2:
     run: stata-mp:latest analysis/01c_SensAnalysis1_Age60_hhClassif_cr_analysis_dataset.do W2
     needs: [W2_generate_cohort]
