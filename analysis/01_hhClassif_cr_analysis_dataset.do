@@ -1796,6 +1796,33 @@ preserve
 	save ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, replace
 restore
 
+**repeat for version with missing eth5 included**
+use ./output/hhClassif_analysis_dataset_with_missing_ethnicity`dataset'.dta, clear
+
+tab ageCatHHRisk
+tab ageCatHHRisk, nolabel
+tab hhRiskCat
+tab hhRiskCat67PLUS
+keep if ageCatHHRisk==3
+tab hhRiskCat
+rename hhRiskCat67PLUS hhRiskCatExp
+rename hhRiskCat67PLUS_3cats hhRiskCatExp_3cats
+rename hhRiskCat67PLUS_4cats hhRiskCatExp_4cats
+*******************tabulation to check these variables make sense***************
+tab hhRiskCatExp hhRiskCatExp_3cats
+tab hhRiskCatExp, miss
+*save for all ethnicities so that eth5 has a missing category
+preserve
+	mkspline age = age, cubic nknots(4)
+	keep hhRiskCat67PLUS_5cats stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat
+	save ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, replace
+restore
+use ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, clear
+****TABULATION TO CHECK MISSING SET TO "." FOR ETH5******
+tab eth5
+tab eth5, miss
+
+
 
 *now create versions for each eth5 ethnicity (1 "White" 2 "South Asian"	3 "Black" 4 "Mixed"	5 "Other"
 /*
