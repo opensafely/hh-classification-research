@@ -1792,7 +1792,7 @@ tab hhRiskCatExp hhRiskCatExp_3cats
 tab hhRiskCatExp, miss
 *save for all ethnicities
 preserve
-	mkspline age = age, cubic nknots(4)
+	*mkspline age = age, cubic nknots(4)
 	save ./output/hhClassif_analysis_dataset_ageband_3`dataset'.dta, replace
 restore
 
@@ -1813,8 +1813,8 @@ tab hhRiskCatExp hhRiskCatExp_3cats
 tab hhRiskCatExp, miss
 *save for all ethnicities so that eth5 has a missing category
 preserve
-	mkspline age = age, cubic nknots(4)
-	keep hhRiskCat67PLUS_5cats stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat
+	*mkspline age = age, cubic nknots(4) - don't need splines as am including an interaction with age and too complicated to do this with age as a spline
+	keep hhRiskCat67PLUS_5cats stime_covidHospOrDeath covidHospOrDeathCase covidHospOrDeathCaseDate stime_covidHospCase covidHospCase covidHospCaseDate stime_covidDeathCase covidDeathCase covidDeathCaseDate stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group region hh_id hh_total_cat
 	save ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, replace
 restore
 use ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, clear
@@ -1858,7 +1858,7 @@ forvalues eth16Cat=4/6 {
 *(1)**nonCovidDeath**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep hhRiskCat67PLUS_5cats stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat
+keep hhRiskCat67PLUS_5cats stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate  patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat
 stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3`dataset'.dta, replace
 /*
