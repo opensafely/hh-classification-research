@@ -668,5 +668,19 @@ actions:
         # table2: output/hhClassif_tablecontents_HRtable_3CATSFULLMVtable_covidHosp_MAIN.txt
         table3: output/24_hhClassif_an_AbsoluteRatesKeyVars_covidHospOrDeath_W2.txt
         # table4: output/11b_hhClassif_tablecontents_HRtable_3CATSFULLMVtableAGECATS_nonCovidDeath_W2.txt
+
+  25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI:
+    needs: [01b_hhClassif_cr_imputed_datasets]
+    run: stata-mp:latest analysis/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.log
+
+  25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2:
+    needs: [01b_hhClassif_cr_imputed_datasets_W2]
+    run: stata-mp:latest analysis/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2.log
      
   

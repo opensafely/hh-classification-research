@@ -30,14 +30,9 @@
 
 local dataset `1' 
 
-/*for reference
-capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
-*/
 
-*list of comorbidities for adjustment
-*global comorbidadjlistWInts i.coMorbCat##i.eth5
-
-
+cap log close
+log using "./logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_`dataset'", text replace
 
 *first, testing that the code works for doing mi estimate (will remove this later ) that the code works for	
 use ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_STSET_covidHospOrDeath_`dataset'.dta, clear
@@ -46,7 +41,9 @@ use ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_STSET_covidHospOrDeath
 *mi estimate, eform: stcox male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id) nolog 		
 	
 
-mi estimate, noisily eform: stcox hhRiskCat67PLUS_5cats##i.eth5 imd##i.eth5 smoke##i.eth5 obese4cat##i.eth5 rural_urbanFive##i.eth5 ageCatfor67Plus##i.eth5 male##i.eth5 coMorbCat##i.eth5 strata(utla_group) vce(cluster hh_id) nolog 
+capture mi estimate, noisily eform: stcox hhRiskCat67PLUS_5cats##i.eth5 imd##i.eth5 smoke##i.eth5 obese4cat##i.eth5 rural_urbanFive##i.eth5 ageCatfor67Plus##i.eth5 male##i.eth5 coMorbCat##i.eth5 strata(utla_group) vce(cluster hh_id) nolog 
+
+log close
 
 
 /*additional code that I need to incorporate (for outputting a table)
