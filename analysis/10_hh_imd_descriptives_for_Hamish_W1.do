@@ -21,246 +21,31 @@ pwd
 
 * Open a log file
 cap log close
-log using ./logs/10_eth_imd_descriptives_W1.log, replace t
+log using ./logs/10_hh_imd_descriptives_for_Hamish_W1.log, replace t
 
 
-/*
- /* PROGRAMS TO AUTOMATE TABULATIONS===========================================*/ 
-
-********************************************************************************
-* All below code from K Baskharan 
-* Generic code to output one row of table for ethnicity
-
-
-**ETH5
-cap prog drop generaterow_eth
-program define generaterow_eth
-syntax, variable(varname) condition(string) 
-	
-	cou
-	local overalldenom=r(N)
-	
-	sum `variable' if `variable' `condition'
-	local level=substr("`condition'",3,.)
-	local lab: label `variable'Label `level'
-	file write tablecontent (" `lab'") _tab
-	
-	*local lab: label hhRiskCatBROADLabel 4
-
-	
-	/*this is the overall column*/
-	cou if `variable' `condition'
-	local rowdenom = r(N)
-	local colpct = 100*(r(N)/`overalldenom')
-	file write tablecontent %9.0f (`rowdenom') _tab   %3.1f (`colpct')  _tab
-
-	/*this loops through groups*/
-	forvalues i=1/5{
-	cou if eth5 == `i'
-	local rowdenom = r(N)
-	cou if eth5 == `i' & `variable' `condition'
-	local pct = 100*(r(N)/`rowdenom') 
-	file write tablecontent %9.0f (r(N)) _tab  %3.1f (`pct')  _tab
-	}
-	
-	file write tablecontent _n
-end
-
-/*
-**ETH16 - SOUTH ASIANS ONLY
-cap prog drop generaterow_eth16
-program define generaterow_eth16
-syntax, variable(varname) condition(string) 
-	
-	cou
-	local overalldenom=r(N)
-	
-	sum `variable' if `variable' `condition'
-	local level=substr("`condition'",3,.)
-	local lab: label `variable'Label `level'
-	file write tablecontent (" `lab'") _tab
-
-	
-	/*this is the overall column*/
-	cou if `variable' `condition'
-	local rowdenom = r(N)
-	local colpct = 100*(r(N)/`overalldenom')
-	file write tablecontent %9.0f (`rowdenom') _tab   %3.1f (`colpct')  _tab
-
-	/*this loops through groups indian, pakistani, bangladeshi*/
-	forvalues i=4/6{
-	cou if eth16 == `i'
-	local rowdenom = r(N)
-	cou if eth16 == `i' & `variable' `condition'
-	local pct = 100*(r(N)/`rowdenom') 
-	file write tablecontent %9.0f (r(N)) _tab  %3.1f (`pct')  _tab
-	}
-	
-	file write tablecontent _n
-end
-*/
-
-*ETH IMD
-* Generic code to output one row of table for ethnicity-imd combined variable
-
-cap prog drop generaterow_ethimd
-program define generaterow_ethimd
-syntax, variable(varname) condition(string) 
-	
-	cou
-	local overalldenom=r(N)
-	
-	sum `variable' if `variable' `condition'
-	**K Wing additional code to aoutput variable category labels**
-	local level=substr("`condition'",3,.)
-	local lab: label `variable'Label `level'
-	file write tablecontent (" `lab'") _tab
-	
-	*local lab: label hhRiskCatBROADLabel 4
-
-	
-	/*this is the overall column*/
-	cou if `variable' `condition'
-	local rowdenom = r(N)
-	local colpct = 100*(r(N)/`overalldenom')
-	file write tablecontent %9.0f (`rowdenom') _tab   %3.1f (`colpct')  _tab
-
-	/*this loops through groups*/
-	forvalues i=1/10{
-		cou if eth_imd == `i'
-		local rowdenom = r(N)
-		cou if eth_imd == `i' & `variable' `condition'
-		local pct = 100*(r(N)/`rowdenom') 
-		*file write tablecontent %9.0gc (r(N))  %3.1f (`pct')  _tab
-		file write tablecontent %9.0f (r(N)) _tab  %3.1f (`pct')  _tab
-	}
-	
-	file write tablecontent _n
-end
-
-/*
-*ETH16 IMD
-* Generic code to output one row of table for ethnicity-imd combined variable
-
-cap prog drop generaterow_eth16imd
-program define generaterow_eth16imd
-syntax, variable(varname) condition(string) 
-	
-	cou
-	local overalldenom=r(N)
-	
-	sum `variable' if `variable' `condition'
-	**K Wing additional code to aoutput variable category labels**
-	local level=substr("`condition'",3,.)
-	local lab: label `variable'Label `level'
-	file write tablecontent (" `lab'") _tab
-	
-	*local lab: label hhRiskCatBROADLabel 4
-
-	
-	/*this is the overall column*/
-	cou if `variable' `condition'
-	local rowdenom = r(N)
-	local colpct = 100*(r(N)/`overalldenom')
-	file write tablecontent %9.0f (`rowdenom') _tab   %3.1f (`colpct')  _tab
-
-	/*this loops through groups*/
-	forvalues i=1/6{
-	cou if eth16_imd == `i'
-	local rowdenom = r(N)
-	cou if eth16_imd == `i' & `variable' `condition'
-	local pct = 100*(r(N)/`rowdenom') 
-	file write tablecontent %9.0f (r(N)) _tab  %3.1f (`pct')  _tab
-	}
-	
-	file write tablecontent _n
-end
-*/
-
-********************************************************************************
-* Generic code to output one section (varible) within table (calls above)
-*ETH5
-cap prog drop tabulatevariable_eth
-prog define tabulatevariable_eth
-syntax, variable(varname) min(real) max(real) [missing]
-
-	local lab: variable label `variable'
-	file write tablecontent ("`lab'") _n 
-
-	forvalues varlevel = `min'/`max'{ 
-		generaterow_eth, variable(`variable') condition("==`varlevel'")
-	}
-	
-	if "`missing'"!="" generaterow_eth, variable(`variable') condition("== 12")
-	
-end
-
-/*
-*ETH16
-cap prog drop tabulatevariable_eth16
-prog define tabulatevariable_eth16
-syntax, variable(varname) min(real) max(real) [missing]
-
-	local lab: variable label `variable'
-	file write tablecontent ("`lab'") _n 
-
-	forvalues varlevel = `min'/`max'{ 
-		generaterow_eth16, variable(`variable') condition("==`varlevel'")
-	}
-	
-	if "`missing'"!="" generaterow_eth16, variable(`variable') condition("== 12")
-	
-end
-*/
-
-*ETH IMD
-cap prog drop tabulatevariable_ethimd
-prog define tabulatevariable_ethimd
-syntax, variable(varname) min(real) max(real) [missing]
-
-	local lab: variable label `variable'
-	file write tablecontent ("`lab'") _n 
-
-	forvalues varlevel = `min'/`max'{ 
-		generaterow_ethimd, variable(`variable') condition("==`varlevel'")
-	}
-	
-	if "`missing'"!="" generaterow_ethimd, variable(`variable') condition("== 12")
-	
-end
-
-/*
-*ETH16 IMD
-cap prog drop tabulatevariable_eth16imd
-prog define tabulatevariable_eth16imd
-syntax, variable(varname) min(real) max(real) [missing]
-
-	local lab: variable label `variable'
-	file write tablecontent ("`lab'") _n 
-
-	forvalues varlevel = `min'/`max'{ 
-		generaterow_eth16imd, variable(`variable') condition("==`varlevel'")
-	}
-	
-	if "`missing'"!="" generaterow_eth16imd, variable(`variable') condition("== 12")
-	
-end
-*/
-*/
-
-/* INVOKE PROGRAMS FOR TABLE 1================================================*/ 
 
 * Open Stata dataset
 use ./output/hhClassif_analysis_dataset_ageband_3MAIN.dta, clear //age 67+ only
 
+
+*Household composition by ethnic group and IMD quintile (Q1: most affluent, Q5: most deprived)
+tab eth5 hhRiskCat67PLUS_5cats if imd==1, row
+
+tab eth5 hhRiskCat67PLUS_5cats if imd==5, row
+
+log close
+
+/*
+
 keep patient_id hhRiskCat hhRiskCatExp_4cats hh_size* hhRiskCatBROAD ethnicity ethnicity_16 hh_size eth5 imd eth16
 
 
-tab hhRiskCatExp_4cats imd if eth5==1, col 
-tab hhRiskCatExp_4cats imd if eth5==2, col
-tab hhRiskCatExp_4cats imd if eth5==3, col
-tab hhRiskCatExp_4cats imd if eth5==4, col
-tab hhRiskCatExp_4cats imd if eth5==5, col
+tab hhRiskCat67PLUS_5cats imd if eth5==1, col 
+tab hhRiskCat67PLUS_5cats imd if eth5==2, col
+tab hhRiskCat67PLUS_5cats imd if eth5==3, col
+tab hhRiskCat67PLUS_5cats imd if eth5==4, col
+tab hhRiskCat67PLUS_5cats imd if eth5==5, col
 
 
 
