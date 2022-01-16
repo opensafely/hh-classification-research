@@ -132,13 +132,13 @@ foreach outcome in covidHospOrDeath {
 	
 	* Open a log file
 	capture log close
-	log using "./logs/20_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'", text replace
+	log using "./logs/20a_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'", text replace
 	
 	*open dataset
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
 	
 	*open table
-	file open tablecontents using ./output/20_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'.txt, t w replace
+	file open tablecontents using ./output/20a_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'.txt, t w replace
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
@@ -149,14 +149,14 @@ foreach outcome in covidHospOrDeath {
 	strate hhRiskCat67PLUS_5cats 
 	**cox regressiona**
 	*crude (only utla matched)
-	stcox i.hhRiskCat67PLUS_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
-	estimates store crude
+	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store crude
 	*age-adjusted
-	stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
-	estimates store ageAdj
+	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store ageAdj
 	*MV adjusted (without household size)
-	stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-	estimates store mvAdj
+	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store mvAdj
 	*MV adjusted (with household size categorical)
 	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat##i.eth5, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store mvAdjWHHSize

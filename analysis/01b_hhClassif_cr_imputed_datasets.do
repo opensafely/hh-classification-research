@@ -38,10 +38,10 @@ mi register imputed eth5
 *noisily mi impute mlogit eth5, add(10) rseed(70548) augment force by(male coMorbCat) nolog 	
 
 *mi impute the dataset - need to edit this list based upon variables, testing 3 iterations for now, want to increase this to 5 once I know it works on the server
-capture noisily mi impute mlogit eth5 i.`outcome'Case, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat)
+capture noisily mi impute mlogit eth5 i.covidHospOrDeathCase, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat)
 										
 *mi stset - need to check this code is the same as my source file
-mi stset stime_`outcome'Case, fail(`outcome'Case) id(patient_id) enter(enter_date) origin(enter_date)
+mi stset stime_covidHospOrDeathCaseCase, fail(covidHospOrDeathCaseCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_STSET_`outcome'_`dataset'.dta, replace	
 
 
