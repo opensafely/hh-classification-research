@@ -276,7 +276,7 @@ study = StudyDefinition(
         find_last_match_in_period=True,
         include_date_of_match=True,
         return_expectations={
-            "category": {"ratios": {"1": 0.3, "2": 0.2, "3": 0.3, "4": 0.1, "5": 0.1}},
+            "category": {"ratios": {"1": 0.25, "2": 0.25, "3": 0.25, "5": 0.25}},
             "incidence": 0.9,
         },
     ),
