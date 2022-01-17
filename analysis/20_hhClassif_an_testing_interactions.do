@@ -45,41 +45,78 @@ use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset
 *check number of records in this dataset - should be 2 624 405
 count
 
+*FOR REFERENCE
+/*
+capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
+*/
 
 **NOTE: main exposure included as an a-priori interaction**
 
 
-**(1)Testing interaction with hhRisk
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+**(1)Testing interaction with hhRisk - RESULT: p<0.001 
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCat67PLUS_5cats i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCat67PLUS_5cats i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store B
 display "***************LRT TEST: HHRISKCAT-ETH*****************"
 lrtest A B, force
 
-**(2)Testing interaction with IMD with HHRisk interaction included
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+**(2)Testing interaction with IMD with HHRisk interaction included - RESULT: p<0.001
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store B
 display "***************LRT TEST: IMD-ETH (WITH HHRISKCAT INTERACTION)*****************"
 lrtest A B, force
 
-**(3)Testing interaction with RURAL-URBAN with HHRisk interaction included
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive##i.eth5 i.smoke i.obese4cat i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+
+**(3)Testing interaction with RURAL-URBAN with HHRisk and IMD interactions included - RESULT: p=0.011
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive##i.eth5 i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.eth5  i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: URBAN-RURAL (WITH HHRISKCAT INTERACTION)*****************"
+display "***************LRT TEST: URBAN-RURAL (WITH HHRISKCAT AND IMD INTERACTIONS)*****************"
 lrtest A B, force
 
-**(4)Testing interaction with RURAL-URBAN with HHRisk and IMD interactions included
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive##i.eth5 i.smoke i.obese4cat i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+
+
+**(4)Testing interaction with AGE with HHRisk and IMD interactions included
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus i.eth5, strata(utla_group) vce(cluster hh_id)
 est store B
-display "***************LRT TEST: URBAN-RURAL (WITH HHRISKCAT INTERACTION)*****************"
+display "***************LRT TEST: AGE (WITH HHRISKCAT AND IMD INTERACTIONS))*****************"
 lrtest A B, force
+
+
+
+**(5)Testing interaction with COMORB with HHRisk, IMD and AGE interactions included
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: COMORB (WITH HHRISKCAT AND IMD INTERACTIONS)*****************"
+lrtest A B, force
+
+
+**(6)Testing interaction with SEX with HHRisk, IMD and AGE interactions included
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male##i.eth5 i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.eth5 i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: SEX (WITH HHRISKCAT AND IMD INTERACTIONS)*****************"
+lrtest A B, force
+
+
+**(6)Testing interaction with OBESITY with HHRisk, IMD and AGE interactions included
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat##i.eth5 i.male i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.eth5 i.male i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: OBESITY (WITH HHRISKCAT AND IMD INTERACTIONS)*****************"
+lrtest A B, force
+
+
 
 log close
 
