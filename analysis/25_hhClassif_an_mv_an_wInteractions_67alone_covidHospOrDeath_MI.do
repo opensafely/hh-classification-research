@@ -39,7 +39,7 @@ use ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_STSET_covidHospOrDeath
 *test code - works!
 *mi estimate, eform: stcox male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id) nolog 	
 
-capture mi estimate, noisily eform: stcox hhRiskCat67PLUS_5cats##i.eth5 imd##i.eth5 obese4cat##i.eth5 ageCatfor67Plus##i.eth5 smoke rural_urbanFive male coMorbCat strata(utla_group) vce(cluster hh_id) nolog 
+mi estimate, dots eform: stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.obese4cat##i.eth5 i.ageCatfor67Plus##i.eth5 i.smoke i.rural_urbanFive i.male i.coMorbCat strata(utla_group) vce(cluster hh_id) nolog 
 
 log close
 
