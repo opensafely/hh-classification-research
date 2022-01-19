@@ -35,9 +35,11 @@ cap log close
 log using "./logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_`dataset'", text replace
 
 use ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_STSET_covidHospOrDeathCase_`dataset'.dta, clear
+*check there are 10 imputations!
+tab _mi_m
 
 *test code - works!
-*mi estimate, eform: stcox male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id) nolog 	
+*mi estimate, dots eform: stcox male##i.eth5 coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id) nolog 	
 
 mi estimate, dots eform: stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.obese4cat##i.eth5 i.ageCatfor67Plus##i.eth5 i.smoke i.rural_urbanFive i.male i.coMorbCat strata(utla_group) vce(cluster hh_id) nolog 
 
