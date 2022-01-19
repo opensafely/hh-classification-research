@@ -43,8 +43,9 @@ capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor6
 capture noisily mi impute mlogit eth5 i.covidHospOrDeathCase i.rural_urbanFive i.smoke i.male i.coMorbCat, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd obese4cat ageCatfor67Plus)
 										
 *mi stset - need to check this code is the same as my source file
-mi stset stime_covidHospOrDeathCaseCase, fail(covidHospOrDeathCaseCase) id(patient_id) enter(enter_date) origin(enter_date)
-save ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_STSET_`outcome'_`dataset'.dta, replace	
+*for reference from source file: stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+mi stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+save ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_STSET_covidHospOrDeathCase_`dataset'.dta, replace	
 
 
 *i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth
