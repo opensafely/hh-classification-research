@@ -25,6 +25,17 @@ log using "./logs/01b_hhClassif_imputed_datasets_`dataset'", text replace
 use ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, clear
 encode utla_group, generate(utla_group2)
 
+*create a two category obesity category to see if imputation works with this
+tab obese4cat
+tab obese4cat, nolabel
+generate obese2cat=obese4cat
+recode obese2cat 3=2 4=2
+tab obese4cat obese2cat
+la var obese2cat "obesity in 2 categories"
+label define obese2cat 	1 "Non-obese" 2 "Obese"
+label values obese2cat obese2cat
+tab obese2cat,m
+
 *mi set the data
 mi set mlong
 
@@ -40,7 +51,7 @@ mi register imputed eth5
 *capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)	
 
 *mi impute the dataset - need to edit this list based upon variables, testing 3 iterations for now, want to increase this to 5 once I know it works on the server
-noisily mi impute mlogit eth5 i.covidHospOrDeathCase i.rural_urbanFive i.smoke i.male i.coMorbCat, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd obese4cat ageCatfor67Plus)
+noisily mi impute mlogit eth5 i.covidHospOrDeathCase i.rural_urbanFive i.smoke i.male i.coMorbCat, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd obese2cat ageCatfor67Plus)
 										
 *mi stset - need to check this code is the same as my source file
 *for reference from source file: stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
