@@ -696,5 +696,14 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2.log
+
+
+  25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.log
+        table: output/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.txt
      
   
