@@ -60,7 +60,7 @@ mi register imputed eth5
 *capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)	
 
 *mi impute the dataset - need to edit this list based upon variables, testing 3 iterations for now, want to increase this to 5 once I know it works on the server
-noisily mi impute mlogit eth5 i.covidHospOrDeathCase i.rural_urbanFive i.smoke i.male i.coMorbCat, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd obese2cat ageCatfor67Plus)
+noisily mi impute mlogit eth5 i.covidHospOrDeathCase i.rural_urbanFive i.smoke i.male i.coMorbCat, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd obese2cat ageCatfor67PlusFOURCATS)
 		
 *save imputed raw data
 save ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_`dataset'.dta, replace		
