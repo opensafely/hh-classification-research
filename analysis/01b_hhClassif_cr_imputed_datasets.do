@@ -36,16 +36,15 @@ label define obese2cat 	1 "Non-obese" 2 "Obese"
 label values obese2cat obese2cat
 tab obese2cat,m
 
-*merge the two oldest age groups as convergence failed again
+*create a binary age group as convergence failed when age was in four groups
 tab ageCatfor67Plus
 tab ageCatfor67Plus, nolabel
-generate ageCatfor67PlusFOURCATS=ageCatfor67Plus
-recode ageCatfor67PlusFOURCATS 4=3
-label define ageCatfor67PlusFOURCATS 0 "67-69" 1 "70-74" 2 "75-79" 3 "80+"
-label values ageCatfor67PlusFOURCATS ageCatfor67PlusFOURCATS
-tab ageCatfor67PlusFOURCATS ageCatfor67Plus
-*drop the original variable
-drop ageCatfor67Plus
+generate ageCatfor67PlusTWOCATS=ageCatfor67Plus
+recode ageCatfor67PlusTWOCATS 0=1 3=2 4=2
+label define ageCatfor67PlusTWOCATS 1 "67-74" 2 "75+"
+label values ageCatfor67PlusTWOCATS ageCatfor67PlusTWOCATS
+tab ageCatfor67PlusTWOCATS ageCatfor67Plus
+
 
 *mi set the data
 mi set mlong
@@ -62,7 +61,7 @@ mi register imputed eth5
 *capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)	
 
 *mi impute the dataset - need to edit this list based upon variables, testing 3 iterations for now, want to increase this to 5 once I know it works on the server
-noisily mi impute mlogit eth5 i.covidHospOrDeathCase i.rural_urbanFive i.smoke i.male i.coMorbCat, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd obese2cat ageCatfor67PlusFOURCATS)
+noisily mi impute mlogit eth5 i.covidHospOrDeathCase i.rural_urbanFive i.smoke i.male i.coMorbCat, add(10) rseed(70548) augment force by(hhRiskCat67PLUS_5cats imd obese2cat ageCatfor67PlusTWOCATS)
 		
 *save imputed raw data
 save ./output/hhClassif_analysis_dataset_eth5_mi_ageband_3_`dataset'.dta, replace		
