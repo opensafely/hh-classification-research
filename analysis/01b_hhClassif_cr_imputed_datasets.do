@@ -44,6 +44,8 @@ recode ageCatfor67PlusFOURCATS 4=3
 label define ageCatfor67PlusFOURCATS 0 "67-69" 1 "70-74" 2 "75-79" 3 "80+"
 label values ageCatfor67PlusFOURCATS ageCatfor67PlusFOURCATS
 tab ageCatfor67PlusFOURCATS ageCatfor67Plus
+*drop the original variable
+drop ageCatfor67Plus
 
 *mi set the data
 mi set mlong
