@@ -19,13 +19,14 @@ local dataset `1'
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
 */
 
-global demogadjlistWInts i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5
+global demogadjlistWInts i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke i.male i.coMorbCat
 *list of comorbidities for adjustment
 *global comorbidadjlistWInts i.coMorbCat##i.eth5	
 
 prog drop _all
 
-prog define outputHRsforvar
+*program for outputting HRs by ethnicity (i.e. for variables where this evidence of an interaction with ethnicity)
+prog define outputHRsforvarByEthnicity
 	syntax, variable(string) catLabel(string) min(real) max(real) ethnicity(real) outcome(string) 
 
 	*calculation of rates
@@ -65,6 +66,49 @@ prog define outputHRsforvar
 				*variable category
 end
 
+
+*program for outputting HRs that have a combined effect
+prog define outputHRsforvar
+	syntax, variable(string) catLabel(string) min(real) max(real) outcome(string) 
+
+	*calculation of rates
+				
+				*get total count of people
+				count
+				local total = r(N)				
+
+				forvalues i=`min'/`max' {
+					*doing just mvadjusted without hh size
+					estimates restore mvAdj
+					*cap lincom `i'.`variable', eform
+					capture noisily lincom `i'.`variable', eform
+					local hr_mvAdj = r(estimate)
+					local lb_mvAdj = r(lb)
+					local ub_mvAdj = r(ub)
+
+					*get variable name
+					local lab: variable label `variable'
+					*file write tablecontents  _tab  (`i') _n
+					*get category name
+					local category: label `catLabel' `i'
+					display "Category label: `category'"
+					
+					
+					*write each row hg
+					if `i'==`min' {
+						*write the total
+						file write tablecontents ("`lab'") _n
+						file write tablecontents _tab ("`category'") _tab "1"  _n
+					}
+					else {
+						file write tablecontents  _tab ("`category'") _tab %4.2f (`hr_mvAdj')  " (" %4.2f (`lb_mvAdj') "-" %4.2f (`ub_mvAdj') ")" _n
+					}
+
+				}
+				*variable category
+end
+
+
 ********Code that calls program and outputs tables*******
 
 /*I think what I want here FOR EACH WAVE is
@@ -78,7 +122,7 @@ end
 *foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
 
 
-foreach outcome in nonCovidDeath {
+foreach outcome in covidHospOrDeath {
    
 	* Open a log file
 	capture log close
@@ -103,6 +147,10 @@ foreach outcome in nonCovidDeath {
 	sum eth5
 	local maxEth5=r(max) 
 	
+
+	
+	*First, output variables where there is an interaction by ethnicity:
+	file write tablecontents "VARIABLES THAT INTERACT WITH ETHNICITY" _n
 	forvalues e=1/`maxEth5' {
 		if `e'==1 {
 			file write tablecontents "--Ethnicity: White--" _n
@@ -120,35 +168,32 @@ foreach outcome in nonCovidDeath {
 			file write tablecontents "--Ethnicity: Other--" _n
 		}
 		*main exposure
-		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
-		*age
-		cap noisily outputHRsforvar, variable(ageCatfor67Plus) catLabel(ageCatfor67Plus) min(0) max(4) ethnicity(`e') outcome(`outcome')
-		*sex
-		cap noisily outputHRsforvar, variable(male) catLabel(male) min(0) max(1) ethnicity(`e') outcome(`outcome')
-		*obesity
-		cap noisily outputHRsforvar, variable(obese4cat) catLabel(obese4cat) min(1) max(4) ethnicity(`e') outcome(`outcome')
-		*smoking
-		cap noisily outputHRsforvar, variable(smoke) catLabel(smoke) min(1) max(3) ethnicity(`e') outcome(`outcome')
-		*rural urban
-		cap noisily outputHRsforvar, variable(rural_urbanFive) catLabel(rural_urbanFive) min(1) max(5) ethnicity(`e') outcome(`outcome')
-		*comorbidities
-		cap noisily outputHRsforvar, variable(coMorbCat) catLabel(coMorbCat) min(0) max(2) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvarByEthnicity, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		*imd
-		cap noisily outputHRsforvar, variable(imd) catLabel(imd) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvarByEthnicity, variable(imd) catLabel(imd) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		*age
+		cap noisily outputHRsforvarByEthnicity, variable(ageCatfor67Plus) catLabel(ageCatfor67Plus) min(0) max(4) ethnicity(`e') outcome(`outcome')
+		*obesity
+		cap noisily outputHRsforvarByEthnicity, variable(obese4cat) catLabel(obese4cat) min(1) max(4) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 	}
+	
+	file write tablecontents "VARIABLES THAT DO NOT INTERACT WITH ETHNICITY" _n
+	*then, output variables where there is no interaction by ethnicity
+	*rural urban
+	cap noisily outputHRsforvar, variable(rural_urbanFive) catLabel(rural_urbanFive) min(1) max(5) outcome(`outcome')
+	*smoking
+	cap noisily outputHRsforvar, variable(smoke) catLabel(smoke) min(1) max(3) outcome(`outcome')
+	*sex
+	cap noisily outputHRsforvar, variable(male) catLabel(male) min(0) max(1) outcome(`outcome')
+	*comorbidities
+	cap noisily outputHRsforvar, variable(coMorbCat) catLabel(coMorbCat) min(0) max(2) outcome(`outcome')
 	
 	cap file close tablecontents 
 	cap log close
 	*output excel
 	*export excel using ./output/hhClassif_tablecontents_HRtable_`outcome'_`dataset'.xlsx, replace
 }
-
-
-
-
-
-
 
 
 ****************ORIGINAL CODE BEFORE I STARTED EDITING TO MAKE SURE THE INTERACTIONS WERE ONLY PERFORMED ONCE!!!*********
