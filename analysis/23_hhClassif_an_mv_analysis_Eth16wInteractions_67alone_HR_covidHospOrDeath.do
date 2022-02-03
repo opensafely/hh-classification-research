@@ -26,7 +26,7 @@ global demogadjlistWInts i.imd##i.eth16 i.ageCatfor67Plus##i.eth16 i.obese4cat##
 
 prog drop _all
 
-prog define outputHRsforvarBy
+prog define outputHRsforvar
 	syntax, variable(string) catLabel(string) min(real) max(real) ethnicity(real) outcome(string) 
 
 				*get total count of people by for each ethnicity
