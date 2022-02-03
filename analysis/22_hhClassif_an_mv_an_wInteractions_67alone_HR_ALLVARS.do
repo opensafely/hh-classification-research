@@ -119,10 +119,10 @@ end
 *Testing outcomes
 *use ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, clear
 
-*foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
+*foreach outcome in covidDeath covidHosp nonCovidDeath nonCovidDeath {
 
 
-foreach outcome in covidHospOrDeath {
+foreach outcome in nonCovidDeath {
    
 	* Open a log file
 	capture log close
@@ -327,10 +327,10 @@ end
 *Testing outcomes
 *use ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, clear
 
-*foreach outcome in covidDeath covidHosp covidHospOrDeath nonCovidDeath {
+*foreach outcome in covidDeath covidHosp nonCovidDeath nonCovidDeath {
 
 
-foreach outcome in covidHospOrDeath {
+foreach outcome in nonCovidDeath {
    
 	
 	* Open a log file
