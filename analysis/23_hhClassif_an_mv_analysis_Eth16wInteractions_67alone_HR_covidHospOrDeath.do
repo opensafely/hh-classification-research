@@ -19,13 +19,14 @@ local dataset `1'
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth16 i.imd##i.eth16 i.smoke##i.eth16 i.obese4cat##i.eth16 i.hh_total_cat##i.eth16 i.rural_urbanFive##i.eth16 i.ageCatfor67Plus##i.eth16 i.male##i.eth16 i.coMorbCat##i.eth16, strata(utla_group) vce(cluster hh_id)
 */
 
-global demogadjlistWIntsEth16 i.imd##i.eth16 i.smoke##i.eth16 i.obese4cat##i.eth16 i.rural_urbanFive##i.eth16 i.ageCatfor67Plus##i.eth16 i.male##i.eth16 i.coMorbCat##i.eth16
+
+global demogadjlistWInts i.imd##i.eth16 i.ageCatfor67Plus##i.eth16 i.obese4cat##i.eth16 i.rural_urbanFive i.smoke i.male i.coMorbCat
 *list of comorbidities for adjustment
 *global comorbidadjlistWInts i.coMorbCat##i.eth16	
 
 prog drop _all
 
-prog define outputHRsforvar
+prog define outputHRsforvarBy
 	syntax, variable(string) catLabel(string) min(real) max(real) ethnicity(real) outcome(string) 
 
 				*get total count of people by for each ethnicity
@@ -157,7 +158,7 @@ foreach outcome in covidHospOrDeath {
 	stcox i.hhRiskCat67PLUS_5cats##i.eth16 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 	estimates store mvAdj
 	*MV adjusted (with household size categorical)
-	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth16 $demogadjlistWInts i.hh_total_cat##i.eth16, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth16 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store mvAdjWHHSize
 	*MV adjusted (with household size continuous)
 	/*
