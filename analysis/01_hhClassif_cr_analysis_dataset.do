@@ -277,7 +277,7 @@ safecount
 rename household_id hh_id
 rename household_size hh_size
 
-*gen categories of household size - KW will use actual household sizes in analysis but will leave this in so easy to find where it is used in Rohini analysis files.
+*gen categories of household size
 gen hh_total_cat=.
 replace hh_total_cat=1 if hh_size >=1 & hh_size<=2
 replace hh_total_cat=2 if hh_size >=3 & hh_size<=5
@@ -288,7 +288,25 @@ label define hh_total_cat  1 "1-2" ///
 						   3 "6+" ///
 						   
 label values hh_total_cat hh_total_cat
-la var hh_total_cat "(TPP) hh_size variable in categories"
+la var hh_total_cat "(TPP) hh_size variable in three categories"
+
+
+*household size with 4 categories
+gen hh_total_4cats=.
+replace hh_total_4cats=2 if hh_size ==1
+replace hh_total_4cats=1 if hh_size ==2
+replace hh_total_4cats=3 if hh_size >=3 & hh_size<=5
+replace hh_total_4cats=4 if hh_size >=6
+
+label define hh_total_4cats  1 "2" ///
+						   2 "1" ///
+						   3 "3-5" ///
+						   4 "6+" ///
+						   
+label values hh_total_4cats hh_total_4cats
+la var hh_total_4cats "(TPP) hh_size variable in four categories"
+
+safetab hh_total_4cats
 
 		
 /* Rohini code - I think I want to drop them completely rather than just not include in a derived household variable
@@ -1385,8 +1403,10 @@ foreach i of global outcomes {
 *HH variable
 label var  hh_size "# people in household"
 label var  hh_id "Household ID"
-label var hh_total "# people in household calculated"
-label var hh_total_cat "Number of people in household"
+*label var hh_total "# people in household calculated"
+*label var hh_total_cat "Number of people in household"
+*label var hh_total_4cat "Number of people in household"
+
 
 * Demographics
 label var patient_id				"Patient ID"
@@ -1411,7 +1431,7 @@ label var stp 						"Sustainability and Transformation Partnership"
 *label var age1 						"Age spline 1"
 *label var age2 						"Age spline 2"
 *label var age3 						"Age spline 3"
-lab var hh_total					"calculated No of ppl in household"
+*lab var hh_total					"calculated No of ppl in household"
 lab var region						"Region of England"
 lab var rural_urban					"Rural-Urban Indicator"
 *lab var carehome					"Care home y/n"
@@ -1814,7 +1834,7 @@ tab hhRiskCatExp, miss
 *save for all ethnicities so that eth5 has a missing category
 preserve
 	*mkspline age = age, cubic nknots(4) - don't need splines as am including an interaction with age and too complicated to do this with age as a spline
-	keep hhRiskCat67PLUS_5cats stime_covidHospOrDeath covidHospOrDeathCase covidHospOrDeathCaseDate stime_covidHospCase covidHospCase covidHospCaseDate stime_covidDeathCase covidDeathCase covidDeathCaseDate stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group region hh_id hh_total_cat
+	keep hhRiskCat67PLUS_5cats stime_covidHospOrDeath covidHospOrDeathCase covidHospOrDeathCaseDate stime_covidHospCase covidHospCase covidHospCaseDate stime_covidDeathCase covidDeathCase covidDeathCaseDate stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group region hh_id hh_total_cat hh_total_4cats
 	save ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, replace
 restore
 use ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, clear
@@ -1858,7 +1878,7 @@ forvalues eth16Cat=4/6 {
 *(1)**nonCovidDeath**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep hhRiskCat67PLUS_5cats stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate  patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat
+keep hhRiskCat67PLUS_5cats stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate  patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats
 stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3`dataset'.dta, replace
 /*
@@ -1884,7 +1904,7 @@ forvalues eth16Cat=4/6 {
 *(2)**covidHospCase**
 * overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep hhRiskCat67PLUS_5cats stime_covidHospCase covidHospCase covidHospCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat
+keep hhRiskCat67PLUS_5cats stime_covidHospCase covidHospCase covidHospCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats
 stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3`dataset'.dta, replace
 /*
@@ -1910,7 +1930,7 @@ forvalues eth16Cat=4/6 {
 *(3)**covidDeath**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep hhRiskCat67PLUS_5cats stime_covidDeathCase covidDeathCase covidDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat
+keep hhRiskCat67PLUS_5cats stime_covidDeathCase covidDeathCase covidDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats
 stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, replace
 
@@ -1935,7 +1955,7 @@ forvalues eth16Cat=4/6 {
 *(4)**covidHospOrDeathCase**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep hhRiskCat67PLUS_5cats stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat
+keep hhRiskCat67PLUS_5cats stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate patient_id eth5 eth16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats
 stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
 *for each ethnicity
