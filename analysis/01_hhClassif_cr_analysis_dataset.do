@@ -315,7 +315,7 @@ replace hh_total_5cats=2 if hh_size ==1
 replace hh_total_5cats=1 if hh_size ==2
 replace hh_total_5cats=3 if hh_size >=3 & hh_size<=4
 replace hh_total_5cats=4 if hh_size >=5 & hh_size<=6
-replace hh_total_5cats=4 if hh_size >=7
+replace hh_total_5cats=5 if hh_size >=7
 
 label define hh_total_5cats  1 "2" ///
 						   2 "1" ///
