@@ -169,10 +169,15 @@ foreach outcome in covidHospOrDeath {
 	sum eth5
 	local maxEth5=r(max) 
 	
-
+	*want to check numbers in each category of exposure here (overall and then by ethnicity)
+	safetab HHRiskCatCOMPandSIZEBROAD, miss
+	safetab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats, miss
+	
 	forvalues e=1/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
 		display "`e'"
+		safetab HHRiskCatCOMPandSIZEBROAD if eth5==`e', miss
+		safetab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats if eth5==`e', miss
 		cap noisily outputHRsforvar, variable(HHRiskCatCOMPandSIZEBROAD) catLabel(HHRiskCatCOMPandSIZEBROAD) ethnicity(`e') min(1) max(9) outcome(`outcome')
 		file write tablecontents _n
 	}
@@ -185,9 +190,20 @@ foreach outcome in covidHospOrDeath {
 }
 
 
+*checking tabulations
+use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
+
+*overall
+tab HHRiskCatCOMPandSIZEBROAD, miss
+tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats, miss
+*just for white
+tab HHRiskCatCOMPandSIZEBROAD if eth5==1, miss
+tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats if eth5==1, miss
+	
 
 
 
+	
 *(2) ADJUSTING ONLY FOR HOUSEHOLD SIZE (TO COMPARE WITHJ MAIN ANALYIS WHERE I ADJUST FOR EVERYTHING ELSE)
 global demogadjlistWInts i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke i.male i.coMorbCat
 	
