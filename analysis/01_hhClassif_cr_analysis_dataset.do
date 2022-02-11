@@ -670,23 +670,23 @@ safetab HHRiskCatCOMPandSIZEBROAD
 *had to do this as result of other analysis showed not enough numbers
 generate HHRiskCatCOMPandSIZEBROAD=.
 la var HHRiskCatCOMPandSIZEBROAD "combined hhcomp and hhsize for the over 67 year old age group - 9 categories"
-*single generation - not included in this analysis
-replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==2
-replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCat67PLUS==1 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCat67PLUS==1 & hh_size==4
+*single generation
+replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS_5cats==1 & hh_size==2
+replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCat67PLUS_5cats==1 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCat67PLUS_5cats==1 & hh_size==4
 *1 younger generation
-replace HHRiskCatCOMPandSIZEBROAD=3 if hhRiskCat67PLUS==2 & hh_size==2
-replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS==2 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS==2 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=5 if hhRiskCat67PLUS==2 & hh_size>4
+replace HHRiskCatCOMPandSIZEBROAD=3 if hhRiskCat67PLUS_5cats==3 & hh_size==2
+replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS_5cats==3 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS_5cats==3 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=5 if hhRiskCat67PLUS_5cats==3 & hh_size>4
 *2 younger generations
-replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS==3 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS==3 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=7 if hhRiskCat67PLUS==3 & hh_size>4
+replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS_5cats==4 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS_5cats==4 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=7 if hhRiskCat67PLUS_5cats==4 & hh_size>4
 *3 younger generations
-replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCat67PLUS==4 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCat67PLUS==4 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=9 if hhRiskCat67PLUS==4 & hh_size>4
+replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCat67PLUS_5cats==5 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCat67PLUS_5cats==5 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=9 if hhRiskCat67PLUS_5cats==5 & hh_size>4
 *label variable
 label define HHRiskCatCOMPandSIZEBROAD 1 "Two 67+ year olds (hhsize=2)" 2 ">2 67+ year olds (hhsize=3-4)" 3 "67+ & 1 gen (hhsize=2)" 4 "67+ & 1 gen (hhsize=3-4)" 5 "67+ & 1 gen (hhsize=5+)" 6 "67+ & 2 gen (hhsize=3-4)" 7 "67+ & 2 gen (hhsize=5+)" 8 "67+ & 3 gen (hhsize=3-4)" 9 "67+ & 3 gen (hhsize=5+)"
 label values HHRiskCatCOMPandSIZEBROAD HHRiskCatCOMPandSIZEBROAD
