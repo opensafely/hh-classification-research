@@ -69,6 +69,16 @@ actions:
         log: logs/01b_hhClassif_imputed_datasets_W2.log
 
 
+  01bDUMMYONLY_hhClassif_cr_imputed_datasets:
+    run: stata-mp:latest analysis/01bDUMMYONLY_hhClassif_cr_imputed_datasets.do
+    needs: [01_hhClassif_cr_analysis_dataset]
+    outputs:
+      highly_sensitive:
+        imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_3_STSET_covidHospOrDeathCase_DUMMYONLY_MAIN.dta
+      moderately_sensitive:
+        log: logs/01b_hhClassif_imputed_datasets_DUMMYONLY.log
+
+
   01c_SensAnalysis_Age60_hhClassif_cr_analysis_dataset_W2:
     run: stata-mp:latest analysis/01c_SensAnalysis1_Age60_hhClassif_cr_analysis_dataset.do W2
     needs: [W2_generate_cohort]
@@ -531,7 +541,7 @@ actions:
         #log4: logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_nonCovidDeath_W2.log
         #table1: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidDeath_W2.txt
         #table2: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHosp_W2.txt
-        table3: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2.txt
+        #table3: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2.txt
         #table4: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_nonCovidDeath_W2.txt
 
   20_hhClassif_an_testing_interactions:
@@ -699,11 +709,11 @@ actions:
 
 
   25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI:
-    needs: [01_hhClassif_cr_analysis_dataset]
+    needs: [01bDUMMYONLY_hhClassif_cr_imputed_datasets]
     run: stata-mp:latest analysis/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do MAIN
     outputs:
       moderately_sensitive:
-        log: logs/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.log
-        table: output/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.txt
+        log: logs/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MAIN.log
+        table: output/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MAIN.txt
      
   

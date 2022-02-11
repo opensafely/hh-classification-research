@@ -17,6 +17,33 @@ local dataset `1'
 
 *global demogadjlistWInts i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke i.male i.coMorbCat
 
+*checking tabulations
+log using "./logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2", text replace
+
+use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
+
+*overall
+tab HHRiskCatCOMPandSIZEBROAD, miss /*this variable has categories of 1-9*/
+tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats, miss /*this variable has categories of 1-5*/
+*check hh_size for those with missing COMPSIZE
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==1
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==2
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==3
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==4
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==5
+
+
+*just for white
+tab HHRiskCatCOMPandSIZEBROAD if eth5==1, miss
+tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats if eth5==1, miss
+
+log close
+
+
+
+
+/*
+
 global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke i.rural_urbanFive
 *list of comorbidities for adjustment
 global comorbidadjlist i.coMorbCat	
@@ -190,15 +217,7 @@ foreach outcome in covidHospOrDeath {
 }
 
 
-*checking tabulations
-use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
 
-*overall
-tab HHRiskCatCOMPandSIZEBROAD, miss
-tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats, miss
-*just for white
-tab HHRiskCatCOMPandSIZEBROAD if eth5==1, miss
-tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats if eth5==1, miss
 	
 
 
