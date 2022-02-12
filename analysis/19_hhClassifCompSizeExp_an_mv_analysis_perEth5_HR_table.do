@@ -18,9 +18,11 @@ local dataset `1'
 *global demogadjlistWInts i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke i.male i.coMorbCat
 
 *checking tabulations
+capture log close
 log using "./logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2", text replace
 
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
+replace HHRiskCatCOMPandSIZEBROAD=2 if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==1
 
 *overall
 tab HHRiskCatCOMPandSIZEBROAD, miss /*this variable has categories of 1-9*/
@@ -37,12 +39,12 @@ tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==5
 tab HHRiskCatCOMPandSIZEBROAD if eth5==1, miss
 tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats if eth5==1, miss
 
-log close
 
 
 
 
-/*
+
+
 
 global demogadjlist age1 age2 age3 i.male i.obese4cat i.smoke i.rural_urbanFive
 *list of comorbidities for adjustment
@@ -156,11 +158,13 @@ foreach outcome in covidHospOrDeath {
    
 	
 	* Open a log file
-	capture log close
-	log using "./logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_`outcome'_`dataset'", text replace
+	
+	*log using "./logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_`outcome'_`dataset'", text replace
 	
 	*open dataset
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
+	*data management correction
+	replace HHRiskCatCOMPandSIZEBROAD=2 if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==1
 	
 	*open table
 	file open tablecontents using ./output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_`outcome'_`dataset'.txt, t w replace

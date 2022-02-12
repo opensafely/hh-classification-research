@@ -541,7 +541,7 @@ actions:
         #log4: logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_nonCovidDeath_W2.log
         #table1: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidDeath_W2.txt
         #table2: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHosp_W2.txt
-        #table3: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2.txt
+        table3: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2.txt
         #table4: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_nonCovidDeath_W2.txt
 
   20_hhClassif_an_testing_interactions:
