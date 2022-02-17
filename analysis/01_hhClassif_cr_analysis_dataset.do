@@ -603,6 +603,9 @@ label define hhRiskCat67PLUS_5cats  1 "Multiple 67+ year olds" 2 "67+ living alo
 label values hhRiskCat67PLUS_5cats hhRiskCat67PLUS_5cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_5cats, miss
 
+*create a version of the above that does not have the living alone category in it, for test for trend tests
+
+
 ****create a totally new HHRiskCatCOMPandSIZE variable for analysis***
 generate HHRiskCatCOMPandSIZE=.
 la var HHRiskCatCOMPandSIZE "combined hhcomp and hhsize for the over 67 year old age group - 13 categories"
