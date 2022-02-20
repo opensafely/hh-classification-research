@@ -147,23 +147,20 @@ foreach outcome in covidHospOrDeath {
 	**REGRESSIONS**
 	*only need to do the regressions once, so putting that code here and editing the outputHRsforvar program accordingly
 	
-	*strate hhRiskCat67PLUS_5cats 
+	strate hhRiskCat67PLUS_5cats 
 	**cox regressiona**
 	*crude (only utla matched)
-	*capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
-	*capture noisily estimates store crude
+	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store crude
 	*age-adjusted
-	*capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
-	*capture noisily estimates store ageAdj
+	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store ageAdj
 	*MV adjusted (without household size)
 	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store mvAdj
-	*MV adjusted with main exposure linear
-	capture noisily stcox c.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-	capture noisily estimates store mvAdjHHLin
 	*MV adjusted (with household size categorical)
-	*capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
-	*capture noisily estimates store mvAdjWHHSize
+	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+	capture noisily estimates store mvAdjWHHSize
 	*MV adjusted (with household size continuous)
 	/*
 	capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_size, strata(utla_group) vce(cluster hh_id)
@@ -174,30 +171,11 @@ foreach outcome in covidHospOrDeath {
 	sum eth5
 	local maxEth5=r(max) 
 	
-
 	forvalues e=1/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
 		display "`e'"
 		*next line: commented out while testing testparm etc
-		*cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
-		*THIS CODE: outputs p-values for hhRiskCat67PLUS_5cats variable by each ethnicity (overall association or test for trend)
-		*call estimates
-		estimates restore mvAdj
-		*(1) P-value for overall association of variable within category of ethnicity (I think this is right??)
-		capture noisily testparm i.hhRiskCat67PLUS_5cats#`e'.eth5
-		*(2) P-value for test for trend - I think I need to rerun the model with main exposure continous for this to work, then lincom this
-		*this is a check that I the new lincom calculation is correct
-		*create counter for main exposure category
-		sum hhRiskCat67PLUS_5cats
-		local maxHHRiskCat=r(max)
-		forvalues riskCat=1/`maxHHRiskCat' {
-			capture noisily lincom `riskCat'.hhRiskCat67PLUS_5cats + `riskCat'.hhRiskCat67PLUS_5cats#`e'.eth5, eform
-		}
-		*this is the linear hh lincom calculation one
-		display "**HH Linear:**"
-		estimates restore mvAdjHHLin
-		capture noisily lincom hhRiskCat67PLUS_5cats + hhRiskCat67PLUS_5cats#`e'.eth5, eform
-		
+		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 	}
 	
