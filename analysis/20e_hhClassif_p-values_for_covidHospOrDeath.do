@@ -75,6 +75,14 @@ foreach outcome in covidHospOrDeath {
 	estimates restore mvAdj
 	*(1) P-value for overall association of variable for white ethnicity
 	capture noisily testparm i.hhRiskCat67PLUS_5cats
+	*this is the linear hh lincom calculation one for when single category are still included
+	display "**HH Linear - incl singles:**"
+	estimates restore mvAdjHHLin
+	capture noisily lincom hhRiskCat67PLUS_5cats, eform
+	*this is the linear hh lincom calculation one for when single category are DROPPED
+	display "**HH Linear - EXCL singles:**"
+	estimates restore mvAdjHHLinNoSingles
+	capture noisily lincom hhRiskCat67PLUS_5catsNoSingles, eform
 	*ethnicities other than white (using loop)
 	forvalues e=2/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
