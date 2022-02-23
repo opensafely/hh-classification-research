@@ -45,6 +45,18 @@ use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset
 *check number of records in this dataset - should be 2 624 405
 count
 
+
+*quick retest of W1, only including hh comp interaction (a-priori), testing to see if there is evidence for comorbidity
+**(1)Testing interaction with comorb with only hhrisk included as an interaction - RESULT W1:p=0.7371 
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat##i.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: COMORB-ETH*****************"
+lrtest A B, force
+
+log close
+
 *FOR REFERENCE
 /*
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
@@ -52,8 +64,8 @@ capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5
 
 **NOTE: main exposure included as an a-priori interaction**
 
-
-**(1)Testing interaction with hhRisk - RESULT W2: p<0.001 
+/*
+**(1)Testing interaction with hhRisk - RESULT W1:p=0.7371, W2: p<0.001 
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCat67PLUS_5cats i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
@@ -61,7 +73,7 @@ est store B
 display "***************LRT TEST: HHRISKCAT-ETH*****************"
 lrtest A B, force
 
-**(2)Testing interaction with IMD with HHRisk interaction included - RESULT W2: p=0.004
+**(2)Testing interaction with IMD with HHRisk interaction included - RESULT W1:p=0.0697, W2: p=0.0042
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
@@ -70,7 +82,7 @@ display "***************LRT TEST: IMD-ETH (WITH HHRISKCAT INTERACTION)**********
 lrtest A B, force
 
 
-**(3)Testing interaction with RURAL-URBAN with HHRisk and IMD interactions included - RESULT W2: p=0.07
+**(3)Testing interaction with RURAL-URBAN with HHRisk and IMD interactions included - RESULT W1: p=0.2497, W2: p=0.0683
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive##i.eth5 i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.eth5  i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
@@ -80,7 +92,7 @@ lrtest A B, force
 
 
 
-**(4)Testing interaction with AGE with HHRisk and IMD interactions included - RESULT W2: p<0.001
+**(4)Testing interaction with AGE with HHRisk and IMD interactions included - RESULT W1:p<0.001, W2: p<0.001
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus i.eth5, strata(utla_group) vce(cluster hh_id)
@@ -90,7 +102,7 @@ lrtest A B, force
 
 
 
-**(5)Testing interaction with COMORB with HHRisk, IMD and AGE interactions included - RESULT W2: p=0.1247
+**(5)Testing interaction with COMORB with HHRisk, IMD and AGE interactions included - RESULT W1: p=0.0347, W2: p=0.1247
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
@@ -99,7 +111,7 @@ display "***************LRT TEST: COMORB (WITH HHRISKCAT AND IMD INTERACTIONS)**
 lrtest A B, force
 
 
-**(6)Testing interaction with SEX with HHRisk, IMD and AGE interactions included - RESULT W2: p=0.89
+**(6)Testing interaction with SEX with HHRisk, IMD and AGE interactions included - RESULT W1: p=0.2973  W2: p=0.89
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male##i.eth5 i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.eth5 i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
@@ -108,7 +120,7 @@ display "***************LRT TEST: SEX (WITH HHRISKCAT AND IMD INTERACTIONS)*****
 lrtest A B, force
 
 
-**(6)Testing interaction with OBESITY with HHRisk, IMD and AGE interactions included - RESULT W2: p<0.001
+**(6)Testing interaction with OBESITY with HHRisk, IMD and AGE interactions included - RESULT W1: p=0.0963, W2: p<0.001
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat##i.eth5 i.male i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.eth5 i.male i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
@@ -119,7 +131,7 @@ lrtest A B, force
 
 
 log close
-
+*/
 
 
 
