@@ -38,34 +38,51 @@ foreach outcome in covidHospOrDeath {
 	
 	**REGRESSIONS**
 	*only need to do the regressions once, so putting that code here and editing the outputHRsforvar program accordingly
+
 	
-	*(1)MV adjusted (without household size)
-	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-	capture noisily estimates store mvAdj
-	*(2)MV adjusted with main exposure linear
-	capture noisily stcox c.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-	capture noisily estimates store mvAdjHHLin
-	*(3)MV adusted with main exposure linear, having dropped the 67+ living alone
-	*first, create a main exposure variable that doesn't have 67+ living alone (going to do this in the main analysis file)
-	generate hhRiskCat67PLUS_5catsNoSingles=hhRiskCat67PLUS_5cats
-	replace hhRiskCat67PLUS_5catsNoSingles=. if hhRiskCat67PLUS_5catsNoSingles==2
-	recode hhRiskCat67PLUS_5catsNoSingles 1=1 3=2 4=3 5=4
-	label define hhRiskCat67PLUS_5catsNoSingles  1 "Multiple 67+ year olds" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
-	label values hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5catsNoSingles
-	tab hhRiskCat67PLUS_5catsNoSingles
-	tab hhRiskCat67PLUS_5catsNoSingles, nolabel
-	tab hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5cats, miss
-	*next, repeat MV adjusted linear with this variable that doesn't include people living alone
-	capture noisily stcox c.hhRiskCat67PLUS_5catsNoSingles##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-	capture noisily estimates store mvAdjHHLinNoSingles
-	*MV adjusted (with household size categorical)
-	*capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
-	*capture noisily estimates store mvAdjWHHSize
-	*MV adjusted (with household size continuous)
-	/*
-	capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_size, strata(utla_group) vce(cluster hh_id)
-	capture noisily estimates store mvAdjWHHSizeCONT
-	*/
+	if "`dataset'"=="MAIN" {
+		*crude (only utla matched)
+		*MV adjusted (without household size)
+		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily estimates store mvAdj
+		*(2)MV adjusted with main exposure linear
+		capture noisily stcox c.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily estimates store mvAdjHHLin
+		*(3)MV adusted with main exposure linear, having dropped the 67+ living alone
+		*first, create a main exposure variable that doesn't have 67+ living alone (going to do this in the main analysis file)
+		generate hhRiskCat67PLUS_5catsNoSingles=hhRiskCat67PLUS_5cats
+		replace hhRiskCat67PLUS_5catsNoSingles=. if hhRiskCat67PLUS_5catsNoSingles==2
+		recode hhRiskCat67PLUS_5catsNoSingles 1=1 3=2 4=3 5=4
+		label define hhRiskCat67PLUS_5catsNoSingles  1 "Multiple 67+ year olds" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
+		label values hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5catsNoSingles
+		tab hhRiskCat67PLUS_5catsNoSingles
+		tab hhRiskCat67PLUS_5catsNoSingles, nolabel
+		tab hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5cats, miss
+		*next, repeat MV adjusted linear with this variable that doesn't include people living alone
+		capture noisily stcox c.hhRiskCat67PLUS_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily estimates store mvAdjHHLinNoSingles
+	}
+	else if "`dataset'"=="W2" {
+		*(1)MV adjusted (without household size)
+		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily estimates store mvAdj
+		*(2)MV adjusted with main exposure linear
+		capture noisily stcox c.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily estimates store mvAdjHHLin
+		*(3)MV adusted with main exposure linear, having dropped the 67+ living alone
+		*first, create a main exposure variable that doesn't have 67+ living alone (going to do this in the main analysis file)
+		generate hhRiskCat67PLUS_5catsNoSingles=hhRiskCat67PLUS_5cats
+		replace hhRiskCat67PLUS_5catsNoSingles=. if hhRiskCat67PLUS_5catsNoSingles==2
+		recode hhRiskCat67PLUS_5catsNoSingles 1=1 3=2 4=3 5=4
+		label define hhRiskCat67PLUS_5catsNoSingles  1 "Multiple 67+ year olds" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
+		label values hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5catsNoSingles
+		tab hhRiskCat67PLUS_5catsNoSingles
+		tab hhRiskCat67PLUS_5catsNoSingles, nolabel
+		tab hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5cats, miss
+		*next, repeat MV adjusted linear with this variable that doesn't include people living alone
+		capture noisily stcox c.hhRiskCat67PLUS_5catsNoSingles##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily estimates store mvAdjHHLinNoSingles
+	}
 	
 	*helper variables
 	sum eth5
