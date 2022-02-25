@@ -40,22 +40,16 @@ local dataset `2'
 capture log close
 log using ./logs/20_hhClassif_an_testing_interactions_`dataset', replace t
 
+/*
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
 
 *check number of records in this dataset - should be 2 624 405
 count
 
 
-*quick retest of W1, only including hh comp interaction (a-priori), testing to see if there is evidence for comorbidity
-**(1)Testing interaction with comorb with only hhrisk included as an interaction - RESULT W1:p=0.7371 
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat##i.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
-est store A
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
-est store B
-display "***************LRT TEST: COMORB-ETH*****************"
-lrtest A B, force
 
-log close
+
+
 
 *FOR REFERENCE
 /*
@@ -64,7 +58,7 @@ capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5
 
 **NOTE: main exposure included as an a-priori interaction**
 
-/*
+
 **(1)Testing interaction with hhRisk - RESULT W1:p=0.7371, W2: p<0.001 
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 est store A
@@ -111,6 +105,16 @@ display "***************LRT TEST: COMORB (WITH HHRISKCAT AND IMD INTERACTIONS)**
 lrtest A B, force
 
 
+*quick test for W1 only including hh comp interaction (a-priori), testing to see if there is evidence for comorbidity
+**(1)Testing interaction with comorb with only hhrisk included as an interaction - RESULT W1: p=0.1639
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat##i.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: COMORB-ETH*****************"
+lrtest A B, force
+
+
 **(6)Testing interaction with SEX with HHRisk, IMD and AGE interactions included - RESULT W1: p=0.2973  W2: p=0.89
 capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male##i.eth5 i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 est store A
@@ -127,11 +131,23 @@ capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urba
 est store B
 display "***************LRT TEST: OBESITY (WITH HHRISKCAT IMD AND AGE INTERACTIONS)*****************"
 lrtest A B, force
+*/
 
+*quick test of p-value for non-COVID death for IMD
+
+use ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3`dataset'.dta, clear
+
+
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.eth5 i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: IMD-ETH (WITH HHRISKCAT INTERACTION)*****************"
+lrtest A B, force
 
 
 log close
-*/
+
 
 
 
