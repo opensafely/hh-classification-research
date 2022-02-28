@@ -42,7 +42,7 @@ prog define outputHRsforvar
 					cou if `variable' == `i' & _d == 1 & eth5==`ethnicity'
 					local event = r(N)
 					*get person time and rate and counts
-					bysort `variable': egen total_follow_up = total(_t) 
+					bysort `variable': egen total_follow_up = total(_t) if eth5==`ethnicity'
 					su total_follow_up if eth5==`ethnicity'
 					local n_people_All = r(N)
 					su total_follow_up if `variable' == `i' & eth5==`ethnicity'
