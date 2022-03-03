@@ -636,12 +636,36 @@ actions:
       moderately_sensitive:
         log: logs/20e_hhClassif_p-values_for_covidHospOrDeath_W2.log
 
+  20f_hhClassif_personYearsCorrection:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/20f_hhClassif_personYearsCorrection.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/20f_hhClassif_personYearsCorrection_*_MAIN.log
+        table: output/20f_hhClassif_personYearsCorrection_*_MAIN.txt
+
+  20f_hhClassif_personYearsCorrection_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/20f_hhClassif_personYearsCorrection.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/20f_hhClassif_personYearsCorrection_*_W2.log
+        table: output/20f_hhClassif_personYearsCorrection_*_W2.txt
+
   21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6:
     needs: [01_hhClassif_cr_analysis_dataset]
     run: stata-mp:latest analysis/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6.do MAIN
     outputs:
       moderately_sensitive:
         log1: logs/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6_MAIN.log
+        # table1: output/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6_MAIN.txt
+
+  21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6.do W2
+    outputs:
+      moderately_sensitive:
+        log1: logs/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6_W2.log
         # table1: output/21_hhClassif_an_67SEPARATED_SizevsGens_Table_S6_MAIN.txt
 
 
