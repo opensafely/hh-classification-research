@@ -55,28 +55,34 @@ prog define outputHRsforvar
 					*crude 
 					estimates restore crude
 					*cap lincom `i'.`variable', eform
-					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
+					*capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform - old way, has white as baseline
+					*amazing new Krishnan way that has same ethnicity as baseline (see email Fri 4 March)
+					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5#`i'.`variable', eform
 					local hr_crude = r(estimate)
 					local lb_crude = r(lb)
 					local ub_crude = r(ub)
 					*age adjusted
 					estimates restore ageAdj
 					*cap lincom `i'.`variable', eform
-					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
+					*capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform - old way, has white as baseline
+					*amazing new Krishnan way that has same ethnicity as baseline (see email Fri 4 March)
+					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5#`i'.`variable', eform
 					local hr_ageAdj = r(estimate)
 					local lb_ageAdj = r(lb)
 					local ub_ageAdj = r(ub)
 					*mv adjusted
 					estimates restore mvAdj
-					*cap lincom `i'.`variable', eform
-					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
+					*capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform - old way, has white as baseline
+					*amazing new Krishnan way that has same ethnicity as baseline (see email Fri 4 March)
+					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5#`i'.`variable', eform
 					local hr_mvAdj = r(estimate)
 					local lb_mvAdj = r(lb)
 					local ub_mvAdj = r(ub)
 					*mv adjusted with hh size
 					capture noisily estimates restore mvAdjWHHSize
-					*cap noisily lincom `i'.`variable', eform
-					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
+					*capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform - old way, has white as baseline
+					*amazing new Krishnan way that has same ethnicity as baseline (see email Fri 4 March)
+					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5#`i'.`variable', eform
 					capture noisily local hr_mvAdjWHHSize = r(estimate)
 					capture noisily local lb_mvAdjWHHSize = r(lb)
 					capture noisily local ub_mvAdjWHHSize = r(ub)
@@ -129,7 +135,7 @@ end
 	
 
 
-foreach outcome in covidHospOrDeath {
+foreach outcome in covidHospOrDeath  {
    
 	
 	* Open a log file
