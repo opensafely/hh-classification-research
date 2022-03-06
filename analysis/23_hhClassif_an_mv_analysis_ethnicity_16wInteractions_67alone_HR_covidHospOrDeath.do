@@ -120,8 +120,6 @@ foreach outcome in covidHospOrDeath {
 	strate hhRiskCat67PLUS_5cats 
 	
 	*MV adjusted (without household size)
-	stcox i.hhRiskCat67PLUS_5cats##i.ethnicity_16 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-	estimates store mvAdj
 	*MV adjusted (with household size continuous)
 	/*
 	capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_size, strata(utla_group) vce(cluster hh_id)
@@ -133,6 +131,8 @@ foreach outcome in covidHospOrDeath {
 	local maxethnicity_16=r(max) 
 	
 	forvalues e=1/16 {
+		capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		estimates store mvAdj
 		if `e'==1 {
 			file write tablecontents "*******Ethnicity: British or Mixed British******" _n
 		}
