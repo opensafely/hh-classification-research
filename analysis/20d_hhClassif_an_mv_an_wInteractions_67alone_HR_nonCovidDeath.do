@@ -59,7 +59,7 @@ prog define outputHRsforvar
 		display "CHECK 3"
 		*get HRs for each regression analysis
 		*crude 
-		estimates restore crude
+		estimates restore crude_`ethnicity'
 		*cap lincom `i'.`variable', eform
 		capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
 		*amazing new Krishnan way that has same ethnicity as baseline (see email Fri 4 March - couldnt' get this to work so doing it the other way suggested in same email)
@@ -69,7 +69,7 @@ prog define outputHRsforvar
 		local ub_crude = r(ub)
 		display "CHECK 4"
 		*age adjusted
-		estimates restore ageAdj
+		estimates restore ageAdj_`ethnicity'
 		*cap lincom `i'.`variable', eform
 		capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
 		local hr_ageAdj = r(estimate)
@@ -77,18 +77,19 @@ prog define outputHRsforvar
 		local ub_ageAdj = r(ub)
 		display "CHECK 5"
 		*mv adjusted
-		estimates restore mvAdj
+		estimates restore mvAdj_`ethnicity'
 		capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
 		local hr_mvAdj = r(estimate)
 		local lb_mvAdj = r(lb)
 		local ub_mvAdj = r(ub)
 		display "CHECK 6"
 		*mv adjusted with hh size
+		/*
 		capture noisily estimates restore mvAdjWHHSize
 		capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
 		capture noisily local hr_mvAdjWHHSize = r(estimate)
 		capture noisily local lb_mvAdjWHHSize = r(lb)
-		capture noisily local ub_mvAdjWHHSize = r(ub)
+		capture noisily local ub_mvAdjWHHSize = r(ub)*/
 		*mv adjusted with hh size CONTINOUS
 		/*
 		capture noisily estimates restore mvAdjWHHSizeCONT
@@ -166,24 +167,24 @@ foreach outcome in nonCovidDeath  {
 		if "`dataset'"=="MAIN" {
 			*crude (only utla matched)
 			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5, strata(utla_group) vce(cluster hh_id)
-			capture noisily estimates store crude
+			capture noisily estimates store crude_`e'
 			*age-adjusted
 			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
-			capture noisily estimates store ageAdj
+			capture noisily estimates store ageAdj_`e'
 			*MV adjusted (without household size)
 			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
-			capture noisily estimates store mvAdj
+			capture noisily estimates store mvAdj_`e'
 		}
 		else if "`dataset'"=="W2" {
 			*crude (only utla matched)
 			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5, strata(utla_group) vce(cluster hh_id)
-			capture noisily estimates store crude
+			capture noisily estimates store crude_`e'
 			*age-adjusted
 			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
-			capture noisily estimates store ageAdj
+			capture noisily estimates store ageAdj_`e'
 			*MV adjusted (without household size)
 			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-			capture noisily estimates store mvAdj
+			capture noisily estimates store mvAdj_`e'
 			*MV adjusted (with household size categorical)
 			*capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 			*capture noisily estimates store mvAdjWHHSize
