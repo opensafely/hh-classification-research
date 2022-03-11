@@ -58,9 +58,20 @@ foreach outcome in covidHospOrDeath {
 		tab hhRiskCat67PLUS_5catsNoSingles
 		tab hhRiskCat67PLUS_5catsNoSingles, nolabel
 		tab hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5cats, miss
-		*next, repeat MV adjusted linear with this variable that doesn't include people living alone
+		*next, create another one that doesn't have 67+ living alone OR multiple 67+ year olds
+		generate NoOnly67Plus=hhRiskCat67PLUS_5catsNoSingles
+		replace NoOnly67Plus=. if hhRiskCat67PLUS_5catsNoSingles==1
+		recode NoOnly67Plus 2=1 3=2 4=3
+		label define NoOnly67Plus  1 "67+ & 1 other gen" 2 "67+ & 2 other gens" 3 "67+ & 3 other gens"
+		label values NoOnly67Plus NoOnly67Plus
+		tab NoOnly67Plus
+		tab NoOnly67Plus, nolabel
+		tab NoOnly67Plus hhRiskCat67PLUS_5catsNoSingles, miss
+		*next, repeat MV adjusted linear with these variables 
 		capture noisily stcox c.hhRiskCat67PLUS_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoSingles
+		capture noisily stcox c.NoOnly67Plus##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily estimates store mvAdjHHLinNoOnly67Plus
 	}
 	else if "`dataset'"=="W2" {
 		*(1)MV adjusted (without household size)
@@ -79,9 +90,20 @@ foreach outcome in covidHospOrDeath {
 		tab hhRiskCat67PLUS_5catsNoSingles
 		tab hhRiskCat67PLUS_5catsNoSingles, nolabel
 		tab hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5cats, miss
-		*next, repeat MV adjusted linear with this variable that doesn't include people living alone
-		capture noisily stcox c.hhRiskCat67PLUS_5catsNoSingles##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		*next, create another one that doesn't have 67+ living alone OR multiple 67+ year olds
+		generate NoOnly67Plus=hhRiskCat67PLUS_5catsNoSingles
+		replace NoOnly67Plus=. if hhRiskCat67PLUS_5catsNoSingles==1
+		recode NoOnly67Plus 2=1 3=2 4=3
+		label define NoOnly67Plus  1 "67+ & 1 other gen" 2 "67+ & 2 other gens" 3 "67+ & 3 other gens"
+		label values NoOnly67Plus NoOnly67Plus
+		tab NoOnly67Plus
+		tab NoOnly67Plus, nolabel
+		tab NoOnly67Plus hhRiskCat67PLUS_5catsNoSingles, miss
+		*next, repeat MV adjusted linear with these variables 
+		capture noisily stcox c.hhRiskCat67PLUS_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoSingles
+		capture noisily stcox c.NoOnly67Plus##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily estimates store mvAdjHHLinNoOnly67Plus
 	}
 	
 	*helper variables
@@ -100,6 +122,10 @@ foreach outcome in covidHospOrDeath {
 	display "**HH Linear - EXCL singles:**"
 	estimates restore mvAdjHHLinNoSingles
 	capture noisily lincom hhRiskCat67PLUS_5catsNoSingles, eform
+	*this is the linear hh lincom calculation one for when single and multi 67+ year old category are DROPPED
+	display "**HH Linear - EXCL singles and multi 67+:**"
+	estimates restore mvAdjHHLinNoOnly67Plus
+	capture noisily lincom NoOnly67Plus, eform
 	*ethnicities other than white (using loop)
 	forvalues e=2/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
@@ -126,6 +152,10 @@ foreach outcome in covidHospOrDeath {
 		display "**HH Linear - EXCL singles:**"
 		estimates restore mvAdjHHLinNoSingles
 		capture noisily lincom hhRiskCat67PLUS_5catsNoSingles + hhRiskCat67PLUS_5catsNoSingles#`e'.eth5, eform
+		*this is the linear hh lincom calculation one for when single and multi 67+ year old category are DROPPED
+		display "**HH Linear - EXCL singles and multi 67+:**"
+		estimates restore mvAdjHHLinNoOnly67Plus
+		capture noisily lincom NoOnly67Plus, eform
 	}
 	cap log close
 }

@@ -40,7 +40,7 @@ local dataset `2'
 capture log close
 log using ./logs/20_hhClassif_an_testing_interactions_`dataset', replace t
 
-/*
+
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
 
 *check number of records in this dataset - should be 2 624 405
