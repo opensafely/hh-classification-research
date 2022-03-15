@@ -753,5 +753,23 @@ actions:
       moderately_sensitive:
         log: logs/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MAIN.log
         table: output/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MAIN.txt
+
+
+  26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath_MAIN.log
+        table: output/26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath_MAIN.txt
+
+
+  26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath_W2.log
+        table: output/26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath_W2.txt
      
   
