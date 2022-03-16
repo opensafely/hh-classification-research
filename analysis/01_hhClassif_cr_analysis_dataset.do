@@ -537,10 +537,113 @@ restore
 merge m:1 hh_id using `hhRiskCat'
 drop _merge
 safetab hhRiskCat, miss
+
+
+
+
 *missing here are likely to be people living in households made up of only under 18 year olds
+
+*9 category version
+generate hhRiskCatExp_9cats=.
+la var hhRiskCatExp_9cats "hhRiskCat for the over 67 year old age group"
+replace hhRiskCatExp_9cats=2 if hhRiskCat==3 & hh_size==1
+replace hhRiskCatExp_9cats=1 if hhRiskCat==3 & hhRiskCatExp_9cats!=2
+replace hhRiskCatExp_9cats=3 if hhRiskCat==6
+replace hhRiskCatExp_9cats=4 if hhRiskCat==8
+replace hhRiskCatExp_9cats=5 if hhRiskCat==9
+replace hhRiskCatExp_9cats=6 if hhRiskCat==11
+replace hhRiskCatExp_9cats=7 if hhRiskCat==12
+replace hhRiskCatExp_9cats=8 if hhRiskCat==13
+replace hhRiskCatExp_9cats=9 if hhRiskCat==14
+*label variable
+label define hhRiskCatExp_9cats 1 "Multiple 67+" 2 "67+ living alone" 3 "0-17 & 67+" 4 "18-29 & 67+" 5 "30-66 & 67+" 6 "0-17, 18-29 & 67+" 7 "0-17, 30-66 & 67+" 8 "18-29, 30-66 & 67+" 9 "0-17, 18-29, 30-66 & 67+"
+label values hhRiskCatExp_9cats hhRiskCatExp_9cats
+tab hhRiskCatExp_9cats
+tab hhRiskCat hhRiskCatExp_9cats, miss
+
+*5 category version
+generate hhRiskCatExp_5cats=.
+la var hhRiskCatExp_5cats "hhRiskCat for the over 67 year old age group - 5 categories"
+replace hhRiskCatExp_5cats=2 if hhRiskCatExp_9cats==2
+replace hhRiskCatExp_5cats=1 if hhRiskCatExp_9cats==1
+replace hhRiskCatExp_5cats=3 if hhRiskCatExp_9cats>2 & hhRiskCatExp_9cats<6
+replace hhRiskCatExp_5cats=4 if hhRiskCatExp_9cats>5 & hhRiskCatExp_9cats<9
+replace hhRiskCatExp_5cats=5 if hhRiskCatExp_9cats==9
+*label variable
+label define hhRiskCatExp_5cats  1 "Multiple 67+ year olds" 2 "67+ living alone" 3 "67+ & 1 other gen" 4 "67+ & 2 other gens" 5 "67+ & 3 other gens"
+label values hhRiskCatExp_5cats hhRiskCatExp_5cats
+tab hhRiskCatExp_9cats hhRiskCatExp_5cats, miss
+
+*check there are no impossible house sizes, particularly for the single generation houses
+*83 records have an impossible hh size for the smallest category (TPP variable measurement error), correct these here
+*replace hh_size=4 if hhRiskCat67PLUS_4cats==1 & hh_size>4
+*replace hh_total_cat=2 if hhRiskCat67PLUS_4cats==1 & hh_total_cat>2
+
+/*
+
+*combined hh size hh composition version
+generate HHRiskCatCOMPandSIZE=.
+la var HHRiskCatCOMPandSIZE "combined hhcomp and hhsize for the over 67 year old age group - 13 categories"
+*single generation
+replace HHRiskCatCOMPandSIZE=2 if hhRiskCat67PLUS_5cats==2
+replace HHRiskCatCOMPandSIZE=1 if hhRiskCat67PLUS_5cats==1 & hh_size==2
+replace HHRiskCatCOMPandSIZE=3 if hhRiskCat67PLUS_5cats==1 & hh_size==3
+replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS_5cats==1 & hh_size==4
+replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS_5cats==1 & hh_size==5
+*1 younger generation
+replace HHRiskCatCOMPandSIZE=5 if hhRiskCat67PLUS_5cats==3 & hh_size==2
+replace HHRiskCatCOMPandSIZE=6 if hhRiskCat67PLUS_5cats==3 & hh_size==3
+replace HHRiskCatCOMPandSIZE=7 if hhRiskCat67PLUS_5cats==3 & hh_size==4
+replace HHRiskCatCOMPandSIZE=7 if hhRiskCat67PLUS_5cats==3 & hh_size==5
+replace HHRiskCatCOMPandSIZE=8 if hhRiskCat67PLUS_5cats==3 & hh_size>5
+*2 younger generations
+replace HHRiskCatCOMPandSIZE=9 if hhRiskCat67PLUS_5cats==4 & hh_size==3
+replace HHRiskCatCOMPandSIZE=10 if hhRiskCat67PLUS_5cats==4 & hh_size==4
+replace HHRiskCatCOMPandSIZE=10 if hhRiskCat67PLUS_5cats==4 & hh_size==5
+replace HHRiskCatCOMPandSIZE=11 if hhRiskCat67PLUS_5cats==4 & hh_size>5
+*3 younger generations
+replace HHRiskCatCOMPandSIZE=12 if hhRiskCat67PLUS_5cats==5 & hh_size==3
+replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS_5cats==5 & hh_size==4
+replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS_5cats==5 & hh_size==5
+replace HHRiskCatCOMPandSIZE=14 if hhRiskCat67PLUS_5cats==5 & hh_size>5
+*label variable
+label define HHRiskCatCOMPandSIZE 1 "Two 67+ yr olds (hhsize=2)" 2 "67+ living alone (hhsize=1)" 3 "Three 67+ yr olds (hhsize=3)" 4 "Four 67+ yr olds (hhsize=4-5)" 5 "67+ & 1 gen (hhsize=2)" 6 "67+ & 1 gen (hhsize=3)" 7 "67+ & 1 gen (hhsize=4-5)" 8 "67+ & 1 gen (hhsize=6+)" 9 "67+ & 2 gen (hhsize=3)" 10 "67+ & 2 gen (hhsize=4-5)" 11 "67+ & 2 gen (hhsize=6+)" 12 "67+ & 3 gen (hhsize=3)" 13 "67+ & 3 gen (hhsize=4-5)" 14 "67+ & 3 gen (hhsize=6+)"
+label values HHRiskCatCOMPandSIZE HHRiskCatCOMPandSIZE
+safetab HHRiskCatCOMPandSIZE
+*/
+
+****create a BROAD CATEGORY (i.e. SUPER BROAD) HHRiskCatCOMPandSIZE variable for analysis***
+*had to do this as result of other analysis showed not enough numbers
+generate HHRiskCatCOMPandSIZEBROAD=.
+la var HHRiskCatCOMPandSIZEBROAD "combined hhcomp and hhsize for the over 67 year old age group - 9 categories"
+*single generation
+replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCatExp_5cats==1 & hh_size==2
+replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCatExp_5cats==1 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCatExp_5cats==1 & hh_size==4
+*1 younger generation
+replace HHRiskCatCOMPandSIZEBROAD=3 if hhRiskCatExp_5cats==3 & hh_size==2
+replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCatExp_5cats==3 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCatExp_5cats==3 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=5 if hhRiskCatExp_5cats==3 & hh_size>4
+*2 younger generations
+replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCatExp_5cats==4 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCatExp_5cats==4 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=7 if hhRiskCatExp_5cats==4 & hh_size>4
+*3 younger generations
+replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCatExp_5cats==5 & hh_size==3
+replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCatExp_5cats==5 & hh_size==4
+replace HHRiskCatCOMPandSIZEBROAD=9 if hhRiskCatExp_5cats==5 & hh_size>4
+*label variable
+label define HHRiskCatCOMPandSIZEBROAD 1 "Two 67+ year olds (hhsize=2)" 2 ">2 67+ year olds (hhsize=3-4)" 3 "67+ & 1 gen (hhsize=2)" 4 "67+ & 1 gen (hhsize=3-4)" 5 "67+ & 1 gen (hhsize=5+)" 6 "67+ & 2 gen (hhsize=3-4)" 7 "67+ & 2 gen (hhsize=5+)" 8 "67+ & 3 gen (hhsize=3-4)" 9 "67+ & 3 gen (hhsize=5+)"
+label values HHRiskCatCOMPandSIZEBROAD HHRiskCatCOMPandSIZEBROAD
+safetab HHRiskCatCOMPandSIZEBROAD
+
+
+*****OTHER MISC HH COMP VARS (LESS IMPORTANT)*****
 
 *now create other exposure variables related to this i.e. (a) the high level broad categories for descriptive analysis and (b) the age-stratified categories
 *(a) high level broad categories from protocol
+/*
 generate hhRiskCatBROAD=.
 la var hhRiskCatBROAD "hhRiskCat in three categories (for descriptive work)"
 replace hhRiskCatBROAD=1 if hhRiskCat>=1 & hhRiskCat<=3
@@ -550,24 +653,6 @@ replace hhRiskCatBROAD=3 if hhRiskCat>=10 & hhRiskCat<=14
 label define hhRiskCatBROAD 1 "1 gen" 2 "2 gens" 3 "3+ gens"
 label values hhRiskCatBROAD hhRiskCatBROAD
 safetab hhRiskCat hhRiskCatBROAD 
-
-*(b) variable for stratifying by the oldest age group (67+)
-generate hhRiskCat67PLUS=.
-la var hhRiskCat67PLUS "hhRiskCat for the over 67 year old age group"
-replace hhRiskCat67PLUS=2 if hhRiskCat==3 & hh_size==1
-replace hhRiskCat67PLUS=1 if hhRiskCat==3 & hhRiskCat67PLUS!=2
-replace hhRiskCat67PLUS=3 if hhRiskCat==6
-replace hhRiskCat67PLUS=4 if hhRiskCat==8
-replace hhRiskCat67PLUS=5 if hhRiskCat==9
-replace hhRiskCat67PLUS=6 if hhRiskCat==11
-replace hhRiskCat67PLUS=7 if hhRiskCat==12
-replace hhRiskCat67PLUS=8 if hhRiskCat==13
-replace hhRiskCat67PLUS=9 if hhRiskCat==14
-*label variable
-label define hhRiskCat67PLUS 1 "Multiple 67+" 2 "67+ living alone" 3 "0-17 & 67+" 4 "18-29 & 67+" 5 "30-66 & 67+" 6 "0-17, 18-29 & 67+" 7 "0-17, 30-66 & 67+" 8 "18-29, 30-66 & 67+" 9 "0-17, 18-29, 30-66 & 67+"
-label values hhRiskCat67PLUS hhRiskCat67PLUS
-tab hhRiskCat67PLUS
-tab hhRiskCat hhRiskCat67PLUS, miss
 
 *create a broad category version of this variable that has three categories (1) living with only one generation (2) living with one other generation (3) living with two other generations
 generate hhRiskCat67PLUS_3cats=.
@@ -591,181 +676,7 @@ replace hhRiskCat67PLUS_4cats=4 if hhRiskCat67PLUS==8
 label define hhRiskCat67PLUS_4cats 1 "Only 67+" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
 label values hhRiskCat67PLUS_4cats hhRiskCat67PLUS_4cats
 safetab hhRiskCat67PLUS hhRiskCat67PLUS_4cats, miss
-
-*create another version that has 5 categories (1) living alone (2) living with only one generation (3) living with one other generation (4) living with two other generations (5) living with three other gens
-generate hhRiskCat67PLUS_5cats=.
-la var hhRiskCat67PLUS_5cats "hhRiskCat for the over 67 year old age group - 4 categories"
-replace hhRiskCat67PLUS_5cats=2 if hh_size==1
-replace hhRiskCat67PLUS_5cats=1 if hhRiskCat67PLUS==1 & hhRiskCat67PLUS_5cats!=2
-replace hhRiskCat67PLUS_5cats=3 if hhRiskCat67PLUS>1 & hhRiskCat67PLUS<5
-replace hhRiskCat67PLUS_5cats=4 if hhRiskCat67PLUS>4 & hhRiskCat67PLUS<8
-replace hhRiskCat67PLUS_5cats=5 if hhRiskCat67PLUS==8
-*label variable
-label define hhRiskCat67PLUS_5cats  1 "Multiple 67+ year olds" 2 "67+ living alone" 3 "67+ & 1 other gen" 4 "67+ & 2 other gens" 5 "67+ & 3 other gens"
-label values hhRiskCat67PLUS_5cats hhRiskCat67PLUS_5cats
-tab hhRiskCat67PLUS hhRiskCat67PLUS_5cats, miss
-
-*create a version of the above that does not have the living alone category in it, for test for trend tests
-
-
-****create a totally new HHRiskCatCOMPandSIZE variable for analysis***
-generate HHRiskCatCOMPandSIZE=.
-la var HHRiskCatCOMPandSIZE "combined hhcomp and hhsize for the over 67 year old age group - 13 categories"
-*single generation
-replace HHRiskCatCOMPandSIZE=2 if hhRiskCat67PLUS==1 & hh_size==1
-replace HHRiskCatCOMPandSIZE=1 if hhRiskCat67PLUS==1 & hh_size==2
-replace HHRiskCatCOMPandSIZE=3 if hhRiskCat67PLUS==1 & hh_size==3
-replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS==1 & hh_size==4
-replace HHRiskCatCOMPandSIZE=4 if hhRiskCat67PLUS==1 & hh_size==5
-*1 younger generation
-replace HHRiskCatCOMPandSIZE=5 if hhRiskCat67PLUS==2 & hh_size==2
-replace HHRiskCatCOMPandSIZE=6 if hhRiskCat67PLUS==2 & hh_size==3
-replace HHRiskCatCOMPandSIZE=7 if hhRiskCat67PLUS==2 & hh_size==4
-replace HHRiskCatCOMPandSIZE=7 if hhRiskCat67PLUS==2 & hh_size==5
-replace HHRiskCatCOMPandSIZE=8 if hhRiskCat67PLUS==2 & hh_size>5
-*2 younger generations
-replace HHRiskCatCOMPandSIZE=9 if hhRiskCat67PLUS==3 & hh_size==3
-replace HHRiskCatCOMPandSIZE=10 if hhRiskCat67PLUS==3 & hh_size==4
-replace HHRiskCatCOMPandSIZE=10 if hhRiskCat67PLUS==3 & hh_size==5
-replace HHRiskCatCOMPandSIZE=11 if hhRiskCat67PLUS==3 & hh_size>5
-*3 younger generations
-replace HHRiskCatCOMPandSIZE=12 if hhRiskCat67PLUS==4 & hh_size==3
-replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS==4 & hh_size==4
-replace HHRiskCatCOMPandSIZE=13 if hhRiskCat67PLUS==4 & hh_size==5
-replace HHRiskCatCOMPandSIZE=14 if hhRiskCat67PLUS==4 & hh_size>5
-*label variable
-label define HHRiskCatCOMPandSIZE 1 "Two 67+ yr olds (hhsize=2)" 2 "67+ living alone (hhsize=1)" 3 "Three 67+ yr olds (hhsize=3)" 4 "Four 67+ yr olds (hhsize=4-5)" 5 "67+ & 1 gen (hhsize=2)" 6 "67+ & 1 gen (hhsize=3)" 7 "67+ & 1 gen (hhsize=4-5)" 8 "67+ & 1 gen (hhsize=6+)" 9 "67+ & 2 gen (hhsize=3)" 10 "67+ & 2 gen (hhsize=4-5)" 11 "67+ & 2 gen (hhsize=6+)" 12 "67+ & 3 gen (hhsize=3)" 13 "67+ & 3 gen (hhsize=4-5)" 14 "67+ & 3 gen (hhsize=6+)"
-label values HHRiskCatCOMPandSIZE HHRiskCatCOMPandSIZE
-safetab HHRiskCatCOMPandSIZE
-
-/*
-****create a BROADER HHRiskCatCOMPandSIZE variable for analysis*** - SUPERCEDED BY THE ONE BELOW (DUE TO LOW NUMBERS)
-generate HHRiskCatCOMPandSIZEBROAD=.
-la var HHRiskCatCOMPandSIZEBROAD "combined hhcomp and hhsize for the over 67 year old age group - 9 categories"
-*single generation
-replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCat67PLUS==1 & hh_size==1
-replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==2
-replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS==1 & hh_size==5
-*1 younger generation
-replace HHRiskCatCOMPandSIZEBROAD=3 if hhRiskCat67PLUS==2 & hh_size==2
-replace HHRiskCatCOMPandSIZEBROAD=3 if hhRiskCat67PLUS==2 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS==2 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS==2 & hh_size==5
-replace HHRiskCatCOMPandSIZEBROAD=5 if hhRiskCat67PLUS==2 & hh_size>5
-*2 younger generations
-replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS==3 & hh_size==2
-replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS==3 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=7 if hhRiskCat67PLUS==3 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=7 if hhRiskCat67PLUS==3 & hh_size==5
-replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCat67PLUS==3 & hh_size>5
-*3 younger generations
-replace HHRiskCatCOMPandSIZEBROAD=9 if hhRiskCat67PLUS==4 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=9 if hhRiskCat67PLUS==4 & hh_size==5
-replace HHRiskCatCOMPandSIZEBROAD=10 if hhRiskCat67PLUS==4 & hh_size>5
-*label variable
-label define HHRiskCatCOMPandSIZEBROAD 1 "Multiple 67+ yr olds (hhsize=2-4)" 2 "67+ living alone (hhsize=1)" 3 "67+ & 1 gen (hhsize=2-3)" 4 "67+ & 1 gen (hhsize=4-5)" 5 "67+ & 1 gen (hhsize=6+)" 6 "67+ & 2 gen (hhsize=2-3)" 7 "67+ & 2 gen (hhsize=4-5)" 8 "67+ & 2 gen (hhsize=6+)" 9 "67+ & 3 gen (hhsize=4-5)" 10 "67+ & 3 gen (hhsize=6+)"
-label values HHRiskCatCOMPandSIZEBROAD HHRiskCatCOMPandSIZEBROAD
-safetab HHRiskCatCOMPandSIZEBROAD
 */
-
-
-****create a BROAD CATEGORY (i.e. SUPER BROAD) HHRiskCatCOMPandSIZE variable for analysis***
-*had to do this as result of other analysis showed not enough numbers
-generate HHRiskCatCOMPandSIZEBROAD=.
-la var HHRiskCatCOMPandSIZEBROAD "combined hhcomp and hhsize for the over 67 year old age group - 9 categories"
-*single generation
-replace HHRiskCatCOMPandSIZEBROAD=1 if hhRiskCat67PLUS_5cats==1 & hh_size==2
-replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCat67PLUS_5cats==1 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=2 if hhRiskCat67PLUS_5cats==1 & hh_size==4
-*1 younger generation
-replace HHRiskCatCOMPandSIZEBROAD=3 if hhRiskCat67PLUS_5cats==3 & hh_size==2
-replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS_5cats==3 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=4 if hhRiskCat67PLUS_5cats==3 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=5 if hhRiskCat67PLUS_5cats==3 & hh_size>4
-*2 younger generations
-replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS_5cats==4 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=6 if hhRiskCat67PLUS_5cats==4 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=7 if hhRiskCat67PLUS_5cats==4 & hh_size>4
-*3 younger generations
-replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCat67PLUS_5cats==5 & hh_size==3
-replace HHRiskCatCOMPandSIZEBROAD=8 if hhRiskCat67PLUS_5cats==5 & hh_size==4
-replace HHRiskCatCOMPandSIZEBROAD=9 if hhRiskCat67PLUS_5cats==5 & hh_size>4
-*label variable
-label define HHRiskCatCOMPandSIZEBROAD 1 "Two 67+ year olds (hhsize=2)" 2 ">2 67+ year olds (hhsize=3-4)" 3 "67+ & 1 gen (hhsize=2)" 4 "67+ & 1 gen (hhsize=3-4)" 5 "67+ & 1 gen (hhsize=5+)" 6 "67+ & 2 gen (hhsize=3-4)" 7 "67+ & 2 gen (hhsize=5+)" 8 "67+ & 3 gen (hhsize=3-4)" 9 "67+ & 3 gen (hhsize=5+)"
-label values HHRiskCatCOMPandSIZEBROAD HHRiskCatCOMPandSIZEBROAD
-safetab HHRiskCatCOMPandSIZEBROAD
-
-
-
-
-*check there are no impossible house sizes, particularly for the single generation houses
-*83 records have an impossible hh size for the smallest category (TPP variable measurement error), correct these here
-replace hh_size=4 if hhRiskCat67PLUS_4cats==1 & hh_size>4
-replace hh_total_cat=2 if hhRiskCat67PLUS_4cats==1 & hh_total_cat>2
-
-
-
-/*
-*(b) variable for stratifying by the 30-66 year olds 
-generate hhRiskCat33TO66=.
-la var hhRiskCat33TO66 "hhRiskCat for the 30-66 year old age group"
-replace hhRiskCat33TO66=1 if hhRiskCat==2
-replace hhRiskCat33TO66=2 if hhRiskCat==5
-replace hhRiskCat33TO66=3 if hhRiskCat==7
-replace hhRiskCat33TO66=4 if hhRiskCat==9
-replace hhRiskCat33TO66=5 if hhRiskCat==10
-replace hhRiskCat33TO66=6 if hhRiskCat==12
-replace hhRiskCat33TO66=7 if hhRiskCat==13
-replace hhRiskCat33TO66=8 if hhRiskCat==14
-*label variable
-label define hhRiskCat33TO66 1 "Only 30-66" 2 "0-17 & 30-66" 3 "18-29 & 30-66" 4 "30-66 & 67+" 5 "0-17, 18-29 & 30-66" 6 "0-17, 30-66 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
-label values hhRiskCat33TO66 hhRiskCat33TO66
-safetab hhRiskCat hhRiskCat33TO66, miss
-
-
-*(c) variable for stratifying by the 18-29 year olds 
-generate hhRiskCat18TO29=.
-la var hhRiskCat18TO29 "hhRiskCat for the 18-29 year old age group"
-replace hhRiskCat18TO29=1 if hhRiskCat==1
-replace hhRiskCat18TO29=2 if hhRiskCat==4
-replace hhRiskCat18TO29=3 if hhRiskCat==7
-replace hhRiskCat18TO29=4 if hhRiskCat==8
-replace hhRiskCat18TO29=5 if hhRiskCat==10
-replace hhRiskCat18TO29=6 if hhRiskCat==11
-replace hhRiskCat18TO29=7 if hhRiskCat==13
-replace hhRiskCat18TO29=8 if hhRiskCat==14
-*label variable
-label define hhRiskCat18TO29 1 "Only 18-29" 2 "0-17 & 18-29" 3 "18-29 & 30-66" 4 "18-29 & 67+" 5 "0-17, 18-29 & 30-66" 6 "0-17, 18-29 & 67+" 7 "18-29, 30-66 & 67+" 8 "0-17, 18-29, 30-66 & 67+"
-label values hhRiskCat18TO29 hhRiskCat18TO29
-safetab hhRiskCat hhRiskCat18TO29, miss
-*/
-
-
-****************************
-*  Create required cohort  *
-****************************
-
-
-
-
-* Create binary age (for age stratification)
-*recode age min/65.999999999 = 0 ///
-*           66/max = 1, gen(age66)
-
-* Check there are no missing ages
-*cap assert age < .
-*cap assert agegroup < .
-*cap assert age66 < .
-
-* Create restricted cubic splines for age
-*mkspline age = age, cubic nknots(4)
-
-
-/* CONVERT STRINGS TO DATE====================================================*/
-/* Comorb dates dates are given with month only, so adding day 
-15 to enable  them to be processed as dates 			  */
 
 
 *NOW THAT I HAVE CREATED HHRISK VAR CAN REMOVE!
@@ -909,29 +820,6 @@ label define bmicat 	1 "Underweight (<18.5)" 	///
 							6 "Obese III (40+)"			
 label values bmicat bmicat
 
-/*
-*create a version for table 1
-gen 	bmicatForTable1 = .
-recode  bmicatForTable1 . = 1 if bmi<18.5
-recode  bmicatForTable1 . = 2 if bmi<25
-recode  bmicatForTable1 . = 3 if bmi<30
-recode  bmicatForTable1 . = 4 if bmi<35
-recode  bmicatForTable1 . = 5 if bmi<40
-recode  bmicatForTable1 . = 6 if bmi<.
-recode  bmicatForTable1 . = 7 if bmi>=.
-
-label define bmicatForTable1 	1 "Underweight (<18.5)" 	///
-								2 "Normal (18.5-24.9)"		///
-								3 "Overweight (25-29.9)"	///
-								4 "Obese I (30-34.9)"		///
-								5 "Obese II (35-39.9)"		///
-								6 "Obese III (40+)"			///	
-								7 "Unknown"				
-label values bmicatForTable1 bmicatForTable1
-la var bmicatForTable1 "BMI showing number unknown"
-*/
-
-
 
 
 * Create more granular categorisation
@@ -1005,31 +893,9 @@ replace smoke = 1 if smoking_status == ""
 
 label values smoke smoke
 
-/*
-*create a version for table 1
-generate smokeForTable1==.
-la var smokeForTable1 "Smoking showing number unknown"
-capture noisily label define smokeForTable1 1 "Never" 2 "Former" 3 "Current" 4 "Unknown"
-replace smokeForTable1 = 1  if smoking_status == "N"
-replace smokeForTable1 = 2  if smoking_status == "E"
-replace smokeForTable1 = 3  if smoking_status == "S"
-*this is where unkown category is populated
-replace smoke = 4 if smoking_status == "M"
-replace smoke = 4 if smoking_status == "" 
-*/
-
-
-
 
 drop smoking_status
 
-
-
-* Create non-missing 3-category variable for current smoking
-* Assumes missing smoking is never smoking 
-/*recode smoke .u = 1, gen(smoke_nomiss)
-order smoke_nomiss, after(smoke)
-label values smoke_nomiss smoke*/
 
 /* CLINICAL COMORBIDITIES */ 
 
@@ -1216,31 +1082,6 @@ gen asthma = (asthmacat==2|asthmacat==3)
 safetab asthma
 safetab asthmacat
 
-/*
-**care home
-encode care_home_type, gen(carehometype)
-drop care_home_type
-
-gen carehome=0
-replace carehome=1 if carehometype<4
-safetab  carehometype carehome
-*/
-
-/* OUTCOME (AND SURVIVAL TIME)==================================================*/
-/*
-Outcome summary: 
- 
-*/
-
-*Think we only need the outcome that is the 3 primary types of probable primary care codes
-
-/*
-*UP TO HERE WED EVENING - NEED TO UPDATE THE CASE SECTION SO IT REFLECTS THE CASE DEFINITIONS THAT I NEED IE:
-1. COVID death
-2. COVID hospitalisation
-3. non-COVID death
-4. (Fracture)
-*/
 
 /* CONVERT STRINGS TO DATE FOR OUTCOME VARIABLES =============================*/
 * Recode to dates from the strings 
@@ -1254,7 +1095,6 @@ foreach var of varlist first_tested_for_covid - covid_admission_date {
 	format `var' %td 
 
 }
-
 
 
 *1. COVID death outcome
@@ -1367,21 +1207,6 @@ rename dereg_date dereg_dstr
 	drop dereg_dstr
 	format dereg_date %td 
 
-	/*
-* Binary indicators for outcomes - have these already
-foreach i of global outcomes {
-		gen `i'=0
-		replace  `i'=1 if `i'_date < .
-		safetab `i'
-}
-*/
-
-*order patient_id age hh_id hh_size case case_date ethnicity
-
-*update case variable so that those wwho died of confirmed covid are also considered cases
-
-*drop severe
-*gen severe=1 if ae==1 | icu==1 | onscoviddeath==1
 
 
 *******************************
@@ -1510,28 +1335,6 @@ lab var organ_transplant					"Organ transplant"
 lab var asplenia							"Asplenia"
 
 
-*medications
-/*
-lab var statin								"Statin in last 12 months"
-lab var insulin								"Insulin in last 12 months"
-lab var alpha_blockers 						"Alpha blocker in last 12 months"
-lab var arbs 								"ARB in last 12 months"
-lab var besafetablockers 						"Beta blocker in last 12 months"
-lab var calcium_channel_blockers 			"CCB in last 12 months"
-lab var combination_bp_meds 				"BP med in last 12 months"
-lab var spironolactone 						"Spironolactone in last 12 months"
-lab var thiazide_diuretics					"TZD in last 12 months"
-
-lab var statin_date							"Statin in last 12 months"
-lab var insulin_date						"Insulin in last 12 months"
-lab var ace_inhibitors_date 				"ACE in last 12 months"
-lab var alpha_blockers_date 				"Alpha blocker in last 12 months"
-lab var arbs_date 							"ARB in last 12 months"
-lab var besafetablockers_date 					"Beta blocker in last 12 months"
-lab var calcium_channel_blockers_date 		"CCB in last 12 months"
-lab var combination_bp_meds_date 			"BP med in last 12 months"
-lab var spironolactone_date 				"Spironolactone in last 12 months"
-*/
 
 *Create a comorbidities variable based upon Fizz's JCVI work that has 0, 1, 2 or more of the following comorbdities: 
 /*
@@ -1638,35 +1441,12 @@ foreach i of global outcomes {
 sum age, detail
 
 
-/*
-*label var was_ventilated_flag		"outcome: ICU Ventilation"
-la var case "Probable case"
-la var case_date "Probable case_date"
-la var onsdeath_date "Date of death recorded in ONS"
-la var cpnsdeath_date "Date of death recorded in CPNS"
-*/
-
 /* TIDY DATA==================================================================*/
 *  Drop variables that are not needed (those not labelled)
 ds, not(varlabel)
 drop `r(varlist)'
 	
 
-
-*some final tweaks to variables not handled above
-*sort out sex and region etc
-/*
-safetab sex
-generate sex2=.
-replace sex2=1 if sex=="F"
-replace sex2=2 if sex=="M"
-drop sex
-rename sex2 sex
-safetab sex
-label define sex 1 "F" 2 "M"
-label values sex sex
-label var sex "Sex"
-*/
 
 *sort out region
 generate region2=.
@@ -1739,15 +1519,6 @@ label define hh_size5cat 1 "2-3" 2 "4-5" 3 "6-7" 4 "8-10"
 label values hh_size5cat hh_size5cat
 safetab hh_size5cat hh_size, miss
 
-*create smoking variable with an unknwon category
-/*()
-safetab smoke, miss
-replace smoke=4 if smoke==.u
-label drop smoke
-label define smoke 1 "Never" 2 "Former" 3 "Current" 4 "Unknown"
-label values smoke smoke
-safetab smoke
-*/
 
 ***************
 *  Save data  *
@@ -1763,7 +1534,6 @@ safecount if ethnicity==.
 keep if ethnicity!=.
 di "***********************FLOWCHART 11. FINAL COMBINED ETHNICITY COHORT********************:"
 safecount
-
 
 
 di "***********************FLOWCHART 12. FINAL SEPARATE ETHNICITY COHORTS********************:"
@@ -1826,17 +1596,14 @@ use ./output/hhClassif_analysis_dataset`dataset'.dta, clear
 tab ageCatHHRisk
 tab ageCatHHRisk, nolabel
 tab hhRiskCat
-tab hhRiskCat67PLUS
+tab hhRiskCatExp_9cats
 keep if ageCatHHRisk==3
 tab hhRiskCat
-rename hhRiskCat67PLUS hhRiskCatExp_9cats
-rename hhRiskCat67PLUS_3cats hhRiskCatExp_3cats
-rename hhRiskCat67PLUS_4cats hhRiskCatExp_4cats
-rename hhRiskCat67PLUS_5cats hhRiskCatExp_5cats
 *******************tabulation to check these variables make sense***************
-tab hhRiskCatExp_9cats hhRiskCatExp_4cats, miss
-tab hhRiskCatExp_9cats hhRiskCatExp_5cats, miss
+tab hhRiskCatExp_5cats, miss
 tab hhRiskCatExp_9cats, miss
+tab hhRiskCatExp_9cats hhRiskCatExp_5cats, miss
+
 *save for all ethnicities
 preserve
 	*mkspline age = age, cubic nknots(4)
@@ -1849,17 +1616,14 @@ use ./output/hhClassif_analysis_dataset_with_missing_ethnicity`dataset'.dta, cle
 tab ageCatHHRisk
 tab ageCatHHRisk, nolabel
 tab hhRiskCat
-tab hhRiskCat67PLUS
+tab hhRiskCatExp_9cats
 keep if ageCatHHRisk==3
 tab hhRiskCat
-rename hhRiskCat67PLUS hhRiskCatExp_9cats
-rename hhRiskCat67PLUS_3cats hhRiskCatExp_3cats
-rename hhRiskCat67PLUS_4cats hhRiskCatExp_4cats
-rename hhRiskCat67PLUS_5cats hhRiskCatExp_5cats
 *******************tabulation to check these variables make sense***************
-tab hhRiskCatExp_9cats hhRiskCatExp_4cats, miss
-tab hhRiskCatExp_9cats hhRiskCatExp_5cats, miss
+tab hhRiskCatExp_5cats, miss
 tab hhRiskCatExp_9cats, miss
+tab hhRiskCatExp_9cats hhRiskCatExp_5cats, miss
+
 *save for all ethnicities so that eth5 has a missing category
 preserve
 	*mkspline age = age, cubic nknots(4) - don't need splines as am including an interaction with age and too complicated to do this with age as a spline
@@ -1870,38 +1634,6 @@ use ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset
 ****TABULATION TO CHECK MISSING SET TO "." FOR ETH5******
 tab eth5
 tab eth5, miss
-
-
-
-*now create versions for each eth5 ethnicity (1 "White" 2 "South Asian"	3 "Black" 4 "Mixed"	5 "Other"
-/*
-sum eth5
-local maxEth5Cat=r(max)
-forvalues ethCat=1/`maxEth5Cat' {
-	display "ethCat: `ethCat'"
-	preserve
-		capture noisily keep if eth5==`ethCat'
-		capture noisily mkspline age = age, cubic nknots(4)
-		capture noisily save ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
-	restore
-}
-*/
-
-*and create versions for each South Asian eth16 ethnicity category I am interested in (4 "Indian" 5 "Pakistani"	6 "Bangladeshi")
-/*
-forvalues eth16Cat=4/6 {
-	display "eth16Cat: `eth16Cat'"
-	preserve
-		capture noisily keep if eth16==`eth16Cat'
-		capture noisily mkspline age = age, cubic nknots(4)
-		capture noisily save ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
-	restore
-}
-*/
-	
-
-*now stset for each agegroup overall and for each eth5 ethnicity and each eth16 separately for each of the three outcomes
-*forvalues x=2/3 {
 	
 
 *(1)**nonCovidDeath**
@@ -1910,25 +1642,6 @@ use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
 keep stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate  patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size
 stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3`dataset'.dta, replace
-/*
-*for each ethnicity
-sum eth5
-local maxEth5Cat=r(max)
-*eth5 categories
-forvalues ethCat=1/`maxEth5Cat' {
-	display "ethCat: `ethCat'"
-	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
-	capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
-}
-*eth16 categories
-forvalues eth16Cat=4/6 {
-	display "eth16Cat: `eth16Cat'"
-	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, clear
-	capture noisily stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	capture noisily save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
-}
-*/
 	
 *(2)**covidHospCase**
 * overall
@@ -1936,25 +1649,7 @@ use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
 keep stime_covidHospCase covidHospCase covidHospCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size
 stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3`dataset'.dta, replace
-/*
-*for each ethnicity
-sum eth5
-local maxEth5Cat=r(max)
-*eth5 categories
-forvalues ethCat=1/`maxEth5Cat' {
-	display "ethCat: `ethCat'"
-	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
-	capture noisily stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
-	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
-}
-*eth16 categories
-forvalues eth16Cat=4/6 {
-	display "eth16Cat: `eth16Cat'"
-	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, clear
-	capture noisily stset stime_nonCOVIDDeathCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
-	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
-}
-*/
+
 
 *(3)**covidDeath**
 *overall
@@ -1963,23 +1658,6 @@ keep stime_covidDeathCase covidDeathCase covidDeathCaseDate patient_id eth5 eth1
 stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, replace
 
-/*
-*for each ethnicity
-*eth5 categories
-forvalues ethCat=1/`maxEth5Cat' {
-	display "ethCat: `ethCat'"
-	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
-	capture noisily stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
-}
-*eth16 categories
-forvalues eth16Cat=4/6 {
-	display "eth16Cat: `eth16Cat'"
-	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, clear
-	capture noisily stset stime_nonCOVIDDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
-}
-*/
 
 *(4)**covidHospOrDeathCase**
 *overall
@@ -1987,23 +1665,7 @@ use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
 keep stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats  HHRiskCatCOMPandSIZEBROAD hh_size
 stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
-*for each ethnicity
-/*
-*eth5 categories
-forvalues ethCat=1/`maxEth5Cat' {
-	display "ethCat: `ethCat'"
-	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_ethnicity_`ethCat'`dataset'.dta, clear
-	capture noisily stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_ethnicity_`ethCat'`dataset'.dta, replace
-}
-*eth16 categories
-forvalues eth16Cat=4/6 {
-	display "eth16Cat: `eth16Cat'"
-	capture noisily use ./output/hhClassif_analysis_dataset_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, clear
-	capture noisily stset stime_nonCOVIDDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-	capture noisily save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3_eth16Cat_`eth16Cat'`dataset'.dta, replace
-}
-*/
+
 
 
 * Close log file 
