@@ -1185,6 +1185,8 @@ safecount if nonCOVIDDeathCaseDate <= enter_date
 drop if covidDeathCaseDate <= enter_date
 drop if covidHospCaseDate <= enter_date
 drop if nonCOVIDDeathCaseDate <= enter_date
+
+
 *drop cases that are dates prior to indexdate
 foreach i of global outcomes {
 	drop if `i'Date<enter_date	
@@ -1197,8 +1199,6 @@ drop if utla_group==""
 *drop if missing imd
 drop if imd==.
 
-di "***********************FLOWCHART 9. INDIVIDUALS WITH ELIGIBLE FOLLOW-UP AND IMD, MSOA AND SEX DATA********************:"
-safecount
 
 
 *date of deregistration
@@ -1235,6 +1235,15 @@ foreach i of global outcomes {
 
 * Format date variables
 format  stime* %td 
+
+*add one day if stime_`i' on entry date, drop record if stime_`i' is prior to entry date
+foreach i of global outcomes {
+	replace stime_`i'=stime_`i'+1 if stime_`i'==enter_date
+	drop if stime_`i'<enter_date
+}
+
+di "***********************FLOWCHART 9. INDIVIDUALS WITH ELIGIBLE FOLLOW-UP AND IMD, MSOA AND SEX DATA********************:"
+safecount
 
 ********UP TO HERE THU 21:20********
 

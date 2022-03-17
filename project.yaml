@@ -28,7 +28,7 @@ actions:
         allvarsEthMiss: output/hhClassif_analysis_dataset_with_missing_ethnicityMAIN.dta
         allvarsEthMiss2: output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_*MAIN.dta
         allVarsAgeSpline: output/hhClassif_analysis_dataset_ageband_*MAIN.dta 
-        # allVarsAgeStratStset: output/hhClassif_analysis_dataset_STSET_*_ageband_*MAIN.dta 
+        allVarsAgeStratStset: output/hhClassif_analysis_dataset_STSET_*_ageband_*MAIN.dta 
       moderately_sensitive:
         log: logs/01_hhClassif_cr_analysis_dataset.log
 
@@ -44,29 +44,9 @@ actions:
         allvarsEthMiss: output/hhClassif_analysis_dataset_with_missing_ethnicityW2.dta
         allvarsEthMiss2: output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_*W2.dta
         allVarsAgeSpline: output/hhClassif_analysis_dataset_ageband_*W2.dta 
-        # allVarsAgeStratStset: output/hhClassif_analysis_dataset_STSET_*_ageband_*W2.dta 
-      moderately_sensitive:
-        log: logs/01_hhClassif_cr_analysis_dataset_W2.log
-
-
-  01a_hhClassif_cr_stset_analysis_dataset:
-    run: stata-mp:latest analysis/01a_hhClassif_cr_stset_analysis_dataset.do MAIN
-    needs: [01_hhClassif_cr_analysis_dataset]
-    outputs:
-      highly_sensitive:
-        allVarsAgeStratStset: output/hhClassif_analysis_dataset_STSET_*_ageband_*MAIN.dta 
-      moderately_sensitive:
-        log: logs/01a_hhClassif_cr_stset_analysis_dataset_MAIN.log
-
-
-  01a_hhClassif_cr_stset_analysis_dataset_W2:
-    run: stata-mp:latest analysis/01a_hhClassif_cr_stset_analysis_dataset.do W2
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    outputs:
-      highly_sensitive:
         allVarsAgeStratStset: output/hhClassif_analysis_dataset_STSET_*_ageband_*W2.dta 
       moderately_sensitive:
-        log: logs/01a_hhClassif_cr_stset_analysis_dataset_W2.log
+        log: logs/01_hhClassif_cr_analysis_dataset_W2.log
 
 
   01b_hhClassif_cr_imputed_datasets:
