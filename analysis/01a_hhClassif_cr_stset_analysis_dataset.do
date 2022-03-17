@@ -27,20 +27,35 @@ pwd
 local dataset `1' 
 
 
-
 * Open a log file
 cap log close
 log using ./logs/01a_hhClassif_cr_stset_analysis_dataset_`dataset'.log, replace t
 
-
-*(1)**nonCovidDeath**
+*(1)**covidHospOrDeathCase**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size
-stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+keep stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats  HHRiskCatCOMPandSIZEBROAD hh_size
+stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 *have a look at records that ended on or before enter()
-list patient_id stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate eth5 imd hh_total_5cats hhRiskCatExp_9cats if nonCOVIDDeathCaseDate<=enter_date
-save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3`dataset'.dta, replace
+*list patient_id stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate eth5 imd hh_total_5cats hhRiskCatExp_9cats if covidHospOrDeathCaseDate<=enter_date
+
+count if covidHospOrDeathCaseDate<=enter_date
+sum covidHospOrDeathCaseDate if covidHospOrDeathCaseDate<=enter_date, detail
+sum hh_id if covidHospOrDeathCaseDate<=enter_date, detail
+tab covidHospOrDeathCase if covidHospOrDeathCaseDate<=enter_date
+tab eth5 if covidHospOrDeathCaseDate<=enter_date, miss
+tab hhRiskCatExp_5cats if covidHospOrDeathCaseDate<=enter_date, miss
+tab imd if covidHospOrDeathCaseDate<=enter_date, miss
+tab rural_urbanFive if covidHospOrDeathCaseDate<=enter_date, miss
+tab ageCatfor67Plus if covidHospOrDeathCaseDate<=enter_date, miss
+tab male if covidHospOrDeathCaseDate<=enter_date, miss
+
+save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
+
+
+log close
+
+/*
 	
 *(2)**covidHospCase**
 * overall
@@ -50,7 +65,6 @@ stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) 
 *have a look at records that ended on or before enter()
 list patient_id stime_covidHospCase covidHospCase covidHospCaseDate eth5 imd hh_total_5cats hhRiskCatExp_9cats if covidHospCaseDate<=enter_date
 save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3`dataset'.dta, replace
-
 
 *(3)**covidDeath**
 *overall
@@ -62,15 +76,15 @@ list patient_id stime_covidDeathCase covidDeathCase covidDeathCaseDate eth5 imd 
 save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, replace
 
 
-*(4)**covidHospOrDeathCase**
+*(4)**nonCovidDeath**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats  HHRiskCatCOMPandSIZEBROAD hh_size
-stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
-*have a look at records that ended on or before enter()
-list patient_id stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate eth5 imd hh_total_5cats hhRiskCatExp_9cats if covidHospOrDeathCaseDate<=enter_date
-save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
+keep stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size
+stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
+*have a look at records that ended on or before enter
+list patient_id stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate eth5 imd hh_total_5cats hhRiskCatExp_9cats if nonCOVIDDeathCaseDate<=enter_date
+save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3`dataset'.dta, replace
 
 
-log close
+
 
