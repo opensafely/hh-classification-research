@@ -39,16 +39,16 @@ stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) ente
 *have a look at records that ended on or before enter()
 *list patient_id stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate eth5 imd hh_total_5cats hhRiskCatExp_9cats if covidHospOrDeathCaseDate<=enter_date
 
-count if covidHospOrDeathCaseDate<=enter_date
-sum covidHospOrDeathCaseDate if covidHospOrDeathCaseDate<=enter_date, detail
-sum hh_id if covidHospOrDeathCaseDate<=enter_date, detail
-tab covidHospOrDeathCase if covidHospOrDeathCaseDate<=enter_date
-tab eth5 if covidHospOrDeathCaseDate<=enter_date, miss
-tab hhRiskCatExp_5cats if covidHospOrDeathCaseDate<=enter_date, miss
-tab imd if covidHospOrDeathCaseDate<=enter_date, miss
-tab rural_urbanFive if covidHospOrDeathCaseDate<=enter_date, miss
-tab ageCatfor67Plus if covidHospOrDeathCaseDate<=enter_date, miss
-tab male if covidHospOrDeathCaseDate<=enter_date, miss
+count if _t<=0
+sum covidHospOrDeathCaseDate if _t<=0, detail
+sum hh_id if _t<=0, detail
+tab covidHospOrDeathCase if _t<=0
+tab eth5 if _t<=0, miss
+tab hhRiskCatExp_5cats if _t<=0, miss
+tab imd if _t<=0, miss
+tab rural_urbanFive if _t<=0, miss
+tab ageCatfor67Plus if _t<=0, miss
+tab male if _t<=0, miss
 
 save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
 
