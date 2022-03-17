@@ -22,22 +22,22 @@ capture log close
 log using "./logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2", text replace
 
 use ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, clear
-replace HHRiskCatCOMPandSIZEBROAD=2 if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==1
+replace HHRiskCatCOMPandSIZEBROAD=2 if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCatExp_5cats==1
 
 *overall
 tab HHRiskCatCOMPandSIZEBROAD, miss /*this variable has categories of 1-9*/
-tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats, miss /*this variable has categories of 1-5*/
+tab HHRiskCatCOMPandSIZEBROAD hhRiskCatExp_5cats, miss /*this variable has categories of 1-5*/
 *check hh_size for those with missing COMPSIZE
-tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==1
-tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==2
-tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==3
-tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==4
-tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==5
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCatExp_5cats==1
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCatExp_5cats==2
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCatExp_5cats==3
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCatExp_5cats==4
+tab hh_size if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCatExp_5cats==5
 
 
 *just for white
 tab HHRiskCatCOMPandSIZEBROAD if eth5==1, miss
-tab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats if eth5==1, miss
+tab HHRiskCatCOMPandSIZEBROAD hhRiskCatExp_5cats if eth5==1, miss
 
 
 
@@ -164,7 +164,7 @@ foreach outcome in covidHospOrDeath {
 	*open dataset
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
 	*data management correction
-	replace HHRiskCatCOMPandSIZEBROAD=2 if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCat67PLUS_5cats==1
+	replace HHRiskCatCOMPandSIZEBROAD=2 if HHRiskCatCOMPandSIZEBROAD==. & hhRiskCatExp_5cats==1
 	
 	*open table
 	file open tablecontents using ./output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_`outcome'_`dataset'.txt, t w replace
@@ -202,19 +202,19 @@ foreach outcome in covidHospOrDeath {
 	
 	*want to check numbers in each category of exposure here (overall and then by ethnicity)
 	safetab HHRiskCatCOMPandSIZEBROAD, miss
-	safetab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats, miss
+	safetab HHRiskCatCOMPandSIZEBROAD hhRiskCatExp_5cats, miss
 	
 	forvalues e=1/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
 		display "`e'"
 		safetab HHRiskCatCOMPandSIZEBROAD if eth5==`e', miss
-		safetab HHRiskCatCOMPandSIZEBROAD hhRiskCat67PLUS_5cats if eth5==`e', miss
+		safetab HHRiskCatCOMPandSIZEBROAD hhRiskCatExp_5cats if eth5==`e', miss
 		cap noisily outputHRsforvar, variable(HHRiskCatCOMPandSIZEBROAD) catLabel(HHRiskCatCOMPandSIZEBROAD) ethnicity(`e') min(1) max(9) outcome(`outcome')
 		file write tablecontents _n
 	}
 	
-	*cap file close tablecontents 
-	*cap log close
+	cap file close tablecontents 
+	cap log close
 	*output excel
 	*insheet using ./output/hhClassif_tablecontents_HRtable_`outcome'_`dataset'.txt, clear
 	*export excel using ./output/hhClassif_tablecontents_HRtable_`outcome'_`dataset'.xlsx, replace
@@ -226,7 +226,7 @@ foreach outcome in covidHospOrDeath {
 
 
 
-	
+/*
 *(2) ADJUSTING ONLY FOR HOUSEHOLD SIZE (TO COMPARE WITHJ MAIN ANALYIS WHERE I ADJUST FOR EVERYTHING ELSE)
 global demogadjlistWInts i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke i.male i.coMorbCat
 	
@@ -329,13 +329,13 @@ foreach outcome in covidHospOrDeath {
 	
 	**REGRESSIONS**
 	*only need to do the regressions once, so putting that code here and editing the outputHRsforvar program accordingly
-	strate hhRiskCat67PLUS_5cats 
+	strate hhRiskCatExp_5cats 
 	**cox regressiona**
 	*crude (only utla matched)
-	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store crude
 	*adjusted for household size
-	capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.hh_total_5cats, strata(utla_group) vce(cluster hh_id)
+	capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.hh_total_5cats, strata(utla_group) vce(cluster hh_id)
 	capture noisily estimates store hhAdj
 	*MV adjusted (with household size continuous)
 	/*
@@ -351,7 +351,7 @@ foreach outcome in covidHospOrDeath {
 	forvalues e=1/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
 		display "`e'"
-		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats ) catLabel(hhRiskCat67PLUS_5cats ) ethnicity(`e') min(1) max(5) outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCatExp_5cats ) catLabel(hhRiskCatExp_5cats ) ethnicity(`e') min(1) max(5) outcome(`outcome')
 		file write tablecontents _n
 	}
 	
