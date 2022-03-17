@@ -34,6 +34,11 @@ log using ./logs/01a_hhClassif_cr_stset_analysis_dataset_`dataset'.log, replace 
 *(1)**covidHospOrDeathCase**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
+
+*test if fix works
+replace stime_covidHospOrDeathCase=stime_covidHospOrDeathCase+1 if stime_covidHospOrDeathCase==enter_date
+drop if stime_covidHospOrDeathCase<enter_date
+
 keep stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats  HHRiskCatCOMPandSIZEBROAD hh_size
 stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 *have a look at records that ended on or before enter()
@@ -49,17 +54,6 @@ tab imd if stime_covidHospOrDeathCase<=enter_date, miss
 tab rural_urbanFive if stime_covidHospOrDeathCase<=enter_date, miss
 tab ageCatfor67Plus if stime_covidHospOrDeathCase<=enter_date, miss
 tab male if stime_covidHospOrDeathCase<=enter_date, miss
-
-count if stime_covidHospOrDeathCase==.
-sum covidHospOrDeathCaseDate if stime_covidHospOrDeathCase==., detail
-sum hh_id if stime_covidHospOrDeathCase==., detail
-tab covidHospOrDeathCase if stime_covidHospOrDeathCase==.
-tab eth5 if stime_covidHospOrDeathCase==., miss
-tab hhRiskCatExp_5cats if stime_covidHospOrDeathCase==., miss
-tab imd if stime_covidHospOrDeathCase==., miss
-tab rural_urbanFive if stime_covidHospOrDeathCase==., miss
-tab ageCatfor67Plus if stime_covidHospOrDeathCase==., miss
-tab male if stime_covidHospOrDeathCase==., miss
 
 save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
 
