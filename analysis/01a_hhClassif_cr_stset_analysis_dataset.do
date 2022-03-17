@@ -39,16 +39,27 @@ stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) ente
 *have a look at records that ended on or before enter()
 *list patient_id stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate eth5 imd hh_total_5cats hhRiskCatExp_9cats if covidHospOrDeathCaseDate<=enter_date
 
-count if _t<=0
-sum covidHospOrDeathCaseDate if _t<=0, detail
-sum hh_id if _t<=0, detail
-tab covidHospOrDeathCase if _t<=0
-tab eth5 if _t<=0, miss
-tab hhRiskCatExp_5cats if _t<=0, miss
-tab imd if _t<=0, miss
-tab rural_urbanFive if _t<=0, miss
-tab ageCatfor67Plus if _t<=0, miss
-tab male if _t<=0, miss
+count if stime_covidHospOrDeathCase<=enter_date
+sum covidHospOrDeathCaseDate if stime_covidHospOrDeathCase<=enter_date, detail
+sum hh_id if stime_covidHospOrDeathCase<=enter_date, detail
+tab covidHospOrDeathCase if stime_covidHospOrDeathCase<=enter_date
+tab eth5 if stime_covidHospOrDeathCase<=enter_date, miss
+tab hhRiskCatExp_5cats if stime_covidHospOrDeathCase<=enter_date, miss
+tab imd if stime_covidHospOrDeathCase<=enter_date, miss
+tab rural_urbanFive if stime_covidHospOrDeathCase<=enter_date, miss
+tab ageCatfor67Plus if stime_covidHospOrDeathCase<=enter_date, miss
+tab male if stime_covidHospOrDeathCase<=enter_date, miss
+
+count if stime_covidHospOrDeathCase==.
+sum covidHospOrDeathCaseDate if stime_covidHospOrDeathCase==., detail
+sum hh_id if stime_covidHospOrDeathCase==., detail
+tab covidHospOrDeathCase if stime_covidHospOrDeathCase==.
+tab eth5 if stime_covidHospOrDeathCase==., miss
+tab hhRiskCatExp_5cats if stime_covidHospOrDeathCase==., miss
+tab imd if stime_covidHospOrDeathCase==., miss
+tab rural_urbanFive if stime_covidHospOrDeathCase==., miss
+tab ageCatfor67Plus if stime_covidHospOrDeathCase==., miss
+tab male if stime_covidHospOrDeathCase==., miss
 
 save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
 
