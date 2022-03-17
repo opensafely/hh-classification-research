@@ -27,7 +27,7 @@ pwd
 local dataset `1' 
 
 
-* Open a logfile
+* Opena logfile
 cap log close
 log using ./logs/01a_hhClassif_cr_stset_analysis_dataset_`dataset'.log, replace t
 
