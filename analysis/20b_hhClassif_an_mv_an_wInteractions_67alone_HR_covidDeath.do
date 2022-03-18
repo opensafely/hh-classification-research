@@ -17,7 +17,7 @@
 local dataset `1' 
 
 /*for reference
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke  i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke  i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 */
 
 *global demogadjlistWInts i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5
@@ -63,7 +63,7 @@ prog define outputHRsforvar
 					*age adjusted
 					estimates restore ageAdj
 					*cap lincom `i'.`variable', eform
-					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform - old way
+					capture noisily lincom `i'.`variable' + `i'.`variable'#`ethnicity'.eth5, eform
 					local hr_ageAdj = r(estimate)
 					local lb_ageAdj = r(lb)
 					local ub_ageAdj = r(ub)
@@ -128,18 +128,18 @@ end
 	
 
 
-foreach outcome in covidHospOrDeath  {
+foreach outcome in covidDeath  {
    
 	
 	* Open a log file
 	capture log close
-	log using "./logs/20a_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'", text replace
+	log using "./logs/20b_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'", text replace
 	
 	*open dataset
 	use ./output/hhClassif_analysis_dataset_STSET_`outcome'_ageband_3`dataset'.dta, clear
 	
 	*open table
-	file open tablecontents using ./output/20a_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'.txt, t w replace
+	file open tablecontents using ./output/20b_hhClassif_an_mv_an_wInteractions_67alone_HR_`outcome'_`dataset'.txt, t w replace
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
@@ -148,32 +148,32 @@ foreach outcome in covidHospOrDeath  {
 	**REGRESSIONS**
 	*only need to do the regressions once, so putting that code here and editing the outputHRsforvar program accordingly
 	
-	strate hhRiskCat67PLUS_5cats 
+	strate hhRiskCatExp_5cats 
 	**cox regressiona**
 	*need to account for different models for wave 1 (only interaction is with hhrisk) versus wave 2 (multiple interactions)
 	if "`dataset'"=="MAIN" {
 		*crude (only utla matched)
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store crude
 		*age-adjusted
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store ageAdj
 		*MV adjusted (without household size)
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdj
 	}
 	else if "`dataset'"=="W2" {
 		*crude (only utla matched)
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store crude
 		*age-adjusted
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store ageAdj
 		*MV adjusted (without household size)
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdj
 		*MV adjusted (with household size categorical)
-		*capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+		*capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 		*capture noisily estimates store mvAdjWHHSize
 	}
 	*MV adjusted (with household size continuous)
@@ -190,7 +190,7 @@ foreach outcome in covidHospOrDeath  {
 		display "*************Ethnicity: `e'************ "
 		display "`e'"
 		*next line: commented out while testing testparm etc
-		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 	}
 	
@@ -207,7 +207,7 @@ foreach outcome in covidHospOrDeath  {
 local dataset `1' 
 
 /*for reference
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke  i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke  i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 */
 
 *global demogadjlistWInts i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5
@@ -356,31 +356,31 @@ foreach outcome in covidDeath  {
 		*run the regressions once per ethnicity, so that the baseline can be change each time (see Krishnan email Fri 4th March) - this is what the "ib.`e'" code is doing
 		if "`dataset'"=="MAIN" {
 			*crude (only utla matched)
-			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5, strata(utla_group) vce(cluster hh_id)
+			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store crude_`e'
 			*age-adjusted
-			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store ageAdj_`e'
 			*MV adjusted (without household size)
-			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store mvAdj_`e'
 		}
 		else if "`dataset'"=="W2" {
 			*crude (only utla matched)
-			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5, strata(utla_group) vce(cluster hh_id)
+			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store crude_`e'
 			*age-adjusted
-			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store ageAdj_`e'
 			*MV adjusted (without household size)
-			capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store mvAdj_`e'
 			*MV adjusted (with household size categorical)
-			*capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
+			*capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 			*capture noisily estimates store mvAdjWHHSize
 		}
 		*next line: commented out while testing testparm etc
-		outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		outputHRsforvar, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 	}
 	
