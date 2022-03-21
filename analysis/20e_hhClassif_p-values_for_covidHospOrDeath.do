@@ -16,7 +16,7 @@
 local dataset `1' 
 
 /*for reference
-capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke  i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.imd##i.eth5 i.ageCatfor67Plus##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive i.smoke  i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 */
 
 *global demogadjlistWInts i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5
@@ -43,64 +43,64 @@ foreach outcome in covidHospOrDeath {
 	if "`dataset'"=="MAIN" {
 		*crude (only utla matched)
 		*MV adjusted (without household size)
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdj
 		*(2)MV adjusted with main exposure linear
-		capture noisily stcox c.hhRiskCat67PLUS_5cats##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox c.hhRiskCatExp_5cats##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLin
 		*(3)MV adusted with main exposure linear, having dropped the 67+ living alone
 		*first, create a main exposure variable that doesn't have 67+ living alone (going to do this in the main analysis file)
-		generate hhRiskCat67PLUS_5catsNoSingles=hhRiskCat67PLUS_5cats
-		replace hhRiskCat67PLUS_5catsNoSingles=. if hhRiskCat67PLUS_5catsNoSingles==2
-		recode hhRiskCat67PLUS_5catsNoSingles 1=1 3=2 4=3 5=4
-		label define hhRiskCat67PLUS_5catsNoSingles  1 "Multiple 67+ year olds" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
-		label values hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5catsNoSingles
-		tab hhRiskCat67PLUS_5catsNoSingles
-		tab hhRiskCat67PLUS_5catsNoSingles, nolabel
-		tab hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5cats, miss
+		generate hhRiskCatExp_5catsNoSingles=hhRiskCatExp_5cats
+		replace hhRiskCatExp_5catsNoSingles=. if hhRiskCatExp_5catsNoSingles==2
+		recode hhRiskCatExp_5catsNoSingles 1=1 3=2 4=3 5=4
+		label define hhRiskCatExp_5catsNoSingles  1 "Multiple 67+ year olds" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
+		label values hhRiskCatExp_5catsNoSingles hhRiskCatExp_5catsNoSingles
+		tab hhRiskCatExp_5catsNoSingles
+		tab hhRiskCatExp_5catsNoSingles, nolabel
+		tab hhRiskCatExp_5catsNoSingles hhRiskCatExp_5cats, miss
 		*next, create another one that doesn't have 67+ living alone OR multiple 67+ year olds
-		generate NoOnly67Plus=hhRiskCat67PLUS_5catsNoSingles
-		replace NoOnly67Plus=. if hhRiskCat67PLUS_5catsNoSingles==1
+		generate NoOnly67Plus=hhRiskCatExp_5catsNoSingles
+		replace NoOnly67Plus=. if hhRiskCatExp_5catsNoSingles==1
 		recode NoOnly67Plus 2=1 3=2 4=3
 		label define NoOnly67Plus  1 "67+ & 1 other gen" 2 "67+ & 2 other gens" 3 "67+ & 3 other gens"
 		label values NoOnly67Plus NoOnly67Plus
 		tab NoOnly67Plus
 		tab NoOnly67Plus, nolabel
-		tab NoOnly67Plus hhRiskCat67PLUS_5catsNoSingles, miss
+		tab NoOnly67Plus hhRiskCatExp_5catsNoSingles, miss
 		*next, repeat MV adjusted linear with these variables 
-		capture noisily stcox c.hhRiskCat67PLUS_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox c.hhRiskCatExp_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoSingles
 		capture noisily stcox c.NoOnly67Plus##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoOnly67Plus
 	}
 	else if "`dataset'"=="W2" {
 		*(1)MV adjusted (without household size)
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdj
 		*(2)MV adjusted with main exposure linear
-		capture noisily stcox c.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox c.hhRiskCatExp_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLin
 		*(3)MV adusted with main exposure linear, having dropped the 67+ living alone
 		*first, create a main exposure variable that doesn't have 67+ living alone (going to do this in the main analysis file)
-		generate hhRiskCat67PLUS_5catsNoSingles=hhRiskCat67PLUS_5cats
-		replace hhRiskCat67PLUS_5catsNoSingles=. if hhRiskCat67PLUS_5catsNoSingles==2
-		recode hhRiskCat67PLUS_5catsNoSingles 1=1 3=2 4=3 5=4
-		label define hhRiskCat67PLUS_5catsNoSingles  1 "Multiple 67+ year olds" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
-		label values hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5catsNoSingles
-		tab hhRiskCat67PLUS_5catsNoSingles
-		tab hhRiskCat67PLUS_5catsNoSingles, nolabel
-		tab hhRiskCat67PLUS_5catsNoSingles hhRiskCat67PLUS_5cats, miss
+		generate hhRiskCatExp_5catsNoSingles=hhRiskCatExp_5cats
+		replace hhRiskCatExp_5catsNoSingles=. if hhRiskCatExp_5catsNoSingles==2
+		recode hhRiskCatExp_5catsNoSingles 1=1 3=2 4=3 5=4
+		label define hhRiskCatExp_5catsNoSingles  1 "Multiple 67+ year olds" 2 "67+ & 1 other gen" 3 "67+ & 2 other gens" 4 "67+ & 3 other gens"
+		label values hhRiskCatExp_5catsNoSingles hhRiskCatExp_5catsNoSingles
+		tab hhRiskCatExp_5catsNoSingles
+		tab hhRiskCatExp_5catsNoSingles, nolabel
+		tab hhRiskCatExp_5catsNoSingles hhRiskCatExp_5cats, miss
 		*next, create another one that doesn't have 67+ living alone OR multiple 67+ year olds
-		generate NoOnly67Plus=hhRiskCat67PLUS_5catsNoSingles
-		replace NoOnly67Plus=. if hhRiskCat67PLUS_5catsNoSingles==1
+		generate NoOnly67Plus=hhRiskCatExp_5catsNoSingles
+		replace NoOnly67Plus=. if hhRiskCatExp_5catsNoSingles==1
 		recode NoOnly67Plus 2=1 3=2 4=3
 		label define NoOnly67Plus  1 "67+ & 1 other gen" 2 "67+ & 2 other gens" 3 "67+ & 3 other gens"
 		label values NoOnly67Plus NoOnly67Plus
 		tab NoOnly67Plus
 		tab NoOnly67Plus, nolabel
-		tab NoOnly67Plus hhRiskCat67PLUS_5catsNoSingles, miss
+		tab NoOnly67Plus hhRiskCatExp_5catsNoSingles, miss
 		*next, repeat MV adjusted linear with these variables 
-		capture noisily stcox c.hhRiskCat67PLUS_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox c.hhRiskCatExp_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoSingles
 		capture noisily stcox c.NoOnly67Plus##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoOnly67Plus
@@ -113,15 +113,15 @@ foreach outcome in covidHospOrDeath {
 	display "*************Ethnicity: 1************ "
 	estimates restore mvAdj
 	*(1) P-value for overall association of variable for white ethnicity
-	capture noisily testparm i.hhRiskCat67PLUS_5cats
+	capture noisily testparm i.hhRiskCatExp_5cats
 	*this is the linear hh lincom calculation one for when single category are still included
 	display "**HH Linear - incl singles:**"
 	estimates restore mvAdjHHLin
-	capture noisily lincom hhRiskCat67PLUS_5cats, eform
+	capture noisily lincom hhRiskCatExp_5cats, eform
 	*this is the linear hh lincom calculation one for when single category are DROPPED
 	display "**HH Linear - EXCL singles:**"
 	estimates restore mvAdjHHLinNoSingles
-	capture noisily lincom hhRiskCat67PLUS_5catsNoSingles, eform
+	capture noisily lincom hhRiskCatExp_5catsNoSingles, eform
 	*this is the linear hh lincom calculation one for when single and multi 67+ year old category are DROPPED
 	display "**HH Linear - EXCL singles and multi 67+:**"
 	estimates restore mvAdjHHLinNoOnly67Plus
@@ -130,28 +130,28 @@ foreach outcome in covidHospOrDeath {
 	forvalues e=2/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
 		*next line: commented out while testing testparm etc
-		*cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
-		*THIS CODE: outputs p-values for hhRiskCat67PLUS_5cats variable by each ethnicity (overall association or test for trend)
+		*cap noisily outputHRsforvar, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		*THIS CODE: outputs p-values for hhRiskCatExp_5cats variable by each ethnicity (overall association or test for trend)
 		*call estimates
 		estimates restore mvAdj
 		*(1) P-value for overall association of variable within category of ethnicity (I think this is right??)
-		capture noisily testparm i.hhRiskCat67PLUS_5cats#`e'.eth5
+		capture noisily testparm i.hhRiskCatExp_5cats#`e'.eth5
 		*(2) P-value for test for trend - I think I need to rerun the model with main exposure continous for this to work, then lincom this
 		*this is a check that I the new lincom calculation is correct
 		*create counter for main exposure category
-		sum hhRiskCat67PLUS_5cats
+		sum hhRiskCatExp_5cats
 		local maxHHRiskCat=r(max)
 		forvalues riskCat=1/`maxHHRiskCat' {
-			capture noisily lincom `riskCat'.hhRiskCat67PLUS_5cats + `riskCat'.hhRiskCat67PLUS_5cats#`e'.eth5, eform
+			capture noisily lincom `riskCat'.hhRiskCatExp_5cats + `riskCat'.hhRiskCatExp_5cats#`e'.eth5, eform
 		}
 		*this is the linear hh lincom calculation one for when single category are still included
 		display "**HH Linear - incl singles:**"
 		estimates restore mvAdjHHLin
-		capture noisily lincom hhRiskCat67PLUS_5cats + hhRiskCat67PLUS_5cats#`e'.eth5, eform
+		capture noisily lincom hhRiskCatExp_5cats + hhRiskCatExp_5cats#`e'.eth5, eform
 		*this is the linear hh lincom calculation one for when single category are DROPPED
 		display "**HH Linear - EXCL singles:**"
 		estimates restore mvAdjHHLinNoSingles
-		capture noisily lincom hhRiskCat67PLUS_5catsNoSingles + hhRiskCat67PLUS_5catsNoSingles#`e'.eth5, eform
+		capture noisily lincom hhRiskCatExp_5catsNoSingles + hhRiskCatExp_5catsNoSingles#`e'.eth5, eform
 		*this is the linear hh lincom calculation one for when single and multi 67+ year old category are DROPPED
 		display "**HH Linear - EXCL singles and multi 67+:**"
 		estimates restore mvAdjHHLinNoOnly67Plus
