@@ -96,7 +96,7 @@ foreach outcome in covidHospOrDeath {
 		*imd
 		cap noisily outputHRsforvar, variable(imd) catLabel(imd) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		*household composition
-		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		*hh size
 		cap noisily outputHRsforvar, variable(hh_total_cat) catLabel(hh_total_cat) min(1) max(3) ethnicity(`e') outcome(`outcome')
 		*comorbidities (for reference)
@@ -105,7 +105,7 @@ foreach outcome in covidHospOrDeath {
 		keep if imd==5
 		file write tablecontents "Results for IMD==5" _n
 		*household composition absolute rates where IMD category==5
-		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		*household size absolute rates where IMD category==5
 		cap noisily outputHRsforvar, variable(hh_total_cat) catLabel(hh_total_cat) min(1) max(3) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
