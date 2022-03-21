@@ -155,7 +155,7 @@ foreach outcome in covidHospOrDeath {
 		*this is the linear hh lincom calculation one for when single and multi 67+ year old category are DROPPED
 		display "**HH Linear - EXCL singles and multi 67+:**"
 		estimates restore mvAdjHHLinNoOnly67Plus
-		capture noisily lincom NoOnly67Plus, eform
+		capture noisily lincom NoOnly67Plus + NoOnly67Plus#`e'.eth5, eform
 	}
 	cap log close
 }
