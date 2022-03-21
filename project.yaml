@@ -544,6 +544,13 @@ actions:
         table3: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_W2.txt
         #table4: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_nonCovidDeath_W2.txt
 
+  19b_hhClassif_p-values_for_compSizeExp_covidHospOrDeath_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/19b_hhClassif_p-values_for_compSizeExp_covidHospOrDeath.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/19b_hhClassif_p-values_compSizeExp_covidHospOrDeath_W2.log
+
   20_hhClassif_an_testing_interactions:
     needs: [01_hhClassif_cr_analysis_dataset]
     run: stata-mp:latest analysis/20_hhClassif_an_testing_interactions.do MAIN
