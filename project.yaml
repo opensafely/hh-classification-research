@@ -674,16 +674,16 @@ actions:
     run: stata-mp:latest analysis/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS.do MAIN
     outputs:
       moderately_sensitive:
-        log: logs/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_nonCovidDeath_MAIN.log
-        table: output/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_nonCovidDeath_MAIN.txt
+        log: logs/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_*_MAIN.log
+        table: output/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_*_MAIN.txt
 
   22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
     run: stata-mp:latest analysis/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS.do W2
     outputs:
       moderately_sensitive:
-        log: logs/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_nonCovidDeath_W2.log
-        table: output/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_nonCovidDeath_W2.txt
+        log: logs/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_*_W2.log
+        table: output/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_*_W2.txt
 
 
   23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath:
