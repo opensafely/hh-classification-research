@@ -88,7 +88,7 @@ syntax, variable(varname) condition(string)
 	local lab: label `variable' `level'
 	file write tablecontent (" `lab'") _tab
 	
-	*local lab: label hhRiskCat67PLUS_5catsLabel 4
+	*local lab: label hhRiskCatExp_5catsLabel 4
 
 	
 	/*this is the overall column*/
@@ -100,9 +100,9 @@ syntax, variable(varname) condition(string)
 
 	/*this loops through groups*/
 	forvalues i=1/5{
-	cou if hhRiskCat67PLUS_5cats == `i'
+	cou if hhRiskCatExp_5cats == `i'
 	local rowdenom = r(N)
-	cou if hhRiskCat67PLUS_5cats == `i' & `variable' `condition'
+	cou if hhRiskCatExp_5cats == `i' & `variable' `condition'
 	local pct = 100*(r(N)/`rowdenom') 
 	*file write tablecontent %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
 	file write tablecontent %9.0f (r(N)) (" (") %3.1f (`pct') (")") _tab
@@ -127,9 +127,9 @@ syntax, variable(varname) condition(string)
 	file write tablecontent %9.0gc (`rowdenom')  (" (") %3.1f (`colpct') (")") _tab
 
 	forvalues i=1/5{
-	cou if hhRiskCat67PLUS_5cats == `i'
+	cou if hhRiskCatExp_5cats == `i'
 	local rowdenom = r(N)
-	cou if hhRiskCat67PLUS_5cats == `i' & `variable' `condition'
+	cou if hhRiskCatExp_5cats == `i' & `variable' `condition'
 	local pct = 100*(r(N)/`rowdenom') 
 	file write tablecontent %9.0gc (r(N)) (" (") %3.1f (`pct') (")") _tab
 	}
@@ -210,7 +210,7 @@ syntax, variable(varname)
 	file write tablecontent  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
 	
 	forvalues i=1/5{							
-	qui summarize `variable' if hhRiskCat67PLUS_5cats == `i', d
+	qui summarize `variable' if hhRiskCatExp_5cats == `i', d
 	file write tablecontent  %3.1f (r(mean)) (" (") %3.1f (r(sd)) (")") _tab
 	}
 
@@ -222,7 +222,7 @@ file write tablecontent _n
 	file write tablecontent %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
 	
 	forvalues i=1/5{
-	qui summarize `variable' if hhRiskCat67PLUS_5cats == `i', d
+	qui summarize `variable' if hhRiskCatExp_5cats == `i', d
 	file write tablecontent %3.1f (r(p50)) (" (") %3.1f (r(p25)) ("-") %3.1f (r(p75)) (")") _tab
 	}
 	
@@ -240,11 +240,11 @@ file write tablecontent ("Table 1: Demographic and Clinical Characteristics - `d
 
 * eth5 labelled columns *THESE WOULD BE HOUSEHOLD LABELS, eth5 is the equivqlent of the hh size variable
 
-local lab1: label hhRiskCat67PLUS_5cats 1
-local lab2: label hhRiskCat67PLUS_5cats 2
-local lab3: label hhRiskCat67PLUS_5cats 3
-local lab4: label hhRiskCat67PLUS_5cats 4
-local lab5: label hhRiskCat67PLUS_5cats 5
+local lab1: label hhRiskCatExp_5cats 1
+local lab2: label hhRiskCatExp_5cats 2
+local lab3: label hhRiskCatExp_5cats 3
+local lab4: label hhRiskCatExp_5cats 4
+local lab5: label hhRiskCatExp_5cats 5
 *local lab5: label eth5 5
 *local lab6: label eth5 6
 
