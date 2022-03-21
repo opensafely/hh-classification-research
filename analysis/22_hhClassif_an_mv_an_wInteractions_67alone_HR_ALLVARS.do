@@ -122,7 +122,7 @@ end
 *foreach outcome in covidDeath covidHosp nonCovidDeath nonCovidDeath {
 
 
-foreach outcome in nonCovidDeath {
+foreach outcome in covidHospOrDeath nonCovidDeath {
    
 	* Open a log file
 	capture log close
@@ -140,7 +140,7 @@ foreach outcome in nonCovidDeath {
 	
 	**REGRESSION**
 	*MV adjusted (without household size)
-	stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+	stcox i.hhRiskCatExp_5cats##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 	estimates store mvAdj
 	
 	*helper variables
@@ -168,16 +168,17 @@ foreach outcome in nonCovidDeath {
 			file write tablecontents "--Ethnicity: Other--" _n
 		}
 		*main exposure
-		cap noisily outputHRsforvarByEthnicity, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
-		*imd
+		*cap noisily outputHRsforvarByEthnicity, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		*imd - just this one for now, left code for others in case reviewers want them
 		cap noisily outputHRsforvarByEthnicity, variable(imd) catLabel(imd) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		*age
-		cap noisily outputHRsforvarByEthnicity, variable(ageCatfor67Plus) catLabel(ageCatfor67Plus) min(0) max(4) ethnicity(`e') outcome(`outcome')
+		*cap noisily outputHRsforvarByEthnicity, variable(ageCatfor67Plus) catLabel(ageCatfor67Plus) min(0) max(4) ethnicity(`e') outcome(`outcome')
 		*obesity
-		cap noisily outputHRsforvarByEthnicity, variable(obese4cat) catLabel(obese4cat) min(1) max(4) ethnicity(`e') outcome(`outcome')
+		*cap noisily outputHRsforvarByEthnicity, variable(obese4cat) catLabel(obese4cat) min(1) max(4) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 	}
 	
+	/*commented out for now, may need for reviewer's comments
 	file write tablecontents "VARIABLES THAT DO NOT INTERACT WITH ETHNICITY" _n
 	*then, output variables where there is no interaction by ethnicity
 	*rural urban
@@ -188,6 +189,7 @@ foreach outcome in nonCovidDeath {
 	cap noisily outputHRsforvar, variable(male) catLabel(male) min(0) max(1) outcome(`outcome')
 	*comorbidities
 	cap noisily outputHRsforvar, variable(coMorbCat) catLabel(coMorbCat) min(0) max(2) outcome(`outcome')
+	*/
 	
 	cap file close tablecontents 
 	cap log close
@@ -354,7 +356,7 @@ foreach outcome in nonCovidDeath {
 	forvalues e=1/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
 		display "`e'"
-		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 	}
 	
