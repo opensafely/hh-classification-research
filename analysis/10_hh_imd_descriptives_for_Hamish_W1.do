@@ -29,12 +29,16 @@ log using ./logs/10_hh_imd_descriptives_for_Hamish_W1.log, replace t
 use ./output/hhClassif_analysis_dataset_ageband_3MAIN.dta, clear //age 67+ only
 
 
-*Household composition by ethnic group and IMD quintile (Q1: most affluent, Q5: most deprived)
-tab eth5 hhRiskCat67PLUS_5cats if imd==1, row
+*% of hh category by region
+tab region hhRiskCatExp_5cats, row
 
-tab eth5 hhRiskCat67PLUS_5cats if imd==5, row
 
 log close
+
+*Household composition by ethnic group and IMD quintile (Q1: most affluent, Q5: most deprived)
+*tab eth5 hhRiskCat67PLUS_5cats if imd==1, row
+
+*tab eth5 hhRiskCat67PLUS_5cats if imd==5, row
 
 /*
 
