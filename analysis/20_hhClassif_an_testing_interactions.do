@@ -50,7 +50,7 @@ count
 
 
 
-
+/*commenting out while checking just the 04a analysis - interaction with age when only hhrisk interaction is included
 *FOR REFERENCE
 /*
 capture noisily stcox i.hhRiskCatExp_4cats##i.eth5 i.imd##i.eth5 i.smoke##i.eth5 i.obese4cat##i.eth5 i.hh_total_cat##i.eth5 i.rural_urbanFive##i.eth5 i.ageCatfor67Plus##i.eth5 i.male##i.eth5 i.coMorbCat##i.eth5, strata(utla_group) vce(cluster hh_id)
@@ -131,7 +131,7 @@ capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.imd##i.eth5 i.rural_urbanFi
 est store B
 display "***************LRT TEST: OBESITY (WITH HHRISKCAT IMD AND AGE INTERACTIONS)*****************"
 lrtest A B, force
-*/
+
 
 *quick test of p-value for non-COVID death for IMD
 
@@ -147,7 +147,19 @@ lrtest A B, force
 
 
 log close
+*/
 
+
+
+**(4)Testing interaction with AGE with only HHRisk interaction included, to see if I need to include an interaction with age in my W1 model
+capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
+est store A
+capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.imd i.rural_urbanFive i.smoke i.obese4cat i.male i.coMorbCat i.ageCatfor67Plus i.eth5, strata(utla_group) vce(cluster hh_id)
+est store B
+display "***************LRT TEST: AGE (WITH HHRISKCAT AND IMD INTERACTIONS))*****************"
+lrtest A B, force
+
+log close
 
 
 
