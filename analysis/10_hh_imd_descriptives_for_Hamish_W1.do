@@ -30,7 +30,7 @@ use ./output/hhClassif_analysis_dataset_ageband_3MAIN.dta, clear //age 67+ only
 
 
 *% of hh category by region
-tab region hhRiskCatExp_5cats, row
+safetab region hhRiskCatExp_5cats, row
 
 
 log close
