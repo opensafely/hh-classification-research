@@ -167,10 +167,10 @@ foreach outcome in nonCovidDeath  {
 			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store crude_`e'
 			*age-adjusted
-			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 i.ageCatfor67Plus, strata(utla_group) vce(cluster hh_id)
+			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 i.ageCatfor67Plus##i.eth5, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store ageAdj_`e'
 			*MV adjusted (without household size)
-			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+			capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 i.ageCatfor67Plus##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 			capture noisily estimates store mvAdj_`e'
 		}
 		else if "`dataset'"=="W2" {

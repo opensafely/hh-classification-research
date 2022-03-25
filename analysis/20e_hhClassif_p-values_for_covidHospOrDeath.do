@@ -43,10 +43,10 @@ foreach outcome in covidHospOrDeath {
 	if "`dataset'"=="MAIN" {
 		*crude (only utla matched)
 		*MV adjusted (without household size)
-		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.ageCatfor67Plus i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##i.eth5 i.ageCatfor67Plus##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdj
 		*(2)MV adjusted with main exposure linear
-		capture noisily stcox c.hhRiskCatExp_5cats##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox c.hhRiskCatExp_5cats##i.eth5 i.ageCatfor67Plus##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLin
 		*(3)MV adusted with main exposure linear, having dropped the 67+ living alone
 		*first, create a main exposure variable that doesn't have 67+ living alone (going to do this in the main analysis file)
@@ -68,9 +68,9 @@ foreach outcome in covidHospOrDeath {
 		tab NoOnly67Plus, nolabel
 		tab NoOnly67Plus hhRiskCatExp_5catsNoSingles, miss
 		*next, repeat MV adjusted linear with these variables 
-		capture noisily stcox c.hhRiskCatExp_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox c.hhRiskCatExp_5catsNoSingles##i.eth5 i.ageCatfor67Plus##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoSingles
-		capture noisily stcox c.NoOnly67Plus##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox c.NoOnly67Plus##i.eth5 i.ageCatfor67Plus##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoOnly67Plus
 	}
 	else if "`dataset'"=="W2" {
@@ -100,7 +100,7 @@ foreach outcome in covidHospOrDeath {
 		tab NoOnly67Plus, nolabel
 		tab NoOnly67Plus hhRiskCatExp_5catsNoSingles, miss
 		*next, repeat MV adjusted linear with these variables 
-		capture noisily stcox c.hhRiskCatExp_5catsNoSingles##i.eth5 i.imd i.obese4cat i.rural_urbanFive i.smoke i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox c.hhRiskCatExp_5catsNoSingles##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoSingles
 		capture noisily stcox c.NoOnly67Plus##i.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 		capture noisily estimates store mvAdjHHLinNoOnly67Plus
