@@ -117,7 +117,7 @@ foreach outcome in covidHospOrDeath {
 	
 	**REGRESSIONS**
 	*only need to do the regressions once, so putting that code here and editing the outputHRsforvar program accordingly
-	strate hhRiskCat67PLUS_5cats 
+	strate hhRiskCatExp_5cats 
 	
 	*MV adjusted (without household size)
 	*MV adjusted (with household size continuous)
@@ -131,7 +131,7 @@ foreach outcome in covidHospOrDeath {
 	local maxethnicity_16=r(max) 
 	
 	forvalues e=1/16 {
-		capture noisily stcox i.hhRiskCat67PLUS_5cats##ib`e'.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+		capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
 		estimates store mvAdj
 		if `e'==1 {
 			file write tablecontents "*******Ethnicity: British or Mixed British******" _n
@@ -181,7 +181,7 @@ foreach outcome in covidHospOrDeath {
 		else if `e'==16 {
 			file write tablecontents "*******Ethnicity: Other*******" _n
 		}
-		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 	}
 	
