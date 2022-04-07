@@ -104,7 +104,7 @@ foreach outcome in covidHospOrDeath {
 	*capture noisily stcox i.hhRiskCat67PLUS_5cats##i.eth5 $demogadjlistWInts i.hh_total_cat, strata(utla_group) vce(cluster hh_id)
 	*capture noisily estimates store mvAdjWHHSize	
 	
-	mi estimate, saving ("./output/MI_RESULTS", replace) dots eform: stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.obese2cat##i.eth5 i.ageCatfor67PlusTWOCATS##i.eth5 i.smoke i.rural_urbanFive i.male i.coMorbCat strata(utla_group) vce(cluster hh_id) nolog 
+	mi estimate, saving ("./output/MI_RESULTS", replace) dots eform: stcox i.hhRiskCat67PLUS_5cats##i.eth5 i.imd##i.eth5 i.obese2cat##i.eth5 i.ageCatfor67PlusTWOCATS##i.eth5 i.smoke i.rural_urbanFive i.male i.coMorbCat, strata(utla_group) vce(cluster hh_id) nolog 
 	
 	*helper variables
 	sum eth5
