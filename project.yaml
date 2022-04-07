@@ -751,6 +751,7 @@ actions:
     outputs:
       moderately_sensitive:
         log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2.log
+        table: output/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_W2.txt
 
 
   25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI:
