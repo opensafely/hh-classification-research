@@ -97,7 +97,7 @@ foreach outcome in covidHospOrDeath {
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
-	file write tablecontents _tab _tab ("MV adjusted - imputed"") _n
+	file write tablecontents _tab _tab ("MV adjusted - imputed") _n
 	
 	**REGRESSIONS**
 	*MV adjusted (with household size categorical)
