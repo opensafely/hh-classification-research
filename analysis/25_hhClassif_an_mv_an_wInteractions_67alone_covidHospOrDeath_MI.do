@@ -113,7 +113,7 @@ foreach outcome in covidHospOrDeath {
 	forvalues e=1/`maxEth5' {
 		display "*************Ethnicity: `e'************ "
 		display "`e'"
-		cap noisily outputHRsforvar, variable(hhRiskCatExp_5cats) catLabel(hhRiskCatExp_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
+		cap noisily outputHRsforvar, variable(hhRiskCat67PLUS_5cats) catLabel(hhRiskCat67PLUS_5cats) min(1) max(5) ethnicity(`e') outcome(`outcome')
 		file write tablecontents _n
 	}
 	
