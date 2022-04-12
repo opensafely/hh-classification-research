@@ -426,6 +426,12 @@ safecount
 
 
 
+*flag for percent tpp coverage
+generate tpp100Percent=0
+replace tpp100Percent=1 if percent_tpp==100
+la var tpp100Percent "Flags people in households that are 100% TPP (1=100% TPP)"
+tab tpp100Percent 
+
 
 *might need to 
 														
@@ -464,6 +470,17 @@ label define ageCatHHRisk 0 "0-17" 1 "18-29" 2 "30-66" 3 "67+"
 label values ageCatHHRisk ageCatHHRisk
 safetab ageCatHHRisk, miss
 la var ageCatHHRisk "Age categorised for HH risk analysis"
+
+*create another set of age bands for the "buffer" sensitivity analysis
+egen ageCatHHRiskBUFFER=cut(age), at (0, 18, 30, 60, 67, 200)
+*drops those aged 61-66 from the category below the 67+ year olds
+drop if ageCatHHRiskBUFFER==60
+recode ageCatHHRiskBUFFER 0=0 18=1 30=2 67=3
+label define ageCatHHRiskBUFFER 0 "0-17" 1 "18-29" 2 "30-60" 3 "67+"
+label values ageCatHHRiskBUFFER ageCatHHRiskBUFFER
+safetab ageCatHHRiskBUFFER, miss
+la var ageCatHHRiskBUFFER "Age categorised for HH risk analysis, including 61-66 Buffer"
+
 
 *make an age category variable here that is for table 1 of the 67+ year old analysis
 egen ageCatfor67Plus=cut(age), at (67, 70, 75, 80, 85, 200)
@@ -539,10 +556,6 @@ drop _merge
 safetab hhRiskCat, miss
 
 
-
-
-*missing here are likely to be people living in households made up of only under 18 year olds
-
 *9 category version
 generate hhRiskCatExp_9cats=.
 la var hhRiskCatExp_9cats "hhRiskCat for the over 67 year old age group"
@@ -573,6 +586,106 @@ replace hhRiskCatExp_5cats=5 if hhRiskCatExp_9cats==9
 label define hhRiskCatExp_5cats  1 "Multiple 67+ year olds" 2 "67+ living alone" 3 "67+ & 1 other gen" 4 "67+ & 2 other gens" 5 "67+ & 3 other gens"
 label values hhRiskCatExp_5cats hhRiskCatExp_5cats
 tab hhRiskCatExp_9cats hhRiskCatExp_5cats, miss
+
+
+*repeat this for the version with a BUFFER in it
+preserve
+	*keep only the variables I need to work this out
+	keep hh_id patient_id ageCatHHRiskBUFFER
+	sort hh_id ageCatHHRiskBUFFER
+
+	*mark whether hh has each age category using egen max which returns true (1) or false (0) (see https://www.stata.com/support/faqs/data-management/create-variable-recording/)
+	egen hasUnder18BUFFER=max(ageCatHHRiskBUFFER==0), by(hh_id)
+	egen has18_29BUFFER=max(ageCatHHRiskBUFFER==1), by(hh_id)
+	egen has30_60BUFFER=max(ageCatHHRiskBUFFER==2), by(hh_id)
+	egen has67PlusBUFFER=max(ageCatHHRiskBUFFER==3), by(hh_id)
+
+	*now generate the hhRiskCat variable for each person
+	generate hhRiskCatBUFFER=.
+	la var hhRiskCatBUFFER "Household risk category"
+	*Key:
+	/*test how to create a variable with the following categories:
+			1 SG1 - hh has only 18-29 year olds in it
+			2 SG2 - hh has only 30-66 year olds in it
+			3 SG3 - hh has only 67+ in it
+			4 2G1 - hh has 0-17 and 18-29 in it
+			5 2G2 - hh has 0-17 and 30-66 in it
+			6 2G3 - hh has 0-17 and 67+ in it
+			7 2G4 - hh has 18-29 and 67+ in it
+			8 2G5 - hh has 30-66 and 67+ in it
+			9 2G6 - hh has 18-29 and 67+ in it
+			10 MG1 - hh has 0-17, 18-29 and 30-66 in it
+			11 MG2 - hh has 0-17, 18-29 and 67+ in it
+			12 MG3 - hh has 0-17, 30-66 and 67+ in it
+			13 MG4 - hh has 18-29, 30-66 and 67+ in it
+			14 MG5 - hh has 0-17, 18-29, 30-66 and 67+ in it
+	*/
+	replace hhRiskCatBUFFER=0 if hasUnder18BUFFER==1 & has18_29BUFFER==0 & has30_60BUFFER==0 & has67PlusBUFFER==0
+	replace hhRiskCatBUFFER=1 if hasUnder18BUFFER==0 & has18_29BUFFER==1 & has30_60BUFFER==0 & has67PlusBUFFER==0
+	replace hhRiskCatBUFFER=2 if hasUnder18BUFFER==0 & has18_29BUFFER==0 & has30_60BUFFER==1 & has67PlusBUFFER==0
+	replace hhRiskCatBUFFER=3 if hasUnder18BUFFER==0 & has18_29BUFFER==0 & has30_60BUFFER==0 & has67PlusBUFFER==1
+	replace hhRiskCatBUFFER=4 if hasUnder18BUFFER==1 & has18_29BUFFER==1 & has30_60BUFFER==0 & has67PlusBUFFER==0
+	replace hhRiskCatBUFFER=5 if hasUnder18BUFFER==1 & has18_29BUFFER==0 & has30_60BUFFER==1 & has67PlusBUFFER==0
+	replace hhRiskCatBUFFER=6 if hasUnder18BUFFER==1 & has18_29BUFFER==0 & has30_60BUFFER==0 & has67PlusBUFFER==1
+	replace hhRiskCatBUFFER=7 if hasUnder18BUFFER==0 & has18_29BUFFER==1 & has30_60BUFFER==1 & has67PlusBUFFER==0
+	replace hhRiskCatBUFFER=8 if hasUnder18BUFFER==0 & has18_29BUFFER==1 & has30_60BUFFER==0 & has67PlusBUFFER==1
+	replace hhRiskCatBUFFER=9 if hasUnder18BUFFER==0 & has18_29BUFFER==0 & has30_60BUFFER==1 & has67PlusBUFFER==1
+	replace hhRiskCatBUFFER=10 if hasUnder18BUFFER==1 & has18_29BUFFER==1 & has30_60BUFFER==1 & has67PlusBUFFER==0
+	replace hhRiskCatBUFFER=11 if hasUnder18BUFFER==1 & has18_29BUFFER==1 & has30_60BUFFER==0 & has67PlusBUFFER==1
+	replace hhRiskCatBUFFER=12 if hasUnder18BUFFER==1 & has18_29BUFFER==0 & has30_60BUFFER==1 & has67PlusBUFFER==1
+	replace hhRiskCatBUFFER=13 if hasUnder18BUFFER==0 & has18_29BUFFER==1 & has30_60BUFFER==1 & has67PlusBUFFER==1
+	replace hhRiskCatBUFFER=14 if hasUnder18BUFFER==1 & has18_29BUFFER==1 & has30_60BUFFER==1 & has67PlusBUFFER==1
+	
+	*label variable
+	label define hhRiskCatBUFFER 0 "Only <18"  1 "Only 18-29" 2 "Only 30-60" 3 "Only 67+" 4 "0-17 & 18-29" 5 "0-17 & 30-60" 6 "0-17 & 67+" 7 "18-29 & 30-60" 8 "18-29 & 67+" 9 "30-60 & 67+" 10 "0-17, 18-29 & 30-60" 11 "0-17, 18-29 & 67+" 12 "0-17, 30-60 & 67+" 13 "18-29, 30-60 & 67+" 14 "0-17, 18-29, 30-60 & 67+"
+	label values hhRiskCatBUFFER hhRiskCatBUFFER
+	la var hhRiskCatBUFFER "Age group(s) of hh occupants"
+	safetab hhRiskCatBUFFER, miss
+	keep hh_id hhRiskCatBUFFER
+	duplicates drop hh_id, force
+	tempfile hhRiskCatBUFFER
+	save `hhRiskCatBUFFER', replace
+restore
+merge m:1 hh_id using `hhRiskCatBUFFER'
+drop _merge
+safetab hhRiskCatBUFFER, miss
+
+
+
+*missing here are likely to be people living in households made up of only under 18 year olds
+
+*9 category version with a BUFFER (for sensitivity analysis)
+generate hhRiskCatExp_9catsBUFFER=.
+la var hhRiskCatExp_9catsBUFFER "hhRiskCat for the over 67 year old age group with BUFFER"
+replace hhRiskCatExp_9catsBUFFER=2 if hhRiskCatBUFFER==3 & hh_size==1
+replace hhRiskCatExp_9catsBUFFER=1 if hhRiskCatBUFFER==3 & hhRiskCatExp_9catsBUFFER!=2
+replace hhRiskCatExp_9catsBUFFER=3 if hhRiskCatBUFFER==6
+replace hhRiskCatExp_9catsBUFFER=4 if hhRiskCatBUFFER==8
+replace hhRiskCatExp_9catsBUFFER=5 if hhRiskCatBUFFER==9
+replace hhRiskCatExp_9catsBUFFER=6 if hhRiskCatBUFFER==11
+replace hhRiskCatExp_9catsBUFFER=7 if hhRiskCatBUFFER==12
+replace hhRiskCatExp_9catsBUFFER=8 if hhRiskCatBUFFER==13
+replace hhRiskCatExp_9catsBUFFER=9 if hhRiskCatBUFFER==14
+*label variable
+label define hhRiskCatExp_9catsBUFFER 1 "Multiple 67+" 2 "67+ living alone" 3 "0-17 & 67+" 4 "18-29 & 67+" 5 "30-60 & 67+" 6 "0-17, 18-29 & 67+" 7 "0-17, 30-60 & 67+" 8 "18-29, 30-60 & 67+" 9 "0-17, 18-29, 30-60 & 67+"
+label values hhRiskCatExp_9catsBUFFER hhRiskCatExp_9catsBUFFER
+tab hhRiskCatExp_9catsBUFFER
+tab hhRiskCat hhRiskCatExp_9catsBUFFER, miss
+
+
+*5 category version WITH BUFFER (for sensitivity analysis)
+generate hhRiskCatExp_5catsBUFFER=.
+la var hhRiskCatExp_5catsBUFFER "hhRiskCat for the over 67 year old age group - 5 categories WITH BUFFER"
+replace hhRiskCatExp_5catsBUFFER=2 if hhRiskCatExp_9catsBUFFER==2
+replace hhRiskCatExp_5catsBUFFER=1 if hhRiskCatExp_9catsBUFFER==1
+replace hhRiskCatExp_5catsBUFFER=3 if hhRiskCatExp_9catsBUFFER>2 & hhRiskCatExp_9catsBUFFER<6
+replace hhRiskCatExp_5catsBUFFER=4 if hhRiskCatExp_9catsBUFFER>5 & hhRiskCatExp_9catsBUFFER<9
+replace hhRiskCatExp_5catsBUFFER=5 if hhRiskCatExp_9catsBUFFER==9
+*label variable
+label define hhRiskCatExp_5catsBUFFER  1 "Multiple 67+ year olds" 2 "67+ living alone" 3 "67+ & 1 other gen" 4 "67+ & 2 other gens" 5 "67+ & 3 other gens"
+label values hhRiskCatExp_5catsBUFFER hhRiskCatExp_5catsBUFFER
+tab hhRiskCatExp_9catsBUFFER hhRiskCatExp_5catsBUFFER, miss
+
 
 *check there are no impossible house sizes, particularly for the single generation houses
 *83 records have an impossible hh size for the smallest category (TPP variable measurement error), correct these here
@@ -809,7 +922,12 @@ recode  bmicat . = 4 if bmi<35
 recode  bmicat . = 5 if bmi<40
 recode  bmicat . = 6 if bmi<.
 
-*set obese to normal
+*create flag for those records where obese was missing
+generate missingBMI=0
+replace missingBMI=1 if bmi==.
+la var missingBMI "Person had missing BMI"
+
+*set missing to normal
 replace bmicat = 2 if bmi>=.
 
 label define bmicat 	1 "Underweight (<18.5)" 	///
@@ -882,6 +1000,15 @@ order obese4cat_sa, after(bmicat_sa)
 /*  Smoking  */
 
 * Smoking - need to set missing to never as per protocol
+*first, set a flag for missing for sensitivity analysis
+generate smokeMissing=0
+replace smokeMissing=1 if smoking_status == "M"
+replace smokeMissing=1 if smoking_status == ""
+la var smokeMissing "Person had smoking status missing (1=missing)"
+
+
+
+*then make change
 capture noisily label define smoke 1 "Never" 2 "Former" 3 "Current" .u "Unknown (.u)"
 
 gen     smoke = 1  if smoking_status == "N"
@@ -1636,7 +1763,7 @@ tab hhRiskCatExp_9cats hhRiskCatExp_5cats, miss
 *save for all ethnicities so that eth5 has a missing category
 preserve
 	*mkspline age = age, cubic nknots(4) - don't need splines as am including an interaction with age and too complicated to do this with age as a spline
-	keep stime_covidHospOrDeath covidHospOrDeathCase covidHospOrDeathCaseDate stime_covidHospCase covidHospCase covidHospCaseDate stime_covidDeathCase covidDeathCase covidDeathCaseDate stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group region hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size
+	keep stime_covidHospOrDeath covidHospOrDeathCase covidHospOrDeathCaseDate stime_covidHospCase covidHospCase covidHospCaseDate stime_covidDeathCase covidDeathCase covidDeathCaseDate stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group region hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size tpp100Percent hhRiskCatExp_5catsBUFFER missingBMI smokeMissing 
 	save ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, replace
 restore
 use ./output/hhClassif_analysis_dataset_with_missing_ethnicity_ageband_3`dataset'.dta, clear
@@ -1648,14 +1775,14 @@ tab eth5, miss
 *(1)**nonCovidDeath**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate  patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size
+keep stime_nonCOVIDDeathCase nonCOVIDDeathCase nonCOVIDDeathCaseDate  patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size tpp100Percent hhRiskCatExp_5catsBUFFER missingBMI smokeMissing 
 stset stime_nonCOVIDDeathCase, fail(nonCOVIDDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_nonCovidDeath_ageband_3`dataset'.dta, replace
 	
 *(2)**covidHospCase**
 * overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep stime_covidHospCase covidHospCase covidHospCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size
+keep stime_covidHospCase covidHospCase covidHospCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size tpp100Percent hhRiskCatExp_5catsBUFFER missingBMI smokeMissing 
 stset stime_covidHospCase, fail(covidHospCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3`dataset'.dta, replace
 
@@ -1663,7 +1790,7 @@ save ./output/hhClassif_analysis_dataset_STSET_covidHosp_ageband_3`dataset'.dta,
 *(3)**covidDeath**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep stime_covidDeathCase covidDeathCase covidDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size
+keep stime_covidDeathCase covidDeathCase covidDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats HHRiskCatCOMPandSIZEBROAD hh_size tpp100Percent hhRiskCatExp_5catsBUFFER missingBMI smokeMissing 
 stset stime_covidDeathCase, fail(covidDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta, replace
 
@@ -1671,7 +1798,7 @@ save ./output/hhClassif_analysis_dataset_STSET_covidDeath_ageband_3`dataset'.dta
 *(4)**covidHospOrDeathCase**
 *overall
 use ./output/hhClassif_analysis_dataset_ageband_3`dataset', clear
-keep stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats  HHRiskCatCOMPandSIZEBROAD hh_size
+keep stime_covidHospOrDeathCase covidHospOrDeathCase covidHospOrDeathCaseDate patient_id eth5 eth16 ethnicity_16 enter_date imd smoke obese4cat rural_urbanFive ageCatfor67Plus male coMorbCat utla_group hh_id hh_total_cat hh_total_4cats hh_total_5cats hhRiskCatExp_5cats hhRiskCatExp_9cats  HHRiskCatCOMPandSIZEBROAD hh_size tpp100Percent hhRiskCatExp_5catsBUFFER missingBMI smokeMissing 
 stset stime_covidHospOrDeathCase, fail(covidHospOrDeathCase) id(patient_id) enter(enter_date) origin(enter_date)
 save ./output/hhClassif_analysis_dataset_STSET_covidHospOrDeath_ageband_3`dataset'.dta, replace
 
