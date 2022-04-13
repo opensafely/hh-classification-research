@@ -605,6 +605,28 @@ actions:
         log: logs/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_W2.log
         table: output/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_W2.txt
 
+  20a_PROPHAZARDS:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/20a_PROPHAZARDS.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/20a_PROPHAZARDS_*_MAIN.log
+        table: output/20a_PROPHAZARDS_*_MAIN.txt
+        graph0: output/Kaplin_Meier_*_MAIN.svg
+        graph1: output/schoenplot_*_univariable_cat_*_MAIN.svg
+        graph2: output/schoenplot_*_multivariable_cat_*_MAIN.svg
+
+  20a_PROPHAZARDS_W2:
+    needs: [01_hhClassif_cr_analysis_dataset_W2]
+    run: stata-mp:latest analysis/20a_PROPHAZARDS.do W2
+    outputs:
+      moderately_sensitive:
+        log: logs/20a_PROPHAZARDS_*_W2.log
+        table: output/20a_PROPHAZARDS_*_W2.txt
+        graph0: output/Kaplin_Meier_*_W2.svg
+        graph1: output/schoenplot_*_univariable_cat_*_W2.svg
+        graph2: output/schoenplot_*_multivariable_cat_*_W2.svg
+
   20b_hhClassif_an_mv_an_wInteractions_67alone_HR_covidDeath:
     needs: [01_hhClassif_cr_analysis_dataset]
     run: stata-mp:latest analysis/20b_hhClassif_an_mv_an_wInteractions_67alone_HR_covidDeath.do MAIN
