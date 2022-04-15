@@ -118,21 +118,15 @@ foreach outcome in covidHospOrDeath {
 	**REGRESSIONS**
 	*only need to do the regressions once, so putting that code here and editing the outputHRsforvar program accordingly
 	strate hhRiskCatExp_5cats 
-	
-	*MV adjusted (without household size)
-	*MV adjusted (with household size continuous)
-	/*
-	capture noisily stcox i.`variable' $demogadjlist $comorbidadjlist i.imd i.hh_size, strata(utla_group) vce(cluster hh_id)
-	capture noisily estimates store mvAdjWHHSizeCONT
-	*/
+
+	capture noisily stcox i.hhRiskCatExp_5cats##i.ethnicity_16 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
+	estimates store mvAdj
 	
 	*helper variables
 	sum ethnicity_16
 	local maxethnicity_16=r(max) 
 	
 	forvalues e=1/16 {
-		capture noisily stcox i.hhRiskCatExp_5cats##ib`e'.eth5 $demogadjlistWInts, strata(utla_group) vce(cluster hh_id)
-		estimates store mvAdj
 		if `e'==1 {
 			file write tablecontents "*******Ethnicity: British or Mixed British******" _n
 		}
