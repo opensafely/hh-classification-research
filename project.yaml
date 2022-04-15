@@ -581,6 +581,14 @@ actions:
         log: logs/20a_hhClassif_an_mv_an_wInteractions_67alone_HR_covidHospOrDeath_W2.log
         table: output/20a_hhClassif_an_mv_an_wInteractions_67alone_HR_covidHospOrDeath_W2.txt
 
+  20a_SENS_TPP100:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/20a_SENS_TPP100.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/20a_SENS_TPP100_covidHospOrDeath_MAIN.log
+        table: output/20a_SENS_TPP100_covidHospOrDeath_MAIN.txt
+
   20a_SENS_TPP100_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
     run: stata-mp:latest analysis/20a_SENS_TPP100.do W2
@@ -589,6 +597,14 @@ actions:
         log: logs/20a_SENS_TPP100_covidHospOrDeath_W2.log
         table: output/20a_SENS_TPP100_covidHospOrDeath_W2.txt
 
+  20a_SENS_BUFFER:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/20a_SENS_BUFFER.do
+    outputs:
+      moderately_sensitive:
+        log: logs/20a_SENS_BUFFER_covidHospOrDeath_MAIN.log
+        table: output/20a_SENS_BUFFER_covidHospOrDeath_MAIN.txt
+
   20a_SENS_BUFFER_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
     run: stata-mp:latest analysis/20a_SENS_BUFFER.do W2
@@ -596,6 +612,14 @@ actions:
       moderately_sensitive:
         log: logs/20a_SENS_BUFFER_covidHospOrDeath_W2.log
         table: output/20a_SENS_BUFFER_covidHospOrDeath_W2.txt
+
+  20a_SENS_SMOKEBMICOMPLETECASE:
+    needs: [01_hhClassif_cr_analysis_dataset]
+    run: stata-mp:latest analysis/20a_SENS_SMOKEBMICOMPLETECASE.do MAIN
+    outputs:
+      moderately_sensitive:
+        log: logs/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_MAIN.log
+        table: output/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_MAIN.txt
 
   20a_SENS_SMOKEBMICOMPLETECASE_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
