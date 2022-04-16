@@ -599,7 +599,7 @@ actions:
 
   20a_SENS_BUFFER:
     needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/20a_SENS_BUFFER.do
+    run: stata-mp:latest analysis/20a_SENS_BUFFER.do MAIN
     outputs:
       moderately_sensitive:
         log: logs/20a_SENS_BUFFER_covidHospOrDeath_MAIN.log
