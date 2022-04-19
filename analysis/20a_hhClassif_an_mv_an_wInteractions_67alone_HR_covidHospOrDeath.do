@@ -155,7 +155,7 @@ foreach outcome in covidHospOrDeath  {
 	
 	*write table title and column headers
 	file write tablecontents "Wave: `dataset', Outcome: `outcome'" _n
-	file write tablecontents _tab _tab ("N (%)") _tab ("Events") _tab ("Person years follow up") _tab ("Rate (per 100 000 person years)") _tab ("Crude") _tab ("Age adjusted") _tab ("MV adjusted") _n
+	file write tablecontents _tab _tab ("MV adjusted - MI") _n
 	
 	**REGRESSIONS**
 	*only need to do the regressions once, so putting that code here and editing the outputHRsforvar program accordingly

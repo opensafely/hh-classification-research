@@ -61,7 +61,7 @@ assert age >= 18
 assert age <= 110
  
 * INCLUSION 2: M or F gender at 1 March 2020 
-assert inlist(sex, 1, 2)
+assert inlist(male, 0, 1)
 
 * EXCLUDE 1:  MISSING IMD
 assert inlist(imd, 1, 2, 3, 4, 5, .u)
@@ -75,21 +75,17 @@ datacheck inlist(hh_size, 1, 2, 3, 4, 5,6, 7, 8, 9, 10, 11, 12 .u), nol
 *hhRiskCat (the generic starting variable)
 datacheck hhRiskCat<., nol
 datacheck inlist(hhRiskCat, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14), nol
-*hhRiskCatBROAD
-datacheck inlist(hhRiskCatBROAD, 1, 2, 3, .), nol
-*hhRiskCat67PLUS
-datacheck inlist(hhRiskCat67PLUS, 1, 2, 3, 4, 5, 6, 7, 8, .), nol
-*hhRiskCat33TO66
-datacheck inlist(hhRiskCat33TO66, 1, 2, 3, 4, 5, 6, 7, 8, .), nol
-*hhRiskCat18TO29
-datacheck inlist(hhRiskCat18TO29, 1, 2, 3, 4, 5, 6, 7, 8, .), nol
+*hhRiskCatExp_5cats
+datacheck hhRiskCatExp_5cats<., nol
+datacheck inlist(hhRiskCat, 1, 2, 3, 4, 5), nol
+
 
 * Age
 datacheck age<., nol
 datacheck inlist(ageCatHHRisk, 0, 1, 2, 3), nol
 
 * Sex
-datacheck inlist(sex, 1, 2), nol
+datacheck inlist(male, 0, 1), nol
 
 * BMI 
 datacheck inlist(obese4cat, 1, 2, 3, 4), nol
@@ -106,29 +102,8 @@ datacheck inlist(eth5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, .)
 
 * Smoking
 datacheck inlist(smoke, 1, 2, 3, 4), nol
-datacheck inlist(smoke_nomiss, 1, 2, 3), nol 
+datacheck inlist(smoke, 1, 2, 3), nol 
 
-
-* Check date ranges for all comorbidities
-/*
-foreach var of varlist  chronic_respiratory_disease 	///
-					asthma		///
-					chronic_cardiac_disease  		///
-					dm  			///
-					cancer_nonhaemPrevYear ///
-					cancer_haemPrev5Years				///
-					chronic_liver_disease  ///
-					stroke_dementia  ///
-					egfr60  			/// 
-					organ_transplant  			/// 
-					asplenia			 	///
-					other_immuno			 	///
-					{
-						
-	summ `var'_date, format
-
-}
-*/
 
 foreach comorb in $varlist { 
 
@@ -188,9 +163,8 @@ summ study_end_censor, format
 
 *HH variables
 safetab hhRiskCat hh_total_cat
-safetab hhRiskCat67PLUS hh_total_cat
-safetab hhRiskCat33TO66 hh_total_cat
-safetab hhRiskCat18TO29 hh_total_cat
+safetab hhRiskCatExp_5cats hh_total_cat
+
 
 * BMI
 bysort bmicat: summ bmi
@@ -201,7 +175,7 @@ safetab bmicat obese4cat, m
 *safetab ageCatHHRisk age66, m
 
 * Smoking
-safetab smoke smoke_nomiss, m
+safetab smoke, m
 
 * Diabetes
 *safetab diabcat diabetes, m

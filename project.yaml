@@ -48,25 +48,24 @@ actions:
       moderately_sensitive:
         log: logs/01_hhClassif_cr_analysis_dataset_W2.log
 
+  # 01b_hhClassif_cr_imputed_datasets:
+  #  run: stata-mp:latest analysis/01b_hhClassif_cr_imputed_datasets.do MAIN
+  #  needs: [01_hhClassif_cr_analysis_dataset]
+  #  outputs:
+  #    highly_sensitive:
+  #      imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_*_STSET_*_MAIN.dta
+  #    moderately_sensitive:
+  #      logs: logs/01b_hhClassif_imputed_datasets_MAIN.log
 
-  01b_hhClassif_cr_imputed_datasets:
-    run: stata-mp:latest analysis/01b_hhClassif_cr_imputed_datasets.do MAIN
-    needs: [01_hhClassif_cr_analysis_dataset]
-    outputs:
-      highly_sensitive:
-        imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_*_STSET_*_MAIN.dta
-      moderately_sensitive:
-        log: logs/01b_hhClassif_imputed_datasets_MAIN.log
 
-
-  01b_hhClassif_cr_imputed_datasets_W2:
-    run: stata-mp:latest analysis/01b_hhClassif_cr_imputed_datasets.do W2
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    outputs:
-      highly_sensitive:
-        imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_*_STSET_*_W2.dta
-      moderately_sensitive:
-        log: logs/01b_hhClassif_imputed_datasets_W2.log
+  # 01b_hhClassif_cr_imputed_datasets_W2:
+  #  run: stata-mp:latest analysis/01b_hhClassif_cr_imputed_datasets.do W2
+  #  needs: [01_hhClassif_cr_analysis_dataset_W2]
+  #  outputs:
+  #    highly_sensitive:
+  #      imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_*_STSET_*_W2.dta
+  #    moderately_sensitive:
+  #      log: logs/01b_hhClassif_imputed_datasets_W2.log
 
   02_hhClassif_an_data_checks:
     run: stata-mp:latest analysis/02_hhClassif_an_data_checks.do MAIN
@@ -157,7 +156,6 @@ actions:
         tableTxt: output/table1_hhClassifMAIN.txt
         # log: logs/03e_hhClassif_hhComp_vs_hhSize_MAIN.log
        
-
   03e_hhClassif_an_descriptive_table_1_W2:
     run: stata-mp:latest analysis/03e_hhClassif_an_descriptive_table_1.do W2
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -166,82 +164,6 @@ actions:
         log: logs/03e_hhClassif_an_descriptive_table_1_W2.log
         tableTxt: output/table1_hhClassifW2.txt
         # log: logs/03e_hhClassif_hhComp_vs_hhSize_W2.log
-      
-
-  03f_hhClassif_an_descriptive_table_1_sepEthnicities:
-    run: stata-mp:latest analysis/03f_hhClassif_an_descriptive_table_1_sepEthnicities.do MAIN
-    needs: [01_hhClassif_cr_analysis_dataset]
-    outputs:
-      moderately_sensitive:
-        log: logs/03f_hhClassif_an_descriptive_table_1_sepEthnicities_MAIN.log
-        tableTxt: output/table1_hhClassif_byEthnicityMAIN.txt
-      
-
-  03f_hhClassif_an_descriptive_table_1_sepEthnicities_W2:
-    run: stata-mp:latest analysis/03f_hhClassif_an_descriptive_table_1_sepEthnicities.do W2
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    outputs:
-      moderately_sensitive:
-        log: logs/03f_hhClassif_an_descriptive_table_1_sepEthnicities_W2.log
-        tableTxt: output/table1_hhClassif_byEthnicityW2.txt
-
-  08_hhClassif_an_mv_analysis_perEth5Group_HR_table:
-    needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/08_hhClassif_an_mv_analysis_perEth5Group_HR_table.do MAIN
-    outputs:
-      moderately_sensitive:
-        log1: logs/08_hhClassif_tablecontent_HRtable_covidDeath_MAIN.log
-        log2: logs/08_hhClassif_tablecontent_HRtable_covidHosp_MAIN.log
-        log3: logs/08_hhClassif_tablecontent_HRtable_covidHospOrDeath_MAIN.log
-        log4: logs/08_hhClassif_tablecontent_HRtable_nonCovidDeath_MAIN.log
-        table1: output/hhClassif_tablecontents_HRtable_covidDeath_MAIN.txt
-        table2: output/hhClassif_tablecontents_HRtable_covidHosp_MAIN.txt
-        table3: output/hhClassif_tablecontents_HRtable_covidHospOrDeath_MAIN.txt
-        table4: output/hhClassif_tablecontents_HRtable_nonCovidDeath_MAIN.txt
-
-
-  08_hhClassif_an_mv_analysis_perEth5Group_HR_table_W2:
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    run: stata-mp:latest analysis/08_hhClassif_an_mv_analysis_perEth5Group_HR_table.do W2
-    outputs:
-      moderately_sensitive:
-        log1: logs/08_hhClassif_tablecontent_HRtable_covidDeath_W2.log
-        log2: logs/08_hhClassif_tablecontent_HRtable_covidHosp_W2.log
-        log3: logs/08_hhClassif_tablecontent_HRtable_covidHospOrDeath_W2.log
-        log4: logs/08_hhClassif_tablecontent_HRtable_nonCovidDeath_W2.log
-        table1: output/hhClassif_tablecontents_HRtable_covidDeath_W2.txt
-        table2: output/hhClassif_tablecontents_HRtable_covidHosp_W2.txt
-        table3: output/hhClassif_tablecontents_HRtable_covidHospOrDeath_W2.txt
-        table4: output/hhClassif_tablecontents_HRtable_nonCovidDeath_W2.txt
-
-  09_hhClassif_an_mv_analysis_perEth16Group_HR_table:
-    needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/09_hhClassif_an_mv_analysis_perEth16Group_HR_table.do MAIN
-    outputs:
-      moderately_sensitive:
-        # log1: logs/09_hhClassif_tablecontent_HRtable_eth16_covidDeath_MAIN.log
-        # log2: logs/09_hhClassif_tablecontent_HRtable_eth16_covidHosp_MAIN.log
-        log3: logs/09_hhClassif_tablecontent_HRtable_eth16_covidHospOrDeath_MAIN.log
-        # log4: logs/09_hhClassif_tablecontent_HRtable_eth16_nonCovidDeath_MAIN.log
-        # table1: output/hhClassif_tablecontents_HRtable_eth16_covidDeath_MAIN.txt
-        # table2: output/hhClassif_tablecontents_HRtable_eth16_covidHosp_MAIN.txt
-        table3: output/hhClassif_tablecontents_HRtable_eth16_covidHospOrDeath_MAIN.txt
-        # table4: output/hhClassif_tablecontents_HRtable_eth16_nonCovidDeath_MAIN.txt
-
-
-  09_hhClassif_an_mv_analysis_perEth16Group_HR_table_W2:
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    run: stata-mp:latest analysis/09_hhClassif_an_mv_analysis_perEth16Group_HR_table.do W2
-    outputs:
-      moderately_sensitive:
-        # log1: logs/09_hhClassif_tablecontent_HRtable_eth16_covidDeath_W2.log
-        # log2: logs/09_hhClassif_tablecontent_HRtable_eth16_covidHosp_W2.log
-        log3: logs/09_hhClassif_tablecontent_HRtable_eth16_covidHospOrDeath_W2.log
-        # log4: logs/09_hhClassif_tablecontent_HRtable_eth16_nonCovidDeath_W2.log
-        # table1: output/hhClassif_tablecontents_HRtable_eth16_covidDeath_W2.txt
-        # table2: output/hhClassif_tablecontents_HRtable_eth16_covidHosp_W2.txt
-        table3: output/hhClassif_tablecontents_HRtable_eth16_covidHospOrDeath_W2.txt
-        # table4: output/hhClassif_tablecontents_HRtable_eth16_nonCovidDeath_W2.txt
 
   10_hh_imd_descriptives_for_Hamish_W1:
     needs: [01_hhClassif_cr_analysis_dataset]
@@ -250,28 +172,6 @@ actions:
       moderately_sensitive:
         log: logs/10_hh_imd_descriptives_for_Hamish_W1.log
         # table: output/table_ethnicity_descriptivesMAIN.txt
-
-  12_hhClassif_an_MV_analysis_W_SA_multipleInteractions:
-    needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/12_hhClassif_an_MV_analysis_W_SA_multipleInteractions.do MAIN
-    outputs:
-      moderately_sensitive:
-        log: logs/12_hhClassif_an_MV_analysis_W_SA_multipleinteractions_MAIN.log
-
-
-  19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table:
-    needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table.do MAIN
-    outputs:
-      moderately_sensitive:
-        log1: logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidDeath_MAIN.log
-        log2: logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHosp_MAIN.log
-        log3: logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_MAIN.log
-        log4: logs/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_nonCovidDeath_MAIN.log
-        table1: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidDeath_MAIN.txt
-        table2: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHosp_MAIN.txt
-        table3: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_covidHospOrDeath_MAIN.txt
-        table4: output/19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_nonCovidDeath_MAIN.txt
 
   19_hhClassifCompSizeExp_an_mv_analysis_perEth5_HR_table_W2:
     needs: [01_hhClassif_cr_analysis_dataset_W2]
@@ -324,53 +224,53 @@ actions:
         log: logs/20a_hhClassif_an_mv_an_wInteractions_67alone_HR_covidHospOrDeath_W2.log
         table: output/20a_hhClassif_an_mv_an_wInteractions_67alone_HR_covidHospOrDeath_W2.txt
 
-  20a_SENS_TPP100:
-    needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/20a_SENS_TPP100.do MAIN
-    outputs:
-      moderately_sensitive:
-        log: logs/20a_SENS_TPP100_covidHospOrDeath_MAIN.log
-        table: output/20a_SENS_TPP100_covidHospOrDeath_MAIN.txt
+  # 20a_SENS_TPP100:
+  #  needs: [01_hhClassif_cr_analysis_dataset]
+  #  run: stata-mp:latest analysis/20a_SENS_TPP100.do MAIN
+  # outputs:
+  #    moderately_sensitive:
+  #     log: logs/20a_SENS_TPP100_covidHospOrDeath_MAIN.log
+  #      table: output/20a_SENS_TPP100_covidHospOrDeath_MAIN.txt
 
-  20a_SENS_TPP100_W2:
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    run: stata-mp:latest analysis/20a_SENS_TPP100.do W2
-    outputs:
-      moderately_sensitive:
-        log: logs/20a_SENS_TPP100_covidHospOrDeath_W2.log
-        table: output/20a_SENS_TPP100_covidHospOrDeath_W2.txt
+  # 20a_SENS_TPP100_W2:
+  #  needs: [01_hhClassif_cr_analysis_dataset_W2]
+  #  run: stata-mp:latest analysis/20a_SENS_TPP100.do W2
+  #  outputs:
+  #    moderately_sensitive:
+  #      log: logs/20a_SENS_TPP100_covidHospOrDeath_W2.log
+  #      table: output/20a_SENS_TPP100_covidHospOrDeath_W2.txt
 
-  20a_SENS_BUFFER:
-    needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/20a_SENS_BUFFER.do MAIN
-    outputs:
-      moderately_sensitive:
-        log: logs/20a_SENS_BUFFER_covidHospOrDeath_MAIN.log
-        table: output/20a_SENS_BUFFER_covidHospOrDeath_MAIN.txt
+  # 20a_SENS_BUFFER:
+  #  needs: [01_hhClassif_cr_analysis_dataset]
+  #  run: stata-mp:latest analysis/20a_SENS_BUFFER.do MAIN
+  #  outputs:
+  #    moderately_sensitive:
+  #      log: logs/20a_SENS_BUFFER_covidHospOrDeath_MAIN.log
+  #      table: output/20a_SENS_BUFFER_covidHospOrDeath_MAIN.txt
 
-  20a_SENS_BUFFER_W2:
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    run: stata-mp:latest analysis/20a_SENS_BUFFER.do W2
-    outputs:
-      moderately_sensitive:
-        log: logs/20a_SENS_BUFFER_covidHospOrDeath_W2.log
-        table: output/20a_SENS_BUFFER_covidHospOrDeath_W2.txt
+  # 20a_SENS_BUFFER_W2:
+  #  needs: [01_hhClassif_cr_analysis_dataset_W2]
+  #  run: stata-mp:latest analysis/20a_SENS_BUFFER.do W2
+  #  outputs:
+  #    moderately_sensitive:
+  #      log: logs/20a_SENS_BUFFER_covidHospOrDeath_W2.log
+  #      table: output/20a_SENS_BUFFER_covidHospOrDeath_W2.txt
 
-  20a_SENS_SMOKEBMICOMPLETECASE:
-    needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/20a_SENS_SMOKEBMICOMPLETECASE.do MAIN
-    outputs:
-      moderately_sensitive:
-        log: logs/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_MAIN.log
-        table: output/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_MAIN.txt
+  # 20a_SENS_SMOKEBMICOMPLETECASE:
+  #  needs: [01_hhClassif_cr_analysis_dataset]
+  #  run: stata-mp:latest analysis/20a_SENS_SMOKEBMICOMPLETECASE.do MAIN
+  #  outputs:
+  #    moderately_sensitive:
+  #      log: logs/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_MAIN.log
+  #      table: output/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_MAIN.txt
 
-  20a_SENS_SMOKEBMICOMPLETECASE_W2:
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    run: stata-mp:latest analysis/20a_SENS_SMOKEBMICOMPLETECASE.do W2
-    outputs:
-      moderately_sensitive:
-        log: logs/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_W2.log
-        table: output/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_W2.txt
+  # 20a_SENS_SMOKEBMICOMPLETECASE_W2:
+  #  needs: [01_hhClassif_cr_analysis_dataset_W2]
+  #  run: stata-mp:latest analysis/20a_SENS_SMOKEBMICOMPLETECASE.do W2
+  #  outputs:
+  #    moderately_sensitive:
+  #      log: logs/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_W2.log
+  #      table: output/20a_SENS_SMOKEBMICOMPLETECASE_covidHospOrDeath_W2.txt
 
   20a_PROPHAZARDS:
     needs: [01_hhClassif_cr_analysis_dataset]
@@ -506,22 +406,22 @@ actions:
         table: output/22_hhClassif_an_mv_an_wInteractions_67alone_HR_ALLVARS_*_W2.txt
 
 
-  23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath:
-    needs: [01_hhClassif_cr_analysis_dataset]
-    run: stata-mp:latest analysis/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath.do MAIN
-    outputs:
-      moderately_sensitive:
-        log: logs/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_MAIN.log
-        table: output/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_MAIN.txt
+  # 23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath:
+  #   needs: [01_hhClassif_cr_analysis_dataset]
+  #   run: stata-mp:latest analysis/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath.do MAIN
+  #   outputs:
+  #     moderately_sensitive:
+  #       log: logs/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_MAIN.log
+  #       table: output/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_MAIN.txt
 
 
-  23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_W2:
-    needs: [01_hhClassif_cr_analysis_dataset_W2]
-    run: stata-mp:latest analysis/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath.do W2
-    outputs:
-      moderately_sensitive:
-        log: logs/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_W2.log
-        table: output/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_W2.txt
+  # 23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_W2:
+  #   needs: [01_hhClassif_cr_analysis_dataset_W2]
+  #   run: stata-mp:latest analysis/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath.do W2
+  #  outputs:
+  #     moderately_sensitive:
+  #       log: logs/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_W2.log
+  #       table: output/23_hhClassif_an_mv_analysis_ethnicity_16wInteractions_67alone_HR_covidHospOrDeath_W2.txt
 
   24_hhClassif_an_AbsoluteRatesKeyVars:
     needs: [01_hhClassif_cr_analysis_dataset]
@@ -551,29 +451,20 @@ actions:
         table3: output/24_hhClassif_an_AbsoluteRatesKeyVars_covidHospOrDeath_W2.txt
         # table4: output/11b_hhClassif_tablecontents_HRtable_3CATSFULLMVtableAGECATS_nonCovidDeath_W2.txt
 
-  25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI:
-    needs: [01b_hhClassif_cr_imputed_datasets]
-    run: stata-mp:latest analysis/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do MAIN
-    outputs:
-      moderately_sensitive:
-        log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.log
+  # 25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI:
+  #   needs: [01b_hhClassif_cr_imputed_datasets]
+  #   run: stata-mp:latest analysis/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do MAIN
+  #   outputs:
+  #     moderately_sensitive:
+  #       log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.log
 
-  25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2:
-    needs: [01b_hhClassif_cr_imputed_datasets_W2]
-    run: stata-mp:latest analysis/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do W2
-    outputs:
-      moderately_sensitive:
-        log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2.log
-        table: output/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_W2.txt
-
-
-  25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI:
-    needs: [01bDUMMYONLY_hhClassif_cr_imputed_datasets]
-    run: stata-mp:latest analysis/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do MAIN
-    outputs:
-      moderately_sensitive:
-        log: logs/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MAIN.log
-        table: output/25DUMMYONLY_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MAIN.txt
+  # 25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2:
+  #   needs: [01b_hhClassif_cr_imputed_datasets_W2]
+  #   run: stata-mp:latest analysis/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do W2
+  #   outputs:
+  #     moderately_sensitive:
+  #       log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2.log
+  #       table: output/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_W2.txt
 
 
   26_hhClassif_an_mv_an_wInteractions_9categories_HR_covidHospOrDeath:
