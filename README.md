@@ -1,8 +1,6 @@
-# OpenSAFELY Research Template
+# Household composition and risk of severe COVID-19 
 
 This is a study looking at the association between generational composition of a household and risk of severe COVID-19 in older people by ethnicity. 
-
-# Household composition and risk of severe COVID-19 
 
 This is the code and configuration for our paper, _name goes here_
 
