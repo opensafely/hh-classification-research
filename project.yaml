@@ -65,7 +65,7 @@ actions:
   #    highly_sensitive:
   #      imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_*_STSET_*_W2.dta
   #    moderately_sensitive:
-  #      log: logs/01b_hhClassif_imputed_datasets_W2.log
+  #      logs: logs/01b_hhClassif_imputed_datasets_W2.log
 
   02_hhClassif_an_data_checks:
     run: stata-mp:latest analysis/02_hhClassif_an_data_checks.do MAIN
