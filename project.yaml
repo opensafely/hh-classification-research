@@ -424,7 +424,7 @@ actions:
   #   run: stata-mp:latest analysis/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI.do MAIN
   #   outputs:
   #     moderately_sensitive:
-  #       log: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.log
+  #       logs: logs/25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_MAIN.log
 
   # 25_hhClassif_an_mv_an_wInteractions_67alone_covidHospOrDeath_MI_W2:
   #   needs: [01b_hhClassif_cr_imputed_datasets_W2]
