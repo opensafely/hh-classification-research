@@ -55,7 +55,7 @@ actions:
   #    highly_sensitive:
   #      imputedEthnicity: output/hhClassif_analysis_dataset_eth5_mi_ageband_*_STSET_*_MAIN.dta
   #    moderately_sensitive:
-  #      log: logs/01b_hhClassif_imputed_datasets_MAIN.log
+  #      logs: logs/01b_hhClassif_imputed_datasets_MAIN.log
 
 
   # 01b_hhClassif_cr_imputed_datasets_W2:
