@@ -30,7 +30,10 @@ use ./output/hhClassif_analysis_dataset_ageband_3MAIN.dta, clear //age 67+ only
 
 
 *% of hh category by region
-safetab region hhRiskCatExp_5cats, row
+tab region hhRiskCatExp_5cats, row
+
+*%redoing household size by ethnic group to separate households of 2 and 3
+tab eth5 hh_size, row
 
 
 log close
